@@ -2,15 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import dynamic from 'next/dynamic';
-const LineChart = dynamic(
-    () => import('recharts').then((mod) => mod.LineChart),
-    { ssr: false }
-);
-import { Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import Head from 'next/head';
+
 import NABHero from './hero';
 import NABHeader from './header';
+import { HowItWorks, PriceChart } from './sections';
 
 const mockPriceData = [
     { time: '1h', price: 100 },
@@ -20,19 +15,6 @@ const mockPriceData = [
     { time: '5h', price: 112 },
     { time: '6h', price: 115 },
 ];
-
-const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="bg-white p-2 border-2 border-dashed border-meme-blue rounded-lg">
-                <p className="font-comic">
-                    trust me fren, price is {payload[0].value}
-                </p>
-            </div>
-        );
-    }
-    return null;
-};
 
 export default function Home() {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -57,7 +39,7 @@ export default function Home() {
                         <Sparkles className="h-12 w-12 inline-block text-moon-yellow" />
                     </div>
                     <h1 className="text-6xl font-bold mb-4 text-white transform -rotate-1">
-                        where number literally just gets bigger lol
+                        where number just gets bigger lol
                     </h1>
 
                     {/* What is this section */}
@@ -67,13 +49,13 @@ export default function Home() {
                         </h2>
                         <p className="text-xl mb-4">
                             hey fren! welcome to NAB (Number Always Bigger) -
-                            the token that literally only goes up. no fancy
-                            promises, just pure mathematic certainty that number
-                            go up (probably).
+                            the token that only goes up. no fancy promises, just
+                            pure mathematic certainty that number go up
+                            (probably).
                         </p>
                         <p className="text-xl">
                             why? because we said &quot;what if number... but
-                            bigger?&quot; and then actually did it lol
+                            bigger?&quot; and then actually did it
                         </p>
                     </div>
 
@@ -89,7 +71,7 @@ export default function Home() {
                         ) : (
                             <span className="flex items-center gap-2">
                                 <Wallet />
-                                connect wallet & vibe
+                                connect wallet & print ur money
                             </span>
                         )}
                     </button>
@@ -97,80 +79,10 @@ export default function Home() {
 
                 {/* How it Works */}
                 <section className="max-w-4xl mx-auto my-16">
-                    <div className="bg-white rounded-lg p-8 transform -rotate-1 border-4 border-floor-pink">
-                        <h2 className="text-4xl font-bold mb-8 text-center text-tech-purple">
-                            how does number get bigger?
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                            {[
-                                {
-                                    step: 1,
-                                    title: 'number exists',
-                                    desc: 'very important first step',
-                                    color: 'meme-blue',
-                                },
-                                {
-                                    step: 2,
-                                    title: 'smart contract do a check',
-                                    desc: 'very technical, much wow',
-                                    color: 'crypto-green',
-                                },
-                                {
-                                    step: 3,
-                                    title: 'if number trying to go down...',
-                                    desc: 'we make supply smol',
-                                    color: 'floor-pink',
-                                },
-                                {
-                                    step: 4,
-                                    title: "that's literally it",
-                                    desc: 'number has no choice but go up',
-                                    color: 'moon-yellow',
-                                },
-                            ].map(({ step, title, desc, color }) => (
-                                <div
-                                    key={step}
-                                    className="text-center p-4 transform hover:scale-105 transition-transform"
-                                >
-                                    <div
-                                        className={`bg-${color} text-white rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 text-xl border-4 border-black shadow-lg`}
-                                    >
-                                        {step}
-                                    </div>
-                                    <h3 className="text-xl font-bold mb-2">
-                                        {title}
-                                    </h3>
-                                    <p className="text-gray-600">{desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <HowItWorks />
                 </section>
                 <section className="max-w-4xl mx-auto my-16">
-                    <div className="mb-8 h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={mockPriceData}>
-                                <XAxis dataKey="time" stroke="#8b008b" />
-                                <YAxis stroke="#8b008b" />
-                                <Tooltip
-                                    content={
-                                        <CustomTooltip
-                                            active={undefined}
-                                            payload={undefined}
-                                            label={undefined}
-                                        />
-                                    }
-                                />
-                                <Line
-                                    type="monotone"
-                                    dataKey="price"
-                                    stroke="#00ff98"
-                                    strokeWidth={4}
-                                    dot={{ fill: '#ff69b4', strokeWidth: 2 }}
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
-                    </div>
+                    <PriceChart data={mockPriceData} />
                 </section>
                 {/* Utility Section */}
                 <section className="max-w-4xl mx-auto my-16">
@@ -222,7 +134,7 @@ export default function Home() {
                                     1. stake fren tokens in our special contract
                                 </p>
                                 <p>2. wait for number printer go brrr</p>
-                                <p>3. profit (literally)</p>
+                                <p>3. profit</p>
                             </AlertDescription>
                         </Alert>
 
@@ -256,11 +168,11 @@ export default function Home() {
                             very serious disclaimer
                         </h2>
                         <p className="text-xl mb-4">
-                            this is literally a token where number go up.
-                            that&apos;s the whole point. if you&apos;re looking
-                            for complex tokenomics and multi-paragraph
-                            explanations, you&apos;re in the wrong place fren.
-                            we keep it simple:
+                            this is a token where number go up. that&apos;s the
+                            whole point. if you&apos;re looking for complex
+                            tokenomics and multi-paragraph explanations,
+                            you&apos;re in the wrong place fren. we keep it
+                            simple:
                         </p>
                         <ul className="list-disc pl-8 text-xl mb-4">
                             <li>number exists</li>
@@ -312,8 +224,8 @@ export default function Home() {
                         somewhere)
                     </p>
                     <div className="text-lg mt-4 text-gray-800">
-                        🌈 remember: number literally cannot go down. it&apos;s
-                        not just a meme, it&apos;s mathematic certainty
+                        🌈 remember: number cannot go down. it&apos;s not just a
+                        meme, it&apos;s mathematic certainty
                         <br />
                         (but also yes, it&apos;s a meme) - and nothing is
                         certain
