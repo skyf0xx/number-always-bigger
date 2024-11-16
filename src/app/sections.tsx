@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Sparkles, ArrowUp, Rocket, TrendingUp, Stars } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
@@ -138,108 +138,216 @@ export const HowItWorks = () => {
 };
 
 export const PriceChart = () => {
-    const generateWavyData = (points = 12) => {
-        const data = [];
-        let baseValue = 100;
+    const [data, setData] = useState([]);
+    const [hoverPoint, setHoverPoint] = useState(null);
 
-        for (let i = 0; i < points; i++) {
-            // Add an upward trend
-            baseValue += Math.random() * 8 + 2;
+    // Generate initial data points
+    const generateDataPoint = useCallback((index, lastValue = 100) => {
+        const upwardTrend = Math.random() * 8 + 2;
+        const wave = Math.sin(index * 0.5) * 5;
+        const newValue = lastValue + upwardTrend;
 
-            // Add wave effect
-            const wave = Math.sin(i * 0.5) * 5;
+        return {
+            time: `${index + 1}h`,
+            price: newValue + wave,
+            smoothPrice: newValue,
+            tooltipValue: `$${(newValue + wave).toFixed(2)}`,
+        };
+    }, []);
 
-            data.push({
-                time: `${i + 1}d`,
-                price: baseValue + wave,
-                // Add a smoother line that's always trending up
-                smoothPrice: baseValue,
+    // Initialize data
+    useEffect(() => {
+        const initialData = Array.from({ length: 12 }, (_, i) => {
+            const lastValue = i > 0 ? data[i - 1]?.smoothPrice || 100 : 100;
+            return generateDataPoint(i, lastValue);
+        });
+        setData(initialData);
+    }, []);
+
+    // Animate data updates
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setData((prevData) => {
+                const newData = [...prevData.slice(1)];
+                const lastValue = prevData[prevData.length - 1].smoothPrice;
+                newData.push(generateDataPoint(prevData.length, lastValue));
+                return newData;
             });
+        }, 2000);
+
+        return () => clearInterval(interval);
+    }, [generateDataPoint]);
+
+    const CustomTooltip = ({ active, payload }) => {
+        if (active && payload && payload.length) {
+            return (
+                <div className="bg-white p-4 border-4 border-dashed border-floor-pink rounded-lg shadow-lg transform -rotate-2 transition-all duration-300">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-moon-yellow" />
+                        <p className="font-comic text-xl text-tech-purple">
+                            {payload[0].payload.tooltipValue}
+                        </p>
+                        <Sparkles className="h-4 w-4 text-moon-yellow" />
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1 font-comic">
+                        number got bigger!
+                    </p>
+                </div>
+            );
         }
-        return data;
+        return null;
     };
-    const wavyData = generateWavyData();
 
     return (
-        <section className="max-w-5xl mx-auto py-16 px-4">
-            <Card className="bg-white/95 backdrop-blur-sm transform -rotate-1 hover:rotate-0 transition-transform duration-300">
-                <CardHeader>
-                    <CardTitle className="text-4xl font-comic text-center text-tech-purple">
-                        looks like this...
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="h-[300px] bg-white/90 backdrop-blur-sm rounded-lg p-4 border-4 border-meme-blue transform hover:scale-[1.01] transition-all duration-300">
-                        <ResponsiveContainer>
-                            <LineChart data={wavyData}>
-                                <defs>
-                                    <linearGradient
-                                        id="colorPrice"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor="#00ff98"
-                                            stopOpacity={0.8}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor="#00ff98"
-                                            stopOpacity={0}
-                                        />
-                                    </linearGradient>
-                                    <linearGradient
-                                        id="colorSmooth"
-                                        x1="0"
-                                        y1="0"
-                                        x2="0"
-                                        y2="1"
-                                    >
-                                        <stop
-                                            offset="5%"
-                                            stopColor="#ff69b4"
-                                            stopOpacity={0.3}
-                                        />
-                                        <stop
-                                            offset="95%"
-                                            stopColor="#ff69b4"
-                                            stopOpacity={0}
-                                        />
-                                    </linearGradient>
-                                </defs>
-                                <XAxis dataKey="time" stroke="#8b008b" />
-                                <YAxis stroke="#8b008b" />
-                                <Tooltip content={CustomTooltip} />
-                                {/* Smooth upward trend line */}
-                                <Line
-                                    type="monotone"
-                                    dataKey="smoothPrice"
-                                    stroke="#ff69b4"
-                                    strokeWidth={2}
-                                    strokeDasharray="5 5"
-                                    dot={false}
-                                    fillOpacity={1}
-                                    fill="url(#colorSmooth)"
-                                />
-                                {/* Wavy main line */}
-                                <Line
-                                    type="natural"
-                                    dataKey="price"
-                                    stroke="#00ff98"
-                                    strokeWidth={4}
-                                    dot={{ fill: '#ff69b4', strokeWidth: 2 }}
-                                    activeDot={{ r: 8 }}
-                                    fillOpacity={1}
-                                    fill="url(#colorPrice)"
-                                />
-                            </LineChart>
-                        </ResponsiveContainer>
+        <Card className="bg-white/95 backdrop-blur-sm transform hover:scale-[1.01] transition-all duration-500 border-4 border-floor-pink">
+            <CardHeader>
+                <CardTitle className="text-4xl font-comic text-center text-tech-purple flex items-center justify-center gap-2">
+                    <Sparkles className="h-8 w-8 text-moon-yellow" />
+                    looks like this...
+                    <Sparkles className="h-8 w-8 text-moon-yellow" />
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="relative h-[400px] bg-white/90 backdrop-blur-sm rounded-lg p-6 border-4 border-meme-blue">
+                    {/* Floating emojis */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        {hoverPoint && (
+                            <div
+                                className="absolute transition-all duration-300"
+                                style={{
+                                    left: `${
+                                        (hoverPoint.index / (data.length - 1)) *
+                                        100
+                                    }%`,
+                                    top: `${100 - hoverPoint.value / 2}%`,
+                                    transform: 'translate(-50%, -50%)',
+                                }}
+                            >
+                                <span className="text-2xl animate-bounce">
+                                    🚀
+                                </span>
+                            </div>
+                        )}
                     </div>
-                </CardContent>
-            </Card>
-        </section>
+
+                    <ResponsiveContainer>
+                        <LineChart
+                            data={data}
+                            onMouseMove={(props) => {
+                                if (props.activeTooltipIndex !== undefined) {
+                                    setHoverPoint({
+                                        index: props.activeTooltipIndex,
+                                        value: data[props.activeTooltipIndex]
+                                            .price,
+                                    });
+                                }
+                            }}
+                            onMouseLeave={() => setHoverPoint(null)}
+                        >
+                            <defs>
+                                <linearGradient
+                                    id="colorPrice"
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="1"
+                                >
+                                    <stop
+                                        offset="5%"
+                                        stopColor="#00ff98"
+                                        stopOpacity={0.8}
+                                    />
+                                    <stop
+                                        offset="95%"
+                                        stopColor="#00ff98"
+                                        stopOpacity={0.1}
+                                    />
+                                </linearGradient>
+                                <linearGradient
+                                    id="colorSmooth"
+                                    x1="0"
+                                    y1="0"
+                                    x2="0"
+                                    y2="1"
+                                >
+                                    <stop
+                                        offset="5%"
+                                        stopColor="#ff69b4"
+                                        stopOpacity={0.3}
+                                    />
+                                    <stop
+                                        offset="95%"
+                                        stopColor="#ff69b4"
+                                        stopOpacity={0.05}
+                                    />
+                                </linearGradient>
+                            </defs>
+
+                            <XAxis
+                                dataKey="time"
+                                stroke="#8b008b"
+                                tick={{
+                                    fontSize: 14,
+                                    fontFamily: 'Comic Sans MS',
+                                }}
+                            />
+                            <YAxis
+                                stroke="#8b008b"
+                                tick={{
+                                    fontSize: 14,
+                                    fontFamily: 'Comic Sans MS',
+                                }}
+                                tickFormatter={(value) =>
+                                    `$${value.toFixed(0)}`
+                                }
+                            />
+                            <Tooltip
+                                content={CustomTooltip}
+                                cursor={{
+                                    stroke: '#ff69b4',
+                                    strokeWidth: 2,
+                                    strokeDasharray: '5 5',
+                                }}
+                            />
+
+                            {/* Smooth trend line */}
+                            <Line
+                                type="monotone"
+                                dataKey="smoothPrice"
+                                stroke="#ff69b4"
+                                strokeWidth={2}
+                                strokeDasharray="5 5"
+                                dot={false}
+                                fillOpacity={1}
+                                fill="url(#colorSmooth)"
+                            />
+
+                            {/* Main animated line */}
+                            <Line
+                                type="natural"
+                                dataKey="price"
+                                stroke="#00ff98"
+                                strokeWidth={4}
+                                dot={{
+                                    fill: '#ff69b4',
+                                    strokeWidth: 2,
+                                    r: 6,
+                                    strokeDasharray: '',
+                                }}
+                                activeDot={{
+                                    r: 8,
+                                    fill: '#00ff98',
+                                    stroke: '#ff69b4',
+                                    strokeWidth: 2,
+                                    className: 'animate-ping',
+                                }}
+                                fillOpacity={1}
+                                fill="url(#colorPrice)"
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            </CardContent>
+        </Card>
     );
 };
