@@ -14,7 +14,7 @@ const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white p-2 border-2 border-dashed border-meme-blue rounded-lg">
-                <p className="font-comic">up, up, up {payload[0].value}</p>
+                <p className="font-comic">up, up, up </p>
             </div>
         );
     }
@@ -98,7 +98,7 @@ export const HowItWorks = () => {
     ];
 
     return (
-        <section className="max-w-5xl mx-auto py-16 px-4">
+        <section className="max-w-5xl mx-auto py-16 px-4" id="how-it-works">
             <Card className="bg-white/95 backdrop-blur-sm transform -rotate-1 hover:rotate-0 transition-transform duration-300">
                 <CardHeader>
                     <CardTitle className="text-4xl font-comic text-center text-tech-purple">

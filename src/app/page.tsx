@@ -115,7 +115,7 @@ export default function Home() {
                 </section>
 
                 {/* How to Get NAB */}
-                <section className="max-w-4xl mx-auto my-16">
+                <section className="max-w-4xl mx-auto my-16" id="stake">
                     <div className="bg-white rounded-lg p-8 transform -rotate-1 border-4 border-crypto-green">
                         <h2 className="text-4xl font-bold mb-6 text-center">
                             how 2 get NAB?
@@ -199,7 +199,10 @@ export default function Home() {
                 </section>
 
                 {/* Footer */}
-                <footer className="max-w-6xl mx-auto text-center py-8">
+                <footer
+                    className="max-w-6xl mx-auto text-center py-8"
+                    id="community"
+                >
                     <p className="mb-4 text-2xl">
                         come watch number get bigger with us:
                     </p>
