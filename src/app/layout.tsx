@@ -14,7 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-    title: 'NAB - Number Always Bigger | where number just gets bigger lol',
+    title: 'NAB - Number Always Bigger | where number just gets bigger',
     description:
         'Welcome to NAB (Number Always Bigger) - the token that only goes up. No fancy promises, just pure mathematic certainty that number go up (probably).',
 };

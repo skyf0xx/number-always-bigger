@@ -21,9 +21,7 @@ const CustomTooltip = ({ active, payload }) => {
     if (active && payload && payload.length) {
         return (
             <div className="bg-white p-2 border-2 border-dashed border-meme-blue rounded-lg">
-                <p className="font-comic">
-                    trust me fren, price is {payload[0].value}
-                </p>
+                <p className="font-comic">up, up, up {payload[0].value}</p>
             </div>
         );
     }
@@ -69,7 +67,7 @@ export const PriceTicker = ({ currentPrice, nextPrice }) => {
                     {/* Trust indicator */}
                     <div className="flex items-center justify-center gap-2 text-sm text-gray-500 italic mt-2">
                         <Stars className="h-4 w-4" />
-                        <span>(source: trust me bro)</span>
+                        <span>(source: big number math)</span>
                         <Stars className="h-4 w-4" />
                     </div>
                 </div>
@@ -101,7 +99,7 @@ export const HowItWorks = () => {
         {
             icon: <Rocket className="h-8 w-8" />,
             title: "that's it!",
-            description: 'number has no choice but to go up',
+            description: 'number has no choice but to go up!',
             color: 'moon-yellow',
         },
     ];
@@ -148,44 +146,55 @@ export const HowItWorks = () => {
 
 export const PriceChart = ({ data }) => {
     return (
-        <div className="h-[300px] bg-white/90 backdrop-blur-sm rounded-lg p-4 border-4 border-meme-blue transform hover:scale-[1.01] transition-all duration-300">
-            <ResponsiveContainer>
-                <LineChart data={data}>
-                    <defs>
-                        <linearGradient
-                            id="colorPrice"
-                            x1="0"
-                            y1="0"
-                            x2="0"
-                            y2="1"
-                        >
-                            <stop
-                                offset="5%"
-                                stopColor="#00ff98"
-                                stopOpacity={0.8}
-                            />
-                            <stop
-                                offset="95%"
-                                stopColor="#00ff98"
-                                stopOpacity={0}
-                            />
-                        </linearGradient>
-                    </defs>
-                    <XAxis dataKey="time" stroke="#8b008b" />
-                    <YAxis stroke="#8b008b" />
-                    <Tooltip content={CustomTooltip} />
-                    <Line
-                        type="monotone"
-                        dataKey="price"
-                        stroke="#00ff98"
-                        strokeWidth={4}
-                        dot={{ fill: '#ff69b4', strokeWidth: 2 }}
-                        activeDot={{ r: 8 }}
-                        fillOpacity={1}
-                        fill="url(#colorPrice)"
-                    />
-                </LineChart>
-            </ResponsiveContainer>
-        </div>
+        <section className="max-w-5xl mx-auto py-16 px-4">
+            <Card className="bg-white/95 backdrop-blur-sm transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+                <CardHeader>
+                    <CardTitle className="text-4xl font-comic text-center text-tech-purple">
+                        looks like this...
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="h-[300px] bg-white/90 backdrop-blur-sm rounded-lg p-4 border-4 border-meme-blue transform hover:scale-[1.01] transition-all duration-300">
+                        <ResponsiveContainer>
+                            <LineChart data={data}>
+                                <defs>
+                                    <linearGradient
+                                        id="colorPrice"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                    >
+                                        <stop
+                                            offset="5%"
+                                            stopColor="#00ff98"
+                                            stopOpacity={0.8}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor="#00ff98"
+                                            stopOpacity={0}
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <XAxis dataKey="time" stroke="#8b008b" />
+                                <YAxis stroke="#8b008b" />
+                                <Tooltip content={CustomTooltip} />
+                                <Line
+                                    type="monotone"
+                                    dataKey="price"
+                                    stroke="#00ff98"
+                                    strokeWidth={4}
+                                    dot={{ fill: '#ff69b4', strokeWidth: 2 }}
+                                    activeDot={{ r: 8 }}
+                                    fillOpacity={1}
+                                    fill="url(#colorPrice)"
+                                />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+                </CardContent>
+            </Card>
+        </section>
     );
 };

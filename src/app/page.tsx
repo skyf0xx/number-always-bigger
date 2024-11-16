@@ -8,12 +8,12 @@ import NABHeader from './header';
 import { HowItWorks, PriceChart } from './sections';
 
 const mockPriceData = [
-    { time: '1h', price: 100 },
-    { time: '2h', price: 102 },
-    { time: '3h', price: 105 },
-    { time: '4h', price: 108 },
-    { time: '5h', price: 112 },
-    { time: '6h', price: 115 },
+    { time: '1d', price: 100 },
+    { time: '2d', price: 102 },
+    { time: '3d', price: 105 },
+    { time: '4d', price: 108 },
+    { time: '5d', price: 112 },
+    { time: '6d', price: 115 },
 ];
 
 export default function Home() {
@@ -39,7 +39,7 @@ export default function Home() {
                         <Sparkles className="h-12 w-12 inline-block text-moon-yellow" />
                     </div>
                     <h1 className="text-6xl font-bold mb-4 text-white transform -rotate-1">
-                        where number just gets bigger lol
+                        where number just gets bigger
                     </h1>
 
                     {/* What is this section */}
@@ -91,24 +91,24 @@ export default function Home() {
                             wen utility?
                         </h2>
                         <p className="text-2xl text-center mb-6">
-                            utility is number go up
+                            utility is number go up. But also other things:
                         </p>
                         <div className="space-y-4 text-xl">
                             <p className="flex items-center gap-2">
                                 <Sparkles className="text-moon-yellow" />
-                                transfer fees that make u money
+                                staking that makes more number (done)
                             </p>
                             <p className="flex items-center gap-2">
                                 <Rocket className="text-crypto-green" />
-                                staking that makes more number
+                                transfer fees that make u money (soon)
                             </p>
                             <p className="flex items-center gap-2">
                                 <Heart className="text-floor-pink" />
-                                yield that buys and burns tokens
+                                yield that buys and burns tokens (soon)
                             </p>
                             <p className="flex items-center gap-2">
                                 <TrendingUp className="text-tech-purple" />
-                                smart contract that does big brain math
+                                Even more features
                             </p>
                         </div>
                     </div>
@@ -165,32 +165,36 @@ export default function Home() {
                 <section className="max-w-4xl mx-auto my-16">
                     <div className="bg-white rounded-lg p-8 transform rotate-1 border-4 border-tech-purple">
                         <h2 className="text-3xl font-bold mb-4 text-center">
-                            very serious disclaimer
+                            numbers about the number
                         </h2>
-                        <p className="text-xl mb-4">
-                            this is a token where number go up. that&apos;s the
-                            whole point. if you&apos;re looking for complex
-                            tokenomics and multi-paragraph explanations,
-                            you&apos;re in the wrong place fren. we keep it
-                            simple:
-                        </p>
-                        <ul className="list-disc pl-8 text-xl mb-4">
-                            <li>number exists</li>
-                            <li>number gets bigger</li>
-                            <li>you smile</li>
-                        </ul>
-                        <p className="text-xl italic">
-                            (but also yes, we&apos;re actually built on super
-                            solid math that makes this work. we just don&apos;t
-                            like to brag about it)
-                            <a
-                                href="#"
-                                className="text-meme-blue hover:underline"
-                            >
-                                {' '}
-                                read whitepaper here
-                            </a>
-                        </p>
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between text-xl">
+                                <span className="font-bold">total supply:</span>
+                                <span className="text-crypto-green">
+                                    exactly what it needs to be
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between text-xl">
+                                <span className="font-bold">
+                                    current price:
+                                </span>
+                                <span className="text-crypto-green">
+                                    bigger than yesterday
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between text-xl">
+                                <span className="font-bold">
+                                    tomorrow&apos;s price:
+                                </span>
+                                <span className="text-crypto-green">
+                                    even bigger probably
+                                </span>
+                            </div>
+                            <div className="flex items-center justify-between text-xl">
+                                <span className="font-bold">trust level:</span>
+                                <span className="text-crypto-green">yes</span>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
@@ -201,23 +205,17 @@ export default function Home() {
                     </p>
                     <div className="flex justify-center gap-8 mb-8">
                         <a
-                            href="#"
+                            href="https://x.com/AlwaysBigger"
                             className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
                         >
-                            Twitter: NumberAlwaysBigger
+                            Twitter: @AlwaysBigger
                         </a>
-                        <a
-                            href="#"
-                            className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
-                        >
-                            Discord: NAB Fren Zone
-                        </a>
-                        <a
-                            href="#"
-                            className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
-                        >
-                            Telegram: Number Watchers
-                        </a>
+                        <span className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black">
+                            Discord: NAB Fren Zone (soon)
+                        </span>
+                        <span className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black">
+                            Telegram: Number Watchers (soon)
+                        </span>
                     </div>
                     <p className="mt-8 text-sm bg-white inline-block px-4 py-2 rounded-full transform rotate-1">
                         powered by mithril (the serious stuff is hiding here
