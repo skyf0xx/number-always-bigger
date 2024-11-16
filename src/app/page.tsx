@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
@@ -7,25 +7,8 @@ import NABHero from './hero';
 import NABHeader from './header';
 import { HowItWorks, PriceChart } from './sections';
 
-const mockPriceData = [
-    { time: '1d', price: 100 },
-    { time: '2d', price: 102 },
-    { time: '3d', price: 105 },
-    { time: '4d', price: 108 },
-    { time: '5d', price: 112 },
-    { time: '6d', price: 115 },
-];
-
 export default function Home() {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
-    const [currentPrice, setCurrentPrice] = useState(420.69);
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrentPrice((prev) => +(prev + Math.random()).toFixed(2));
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
 
     return (
         <>
@@ -82,7 +65,7 @@ export default function Home() {
                     <HowItWorks />
                 </section>
                 <section className="max-w-4xl mx-auto my-16">
-                    <PriceChart data={mockPriceData} />
+                    <PriceChart />
                 </section>
                 {/* Utility Section */}
                 <section className="max-w-4xl mx-auto my-16">

@@ -6,7 +6,6 @@ import NABMascot from './mascot';
 const NABHero = () => {
     const [currentFloor, setCurrentFloor] = useState('420.69');
     const [nextFloor, setNextFloor] = useState('429.42');
-    const [arrowBounce, setArrowBounce] = useState(false);
 
     // Simulate price updates
     useEffect(() => {
@@ -15,8 +14,6 @@ const NABHero = () => {
             const increase = (Math.random() * 2).toFixed(2);
             setCurrentFloor((current + parseFloat(increase)).toFixed(2));
             setNextFloor((current + parseFloat(increase) + 8.73).toFixed(2));
-            setArrowBounce(true);
-            setTimeout(() => setArrowBounce(false), 500);
         }, 5000);
 
         return () => clearInterval(interval);
