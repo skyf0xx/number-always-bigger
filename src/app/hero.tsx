@@ -44,14 +44,14 @@ const NABHero = () => {
                 {/* Sparkly Header */}
                 <div className="flex justify-center items-center gap-2 mb-6">
                     <Sparkles className="h-8 w-8 text-moon-yellow animate-pulse" />
-                    <h1 className="text-6xl font-comic font-bold text-moon-yellow transform -rotate-2">
-                        number always bigger
+                    <h1 className="text-8xl font-comic font-bold text-moon-yellow transform -rotate-2">
+                        number, always, bigger
                     </h1>
                     <Sparkles className="h-8 w-8 text-moon-yellow animate-pulse" />
                 </div>
 
                 <p className="text-2xl text-white mb-12 transform text-black rotate-1">
-                    (it&apos;s that simple fren)
+                    (NAB)
                 </p>
 
                 <PriceTicker
@@ -62,7 +62,7 @@ const NABHero = () => {
                 {/* Tagline */}
                 <div className="text-2xl text-black font-comic space-y-8 ">
                     <p className="transform rotate-1 mt-12">
-                        a token where number just gets bigger
+                        a token where the price just goes up
                     </p>
                 </div>
             </div>

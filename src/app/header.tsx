@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Wallet, Menu, X } from 'lucide-react';
+import { Wallet, Menu, X, Rocket } from 'lucide-react';
 import Image from 'next/image';
 
 const NABHeader = () => {
@@ -73,10 +73,17 @@ const NABHeader = () => {
                             className="bg-moon-yellow hover:bg-yellow-400 text-black font-bold py-2 px-4 rounded-full text-lg transform hover:scale-105 transition-all hover:-rotate-2 border-2 border-black"
                         >
                             <span className="flex items-center gap-2">
-                                <Wallet className="h-4 w-4" />
-                                {isWalletConnected
-                                    ? 'gm fren!'
-                                    : 'connect wallet'}
+                                {isWalletConnected ? (
+                                    <span className="flex items-center gap-2">
+                                        <Rocket className="animate-pulse" />
+                                        printer go brrrrrrrr!!!!!
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        <Wallet />
+                                        connect wallet
+                                    </span>
+                                )}
                             </span>
                         </button>
                     </nav>
@@ -124,10 +131,17 @@ const NABHeader = () => {
                             className="w-full bg-moon-yellow hover:bg-yellow-400 text-black font-bold py-2 px-4 rounded-full text-lg transform hover:scale-105 transition-all hover:-rotate-2 border-2 border-black"
                         >
                             <span className="flex items-center justify-center gap-2">
-                                <Wallet className="h-4 w-4" />
-                                {isWalletConnected
-                                    ? 'gm fren!'
-                                    : 'connect wallet'}
+                                {isWalletConnected ? (
+                                    <span className="flex items-center gap-2">
+                                        <Rocket className="animate-pulse" />
+                                        printer go brrrrrrrr!!!!!
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        <Wallet />
+                                        connect wallet
+                                    </span>
+                                )}
                             </span>
                         </button>
                     </div>

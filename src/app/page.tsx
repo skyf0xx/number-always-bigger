@@ -21,20 +21,19 @@ export default function Home() {
                     <div className="animate-bounce mb-4">
                         <Sparkles className="h-12 w-12 inline-block text-moon-yellow" />
                     </div>
-                    <h1 className="text-6xl font-bold mb-4 text-white transform -rotate-1">
-                        where number just gets bigger
+                    <h1 className="text-6xl font-bold mb-8 text-white transform -rotate-1">
+                        Only up?
                     </h1>
 
                     {/* What is this section */}
-                    <div className="bg-white rounded-lg p-8 mb-8 transform -rotate-1 border-4 border-floor-pink">
+                    <div className="bg-white rounded-lg p-8 mb-8transform -rotate-1 border-4 border-floor-pink">
                         <h2 className="text-3xl font-bold mb-4">
                             what even is this?
                         </h2>
                         <p className="text-xl mb-4">
                             hey fren! welcome to NAB (Number Always Bigger) -
                             the token that only goes up. no fancy promises, just
-                            pure mathematic certainty that number go up
-                            (probably).
+                            pure mathematic certainty that number go up.
                         </p>
                         <p className="text-xl">
                             why? because we said &quot;what if number... but
