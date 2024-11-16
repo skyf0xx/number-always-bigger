@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Wallet, Menu, X } from 'lucide-react';
+import Image from 'next/image';
 
 const NABHeader = () => {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -31,7 +32,9 @@ const NABHeader = () => {
                     <div className="flex items-center gap-2">
                         <div className="relative">
                             <div className="w-12 h-12 rounded-full bg-white border-4 border-moon-yellow shadow-xl overflow-hidden">
-                                <img
+                                <Image
+                                    width={12}
+                                    height={12}
                                     src="nab.jpg"
                                     alt="NAB Mascot"
                                     className="w-full h-full object-cover"

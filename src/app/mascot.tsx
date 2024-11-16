@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 const NABMascot = () => {
     const [isLaunching, setIsLaunching] = useState(false);
@@ -56,7 +57,9 @@ const NABMascot = () => {
                         ${isLaunching ? 'animate-mascot-spin' : ''}
                     `}
                     >
-                        <img
+                        <Image
+                            width={20}
+                            height={20}
                             src="nab.jpg"
                             alt="NAB Mascot"
                             className="w-full h-full object-cover"
