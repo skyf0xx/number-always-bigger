@@ -66,7 +66,7 @@ export default function Home() {
                         {isWalletConnected ? (
                             <span className="flex items-center gap-2">
                                 <Rocket className="animate-pulse" />
-                                ur vibing with us now!
+                                printer go brrrrrrrr!!!!!
                             </span>
                         ) : (
                             <span className="flex items-center gap-2">
