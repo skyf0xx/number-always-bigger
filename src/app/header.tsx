@@ -11,7 +11,21 @@ const NABHeader = () => {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center gap-2">
-                        <Sparkles className="h-6 w-6 text-moon-yellow animate-pulse" />
+                        <div className="relative">
+                            <div
+                                className={`
+                        w-12 h-12  rounded-full
+                        bg-white border-4 border-moon-yellow
+                        shadow-xl overflow-hidden
+                    `}
+                            >
+                                <img
+                                    src="nab.jpg"
+                                    alt="NAB Mascot"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        </div>
                         <span className="text-2xl font-bold text-tech-purple transform -rotate-1 hover:rotate-0 transition-transform">
                             Number Always Bigger
                         </span>
