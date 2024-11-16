@@ -1,9 +1,27 @@
 import React, { useState } from 'react';
-import { Sparkles, Wallet, Menu, X } from 'lucide-react';
+import { Wallet, Menu, X } from 'lucide-react';
 
 const NABHeader = () => {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+    const scrollToSection = (sectionId: string) => {
+        // Close mobile menu if open
+        setIsMobileMenuOpen(false);
+
+        // Find the element
+        const element = document.getElementById(sectionId);
+        if (element) {
+            // Get the header height to offset the scroll
+            const headerHeight = 64; // This is the h-16 value in pixels
+            const elementPosition = element.offsetTop - headerHeight;
+
+            window.scrollTo({
+                top: elementPosition,
+                behavior: 'smooth',
+            });
+        }
+    };
 
     return (
         <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b-4 border-floor-pink font-comic">
@@ -12,13 +30,7 @@ const NABHeader = () => {
                     {/* Logo */}
                     <div className="flex items-center gap-2">
                         <div className="relative">
-                            <div
-                                className={`
-                        w-12 h-12  rounded-full
-                        bg-white border-4 border-moon-yellow
-                        shadow-xl overflow-hidden
-                    `}
-                            >
+                            <div className="w-12 h-12 rounded-full bg-white border-4 border-moon-yellow shadow-xl overflow-hidden">
                                 <img
                                     src="nab.jpg"
                                     alt="NAB Mascot"
@@ -33,24 +45,24 @@ const NABHeader = () => {
 
                     {/* Desktop Navigation */}
                     <nav className="hidden md:flex items-center gap-8">
-                        <a
-                            href="#how-it-works"
+                        <button
+                            onClick={() => scrollToSection('how-it-works')}
                             className="text-lg hover:text-crypto-green transition-colors"
                         >
                             how it works
-                        </a>
-                        <a
-                            href="#stake"
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('stake')}
                             className="text-lg hover:text-crypto-green transition-colors"
                         >
                             stake frens
-                        </a>
-                        <a
-                            href="#community"
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('community')}
                             className="text-lg hover:text-crypto-green transition-colors"
                         >
                             fren zone
-                        </a>
+                        </button>
                         <button
                             onClick={() =>
                                 setIsWalletConnected(!isWalletConnected)
@@ -84,24 +96,24 @@ const NABHeader = () => {
             {isMobileMenuOpen && (
                 <div className="md:hidden bg-white border-t-2 border-floor-pink">
                     <div className="px-4 py-2 space-y-4">
-                        <a
-                            href="#how-it-works"
-                            className="block text-lg py-2 hover:text-crypto-green transition-colors"
+                        <button
+                            onClick={() => scrollToSection('how-it-works')}
+                            className="block w-full text-left text-lg py-2 hover:text-crypto-green transition-colors"
                         >
                             how it works
-                        </a>
-                        <a
-                            href="#stake"
-                            className="block text-lg py-2 hover:text-crypto-green transition-colors"
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('stake')}
+                            className="block w-full text-left text-lg py-2 hover:text-crypto-green transition-colors"
                         >
                             stake frens
-                        </a>
-                        <a
-                            href="#community"
-                            className="block text-lg py-2 hover:text-crypto-green transition-colors"
+                        </button>
+                        <button
+                            onClick={() => scrollToSection('community')}
+                            className="block w-full text-left text-lg py-2 hover:text-crypto-green transition-colors"
                         >
                             fren zone
-                        </a>
+                        </button>
                         <button
                             onClick={() =>
                                 setIsWalletConnected(!isWalletConnected)
