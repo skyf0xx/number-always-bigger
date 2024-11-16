@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-    Sparkles,
-    ArrowUp,
-    Rocket,
-    TrendingUp,
-    Wallet,
-    Stars,
-} from 'lucide-react';
+import { Sparkles, ArrowUp, Rocket, TrendingUp, Stars } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
     LineChart,
@@ -144,7 +137,29 @@ export const HowItWorks = () => {
     );
 };
 
-export const PriceChart = ({ data }) => {
+export const PriceChart = () => {
+    const generateWavyData = (points = 12) => {
+        const data = [];
+        let baseValue = 100;
+
+        for (let i = 0; i < points; i++) {
+            // Add an upward trend
+            baseValue += Math.random() * 8 + 2;
+
+            // Add wave effect
+            const wave = Math.sin(i * 0.5) * 5;
+
+            data.push({
+                time: `${i + 1}d`,
+                price: baseValue + wave,
+                // Add a smoother line that's always trending up
+                smoothPrice: baseValue,
+            });
+        }
+        return data;
+    };
+    const wavyData = generateWavyData();
+
     return (
         <section className="max-w-5xl mx-auto py-16 px-4">
             <Card className="bg-white/95 backdrop-blur-sm transform -rotate-1 hover:rotate-0 transition-transform duration-300">
@@ -156,7 +171,7 @@ export const PriceChart = ({ data }) => {
                 <CardContent>
                     <div className="h-[300px] bg-white/90 backdrop-blur-sm rounded-lg p-4 border-4 border-meme-blue transform hover:scale-[1.01] transition-all duration-300">
                         <ResponsiveContainer>
-                            <LineChart data={data}>
+                            <LineChart data={wavyData}>
                                 <defs>
                                     <linearGradient
                                         id="colorPrice"
@@ -176,12 +191,42 @@ export const PriceChart = ({ data }) => {
                                             stopOpacity={0}
                                         />
                                     </linearGradient>
+                                    <linearGradient
+                                        id="colorSmooth"
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                    >
+                                        <stop
+                                            offset="5%"
+                                            stopColor="#ff69b4"
+                                            stopOpacity={0.3}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor="#ff69b4"
+                                            stopOpacity={0}
+                                        />
+                                    </linearGradient>
                                 </defs>
                                 <XAxis dataKey="time" stroke="#8b008b" />
                                 <YAxis stroke="#8b008b" />
                                 <Tooltip content={CustomTooltip} />
+                                {/* Smooth upward trend line */}
                                 <Line
                                     type="monotone"
+                                    dataKey="smoothPrice"
+                                    stroke="#ff69b4"
+                                    strokeWidth={2}
+                                    strokeDasharray="5 5"
+                                    dot={false}
+                                    fillOpacity={1}
+                                    fill="url(#colorSmooth)"
+                                />
+                                {/* Wavy main line */}
+                                <Line
+                                    type="natural"
                                     dataKey="price"
                                     stroke="#00ff98"
                                     strokeWidth={4}
