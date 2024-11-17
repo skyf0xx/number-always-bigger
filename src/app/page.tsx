@@ -127,12 +127,26 @@ export default function Home() {
                             <AlertDescription className="text-xl">
                                 <ul className="space-y-4">
                                     <li className="flex items-center gap-2">
+                                        <TrendingUp className="text-crypto-green" />
+                                        <a
+                                            target="_blank"
+                                            href="https://www.ao.link/#/token/lmaw9BhyycEIyxWhr0kF_tTcfoSoduDX8fChpHn2eQM"
+                                            className="text-meme-blue hover:text-crypto-green underline decoration-dotted hover:decoration-solid transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1"
+                                        >
+                                            Botega LP qAR/AGENT
+                                        </a>{' '}
+                                        <span className="text-sm">
+                                            (mint NAB on top of your LP rewards
+                                            on Botega)
+                                        </span>
+                                    </li>
+                                    <li className="flex items-center gap-2">
                                         <Sparkles className="text-moon-yellow" />
-                                        stETH (such premium, such yield)
+                                        stETH (soon)
                                     </li>
                                     <li className="flex items-center gap-2">
                                         <Rocket className="text-crypto-green" />
-                                        stSOL (much speed, very efficiency)
+                                        stSOL (soon)
                                     </li>
                                     <li className="text-center mt-4">
                                         more frens coming soon™
