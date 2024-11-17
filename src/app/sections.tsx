@@ -128,7 +128,6 @@ export const HowItWorks = () => {
 
 export const PriceChart = () => {
     const [data, setData] = useState([]);
-    const [hoverPoint, setHoverPoint] = useState(null);
 
     // Generate initial data points
     const generateDataPoint = useCallback((index, lastValue = 100) => {
@@ -150,7 +149,6 @@ export const PriceChart = () => {
             const lastValue = i > 0 ? data[i - 1]?.smoothPrice || 100 : 100;
             return generateDataPoint(i, lastValue);
         });
-        console.log({ initialData });
         setData(initialData);
     }, []);
 
@@ -179,27 +177,6 @@ export const PriceChart = () => {
             </CardHeader>
             <CardContent>
                 <div className="relative h-[400px] bg-white/90 backdrop-blur-sm rounded-lg p-6 ">
-                    {/* Floating emojis */}
-                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        {hoverPoint && (
-                            <div
-                                className="absolute transition-all duration-300"
-                                style={{
-                                    left: `${
-                                        (hoverPoint.index / (data.length - 1)) *
-                                        100
-                                    }%`,
-                                    top: `${100 - hoverPoint.value / 2}%`,
-                                    transform: 'translate(-50%, -50%)',
-                                }}
-                            >
-                                <span className="text-2xl animate-bounce">
-                                    🚀
-                                </span>
-                            </div>
-                        )}
-                    </div>
-
                     <ResponsiveContainer>
                         <LineChart data={data}>
                             <defs>
