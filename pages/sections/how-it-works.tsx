@@ -8,7 +8,7 @@ interface Step {
     color: string;
 }
 
-export const HowItWorks: React.FC = () => {
+const HowItWorks: React.FC = () => {
     const steps: Step[] = [
         {
             icon: <Sparkles className="h-8 w-8" />,
@@ -75,3 +75,5 @@ export const HowItWorks: React.FC = () => {
         </section>
     );
 };
+
+export default HowItWorks;
