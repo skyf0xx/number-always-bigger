@@ -5,7 +5,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 import NABHero from './hero';
 import NABHeader from './header';
-import { HowItWorks } from './sections/how-it-works';
+import HowItWorks from './sections/how-it-works';
 import PriceChart from './sections/price-chart';
 
 export default function Home() {
