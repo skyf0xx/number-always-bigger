@@ -1,7 +1,14 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Sparkles, LineChart } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useState, useCallback, useEffect } from 'react';
-import { ResponsiveContainer, XAxis, YAxis, Tooltip, Line } from 'recharts';
+import {
+    ResponsiveContainer,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Line,
+    LineChart,
+} from 'recharts';
 
 interface ChartDataPoint {
     time: string;
