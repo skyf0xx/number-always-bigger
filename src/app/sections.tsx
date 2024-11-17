@@ -137,19 +137,20 @@ export const PriceChart = () => {
         const newValue = lastValue + upwardTrend;
 
         return {
-            time: `${index + 1}h`,
+            time: `${index + 1}d`,
             price: newValue + wave,
             smoothPrice: newValue,
-            tooltipValue: `$${(newValue + wave).toFixed(2)}`,
+            tooltipValue: `up!`,
         };
     }, []);
 
     // Initialize data
     useEffect(() => {
-        const initialData = Array.from({ length: 12 }, (_, i) => {
+        const initialData = Array.from({ length: 50 }, (_, i) => {
             const lastValue = i > 0 ? data[i - 1]?.smoothPrice || 100 : 100;
             return generateDataPoint(i, lastValue);
         });
+        console.log({ initialData });
         setData(initialData);
     }, []);
 
@@ -167,9 +168,8 @@ export const PriceChart = () => {
         return () => clearInterval(interval);
     }, [generateDataPoint]);
 
-
     return (
-        <Card className="bg-white/95 backdrop-blur-sm transform hover:scale-[1.01] transition-all duration-500 border-4 border-floor-pink">
+        <Card className="bg-white/95 backdrop-blur-sm transform hover:scale-[1.01] transition-all duration-500 border-4 border-meme-blue">
             <CardHeader>
                 <CardTitle className="text-4xl font-comic text-center text-tech-purple flex items-center justify-center gap-2">
                     <Sparkles className="h-8 w-8 text-moon-yellow" />
@@ -178,7 +178,7 @@ export const PriceChart = () => {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="relative h-[400px] bg-white/90 backdrop-blur-sm rounded-lg p-6 border-4 border-meme-blue">
+                <div className="relative h-[400px] bg-white/90 backdrop-blur-sm rounded-lg p-6 ">
                     {/* Floating emojis */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
                         {hoverPoint && (
@@ -201,19 +201,7 @@ export const PriceChart = () => {
                     </div>
 
                     <ResponsiveContainer>
-                        <LineChart
-                            data={data}
-                            onMouseMove={(props) => {
-                                if (props.activeTooltipIndex !== undefined) {
-                                    setHoverPoint({
-                                        index: props.activeTooltipIndex,
-                                        value: data[props.activeTooltipIndex]
-                                            .price,
-                                    });
-                                }
-                            }}
-                            onMouseLeave={() => setHoverPoint(null)}
-                        >
+                        <LineChart data={data}>
                             <defs>
                                 <linearGradient
                                     id="colorPrice"
@@ -221,62 +209,43 @@ export const PriceChart = () => {
                                     y1="0"
                                     x2="0"
                                     y2="1"
-                                >
-                                    <stop
-                                        offset="5%"
-                                        stopColor="#00ff98"
-                                        stopOpacity={0.8}
-                                    />
-                                    <stop
-                                        offset="95%"
-                                        stopColor="#00ff98"
-                                        stopOpacity={0.1}
-                                    />
-                                </linearGradient>
+                                ></linearGradient>
                                 <linearGradient
                                     id="colorSmooth"
                                     x1="0"
                                     y1="0"
                                     x2="0"
                                     y2="1"
-                                >
-                                    <stop
-                                        offset="5%"
-                                        stopColor="#ff69b4"
-                                        stopOpacity={0.3}
-                                    />
-                                    <stop
-                                        offset="95%"
-                                        stopColor="#ff69b4"
-                                        stopOpacity={0.05}
-                                    />
-                                </linearGradient>
+                                ></linearGradient>
                             </defs>
 
                             <XAxis
                                 dataKey="time"
                                 stroke="#8b008b"
-                                tick={{
-                                    fontSize: 14,
-                                    fontFamily: 'Comic Sans MS',
-                                }}
+                                tick={false}
                             />
                             <YAxis
                                 stroke="#8b008b"
-                                tick={{
-                                    fontSize: 14,
-                                    fontFamily: 'Comic Sans MS',
-                                }}
+                                tick={false}
                                 tickFormatter={(value) =>
                                     `$${value.toFixed(0)}`
                                 }
                             />
                             <Tooltip
-                                content={CustomTooltip}
                                 cursor={{
                                     stroke: '#ff69b4',
                                     strokeWidth: 2,
                                     strokeDasharray: '5 5',
+                                }}
+                                content={({ active }) => {
+                                    if (active) {
+                                        return (
+                                            <div className="bg-black/80 text-white px-4 py-2 rounded-full font-comic">
+                                                Up!
+                                            </div>
+                                        );
+                                    }
+                                    return null;
                                 }}
                             />
 
@@ -299,17 +268,10 @@ export const PriceChart = () => {
                                 stroke="#00ff98"
                                 strokeWidth={4}
                                 dot={{
-                                    fill: '#ff69b4',
-                                    strokeWidth: 2,
-                                    r: 6,
-                                    strokeDasharray: '',
-                                }}
-                                activeDot={{
-                                    r: 8,
                                     fill: '#00ff98',
-                                    stroke: '#ff69b4',
-                                    strokeWidth: 2,
-                                    className: 'animate-ping',
+                                    strokeWidth: 0,
+                                    r: 4,
+                                    strokeDasharray: '',
                                 }}
                                 fillOpacity={1}
                                 fill="url(#colorPrice)"
