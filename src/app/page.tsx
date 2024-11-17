@@ -136,8 +136,8 @@ export default function Home() {
                                             Botega LP qAR/AGENT
                                         </a>{' '}
                                         <span className="text-sm">
-                                            (mint NAB on top of your LP rewards
-                                            on Botega)
+                                            (mint NAB while still earning your
+                                            LP rewards on Botega)
                                         </span>
                                     </li>
                                     <li className="flex items-center gap-2">
