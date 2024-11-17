@@ -10,17 +10,6 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
-const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
-        return (
-            <div className="bg-white p-2 border-2 border-dashed border-meme-blue rounded-lg">
-                <p className="font-comic">up, up, up </p>
-            </div>
-        );
-    }
-    return null;
-};
-
 // Price ticker component with enhanced animations
 export const PriceTicker = ({ currentPrice, nextPrice }) => {
     return (
@@ -178,25 +167,6 @@ export const PriceChart = () => {
         return () => clearInterval(interval);
     }, [generateDataPoint]);
 
-    const CustomTooltip = ({ active, payload }) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="bg-white p-4 border-4 border-dashed border-floor-pink rounded-lg shadow-lg transform -rotate-2 transition-all duration-300">
-                    <div className="flex items-center gap-2">
-                        <Sparkles className="h-4 w-4 text-moon-yellow" />
-                        <p className="font-comic text-xl text-tech-purple">
-                            {payload[0].payload.tooltipValue}
-                        </p>
-                        <Sparkles className="h-4 w-4 text-moon-yellow" />
-                    </div>
-                    <p className="text-sm text-gray-500 mt-1 font-comic">
-                        number got bigger!
-                    </p>
-                </div>
-            );
-        }
-        return null;
-    };
 
     return (
         <Card className="bg-white/95 backdrop-blur-sm transform hover:scale-[1.01] transition-all duration-500 border-4 border-floor-pink">
