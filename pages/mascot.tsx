@@ -60,7 +60,7 @@ const NABMascot = () => {
                         <Image
                             width={100}
                             height={100}
-                            src="/nab.jpg"
+                            src="./nab.jpg"
                             alt="NAB Mascot"
                             className="w-full h-full object-cover"
                         />
