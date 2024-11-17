@@ -35,7 +35,7 @@ const NABHeader = () => {
                                 <Image
                                     width={12}
                                     height={12}
-                                    src="nab.jpg"
+                                    src="/nab.jpg"
                                     alt="NAB Mascot"
                                     className="w-full h-full object-cover"
                                 />
