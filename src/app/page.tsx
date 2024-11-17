@@ -195,10 +195,7 @@ export default function Home() {
                 </section>
 
                 {/* Footer */}
-                <footer
-                    className="max-w-6xl mx-auto text-center py-8"
-                    id="community"
-                >
+                <footer className="max-w-6xl mx-auto text-center py-8">
                     <p className="mb-4 text-2xl">
                         come watch number get bigger with us:
                     </p>
@@ -217,10 +214,21 @@ export default function Home() {
                         </span>
                     </div>
                     <p className="mt-8 text-sm bg-white inline-block px-4 py-2 rounded-full transform rotate-1">
-                        powered by mithril (the serious stuff is hiding here
-                        somewhere)
+                        powered by <span className="font-bold">mithril.</span>{' '}
+                        (the serious stuff is hiding here:{' '}
+                        <a
+                            href="#"
+                            target="_blank"
+                            className="text-meme-blue hover:underline decoration-dotted hover:decoration-solid transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1"
+                        >
+                            whitepaper
+                        </a>
+                        )
                     </p>
-                    <div className="text-lg mt-4 text-gray-800">
+                    <div
+                        className="text-lg mt-4 text-gray-800 mb-56"
+                        id="paper"
+                    >
                         🌈 remember: number cannot go down. it&apos;s not just a
                         meme, it&apos;s mathematic certainty
                         <br />
