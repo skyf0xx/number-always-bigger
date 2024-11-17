@@ -10,8 +10,31 @@ import {
     ResponsiveContainer,
 } from 'recharts';
 
+// Types and Interfaces
+interface PriceTickerProps {
+    currentPrice: string;
+    nextPrice: string;
+}
+
+interface Step {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+    color: string;
+}
+
+interface ChartDataPoint {
+    time: string;
+    price: number;
+    smoothPrice: number;
+    tooltipValue: string;
+}
+
 // Price ticker component with enhanced animations
-export const PriceTicker = ({ currentPrice, nextPrice }) => {
+export const PriceTicker: React.FC<PriceTickerProps> = ({
+    currentPrice,
+    nextPrice,
+}) => {
     return (
         <Card className="bg-white/95 backdrop-blur-sm border-4 border-floor-pink shadow-xl transform hover:scale-[1.02] transition-all duration-300">
             <CardContent className="p-8">
@@ -58,8 +81,8 @@ export const PriceTicker = ({ currentPrice, nextPrice }) => {
     );
 };
 
-export const HowItWorks = () => {
-    const steps = [
+export const HowItWorks: React.FC = () => {
+    const steps: Step[] = [
         {
             icon: <Sparkles className="h-8 w-8" />,
             title: 'number exists',
@@ -126,22 +149,25 @@ export const HowItWorks = () => {
     );
 };
 
-export const PriceChart = () => {
-    const [data, setData] = useState([]);
+export const PriceChart: React.FC = () => {
+    const [data, setData] = useState<ChartDataPoint[]>([]);
 
     // Generate initial data points
-    const generateDataPoint = useCallback((index, lastValue = 100) => {
-        const upwardTrend = Math.random() * 8 + 2;
-        const wave = Math.sin(index * 0.5) * 5;
-        const newValue = lastValue + upwardTrend;
+    const generateDataPoint = useCallback(
+        (index: number, lastValue: number = 100): ChartDataPoint => {
+            const upwardTrend = Math.random() * 8 + 2;
+            const wave = Math.sin(index * 0.5) * 5;
+            const newValue = lastValue + upwardTrend;
 
-        return {
-            time: `${index + 1}d`,
-            price: newValue + wave,
-            smoothPrice: newValue,
-            tooltipValue: `up!`,
-        };
-    }, []);
+            return {
+                time: `${index + 1}d`,
+                price: newValue + wave,
+                smoothPrice: newValue,
+                tooltipValue: 'up!',
+            };
+        },
+        []
+    );
 
     // Initialize data
     useEffect(() => {
@@ -176,7 +202,7 @@ export const PriceChart = () => {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="relative h-[400px] bg-white/90 backdrop-blur-sm rounded-lg p-6 ">
+                <div className="relative h-[400px] bg-white/90 backdrop-blur-sm rounded-lg p-6">
                     <ResponsiveContainer>
                         <LineChart data={data}>
                             <defs>
@@ -204,7 +230,7 @@ export const PriceChart = () => {
                             <YAxis
                                 stroke="#8b008b"
                                 tick={false}
-                                tickFormatter={(value) =>
+                                tickFormatter={(value: number) =>
                                     `$${value.toFixed(0)}`
                                 }
                             />
