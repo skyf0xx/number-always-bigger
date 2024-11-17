@@ -61,11 +61,12 @@ const NABHeader = () => {
                             stake frens
                         </button>
                         <button
-                            onClick={() => scrollToSection('community')}
+                            onClick={() => scrollToSection('paper')}
                             className="text-lg hover:text-crypto-green transition-colors"
                         >
-                            fren zone
+                            whitepaper
                         </button>
+
                         <button
                             onClick={() =>
                                 setIsWalletConnected(!isWalletConnected)
@@ -119,10 +120,10 @@ const NABHeader = () => {
                             stake frens
                         </button>
                         <button
-                            onClick={() => scrollToSection('community')}
-                            className="block w-full text-left text-lg py-2 hover:text-crypto-green transition-colors"
+                            onClick={() => scrollToSection('paper')}
+                            className="text-lg hover:text-crypto-green transition-colors"
                         >
-                            fren zone
+                            whitepaper
                         </button>
                         <button
                             onClick={() =>
