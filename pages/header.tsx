@@ -33,8 +33,8 @@ const NABHeader = () => {
                         <div className="relative">
                             <div className="w-12 h-12 rounded-full bg-white border-4 border-moon-yellow shadow-xl overflow-hidden">
                                 <Image
-                                    width={12}
-                                    height={12}
+                                    width={100}
+                                    height={100}
                                     src="/nab.jpg"
                                     alt="NAB Mascot"
                                     className="w-full h-full object-cover"
