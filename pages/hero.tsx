@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
-import { PriceTicker } from './sections';
 import NABMascot from './mascot';
+import PriceTicker from './sections/price-ticker';
 
 const NABHero = () => {
     const [currentFloor, setCurrentFloor] = useState('420.69');
