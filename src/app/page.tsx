@@ -217,7 +217,7 @@ export default function Home() {
                         powered by <span className="font-bold">mithril.</span>{' '}
                         (the serious stuff is hiding here:{' '}
                         <a
-                            href="#"
+                            href="https://fde7mye2jlxwd44ljgpwh2iyjrqany55bjxgsn36fnelftwhdo2q.arweave.net/KMn2YJpK72Hzi0mfY-kYTGAG470Kbmk3fitIss7HG7U"
                             target="_blank"
                             className="text-meme-blue hover:underline decoration-dotted hover:decoration-solid transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1"
                         >
