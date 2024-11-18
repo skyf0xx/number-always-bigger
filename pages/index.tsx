@@ -20,10 +20,10 @@ export default function Home() {
                     gets bigger
                 </title>
             </Head>
-            <div className="min-h-screen bg-gradient-to-b from-meme-blue via-floor-pink to-moon-yellow p-4 font-comic">
+            <div className="min-h-screen bg-gradient-to-b from-meme-blue via-floor-pink to-moon-yellow p-4 font-comic w-full overflow-x-hidden">
+                {' '}
                 <NABHeader />
                 <NABHero />
-
                 {/* Hero Section */}
                 <header className="max-w-6xl mx-auto pt-8 text-center">
                     <div className="animate-bounce mb-4">
@@ -66,7 +66,6 @@ export default function Home() {
                         )}
                     </button>
                 </header>
-
                 {/* How it Works */}
                 <section className="max-w-4xl mx-auto my-16">
                     <HowItWorks />
@@ -103,7 +102,6 @@ export default function Home() {
                         </div>
                     </div>
                 </section>
-
                 {/* How to Get NAB */}
                 <section className="max-w-4xl mx-auto my-16" id="stake">
                     <div className="bg-white rounded-lg p-8 transform -rotate-1 border-4 border-crypto-green">
@@ -164,7 +162,6 @@ export default function Home() {
                         </Alert>
                     </div>
                 </section>
-
                 {/* Disclaimer */}
                 <section className="max-w-4xl mx-auto my-16">
                     <div className="bg-white rounded-lg p-8 transform rotate-1 border-4 border-tech-purple">
@@ -201,7 +198,6 @@ export default function Home() {
                         </div>
                     </div>
                 </section>
-
                 {/* Footer */}
                 <footer className="max-w-6xl mx-auto text-center py-8">
                     <p className="mb-4 text-2xl">
