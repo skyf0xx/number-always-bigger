@@ -198,6 +198,9 @@ export default function Home() {
                         </div>
                     </div>
                 </section>
+                <WhitepaperSection />
+                <FAQSection />
+                <RealityCheckSection />
                 {/* Footer */}
                 <footer className="max-w-6xl mx-auto text-center py-8">
                     <p className="mb-4 text-2xl">
