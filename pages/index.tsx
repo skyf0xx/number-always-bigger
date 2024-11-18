@@ -232,10 +232,7 @@ export default function Home() {
                         </a>
                         )
                     </p>
-                    <div
-                        className="text-lg mt-4 text-gray-800 mb-56"
-                        id="paper"
-                    >
+                    <div className="text-lg mt-4 text-gray-800 mb-56">
                         🌈 remember: number cannot go down. it&apos;s not just a
                         meme, it&apos;s mathematic certainty
                         <br />
