@@ -60,8 +60,19 @@ export default {
                 'stability-gray': '#cccccc',
             },
             fontFamily: {
-                comic: ['"Comic Sans MS"', 'cursive'],
-                impact: ['Impact', 'sans-serif'],
+                comic: [
+                    'Comic Sans MS',
+                    'Comic Sans',
+                    'Chalkboard SE', // Good fallback for iOS
+                    'Comic Neue', // Open source alternative
+                    'sans-serif', // Last resort - better than cursive
+                ],
+                impact: [
+                    'Impact',
+                    'Haettenschweiler',
+                    'Arial Narrow Bold',
+                    'sans-serif',
+                ],
             },
             borderRadius: {
                 lg: 'var(--radius)',
