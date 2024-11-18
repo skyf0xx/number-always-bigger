@@ -22,6 +22,44 @@ export default function Home() {
                     Number Always Bigger (NAB) - where number literally just
                     gets bigger
                 </title>
+                <title>
+                    Number Always Bigger (NAB) - where number literally just
+                    gets bigger
+                </title>
+                <meta
+                    name="description"
+                    content="NAB is a token where number go up. That's it. No fancy promises, just pure mathematic certainty that number get bigger."
+                />
+
+                {/* Open Graph / Facebook */}
+                <meta property="og:type" content="website" />
+
+                <meta
+                    property="og:title"
+                    content="Number Always Bigger (NAB) 📈"
+                />
+                <meta
+                    property="og:description"
+                    content="The token where number literally just gets bigger. Up only, that's it!"
+                />
+                <meta property="og:image" content="./nab-preview.jpg" />
+
+                {/* Twitter */}
+                <meta property="twitter:card" content="summary_large_image" />
+
+                <meta
+                    property="twitter:title"
+                    content="Number Always Bigger (NAB) 📈"
+                />
+                <meta
+                    property="twitter:description"
+                    content="The token where number literally just gets bigger. Up only, that's it!"
+                />
+                <meta property="twitter:image" content="./nab-preview.jpg" />
+
+                {/* Additional SEO */}
+                <meta name="theme-color" content="#4287f5" />
+                <link rel="icon" href="/favicon.ico" />
             </Head>
             <div className="min-h-screen bg-gradient-to-b from-meme-blue via-floor-pink to-moon-yellow p-4 font-comic w-full overflow-x-hidden">
                 {' '}
