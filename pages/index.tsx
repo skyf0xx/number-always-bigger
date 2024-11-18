@@ -8,6 +8,9 @@ import NABHeader from './header';
 import HowItWorks from './sections/how-it-works';
 import PriceChart from './sections/price-chart';
 import Head from 'next/head';
+import WhitepaperSection from './sections/whitepaper';
+import FAQSection from './sections/faq';
+import RealityCheckSection from './sections/reality';
 
 export default function Home() {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
