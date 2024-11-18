@@ -11,6 +11,7 @@ import Head from 'next/head';
 import WhitepaperSection from './sections/whitepaper';
 import FAQSection from './sections/faq';
 import RealityCheckSection from './sections/reality';
+import AOSection from './sections/ao';
 
 export default function Home() {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
@@ -239,6 +240,7 @@ export default function Home() {
                         </div>
                     </div>
                 </section>
+                <AOSection />
                 <WhitepaperSection />
                 <FAQSection />
                 <RealityCheckSection />
