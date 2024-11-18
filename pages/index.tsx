@@ -30,7 +30,7 @@ export default function Home() {
                         <Sparkles className="h-12 w-12 inline-block text-moon-yellow" />
                     </div>
                     <h1 className="text-6xl font-bold mb-8 text-white transform -rotate-1">
-                        Only up?
+                        Up only?
                     </h1>
 
                     {/* What is this section */}
