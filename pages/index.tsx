@@ -7,12 +7,19 @@ import NABHero from './hero';
 import NABHeader from './header';
 import HowItWorks from './sections/how-it-works';
 import PriceChart from './sections/price-chart';
+import Head from 'next/head';
 
 export default function Home() {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
 
     return (
         <>
+            <Head>
+                <title>
+                    Number Always Bigger (NAB) - where number literally just
+                    gets bigger
+                </title>
+            </Head>
             <div className="min-h-screen bg-gradient-to-b from-meme-blue via-floor-pink to-moon-yellow p-4 font-comic">
                 <NABHeader />
                 <NABHero />
