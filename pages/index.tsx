@@ -44,6 +44,9 @@ export default function Home() {
                     content="The token where number literally just gets bigger. Up only, that's it!"
                 />
                 <meta property="og:image" content="./nab-preview.jpg" />
+                <meta property="og:image:type" content="image/png" />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
 
                 {/* Twitter */}
                 <meta property="twitter:card" content="summary_large_image" />
