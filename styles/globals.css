@@ -2,10 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-    font-family: Arial, Helvetica, sans-serif;
-}
-
+/* Base styles and CSS variables remain the same */
 @layer base {
     :root {
         --background: 0 0% 100%;
@@ -34,6 +31,7 @@ body {
         --chart-5: 27 87% 67%;
         --radius: 0.5rem;
     }
+
     .dark {
         --background: 0 0% 3.9%;
         --foreground: 0 0% 98%;
@@ -62,11 +60,170 @@ body {
     }
 }
 
+/* Base styles */
 @layer base {
     * {
         @apply border-border;
     }
-    body {
-        @apply bg-background text-foreground;
+
+    html {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+        @apply antialiased;
     }
+
+    body {
+        @apply bg-background text-foreground min-h-screen w-full overflow-x-hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: none;
+    }
+}
+
+/* Mobile-first utilities */
+@layer utilities {
+    /* Touch optimizations */
+    .touch-target {
+        @apply min-h-[44px] min-w-[44px];
+    }
+
+    .touch-action-none {
+        touch-action: none;
+    }
+
+    .touch-manipulation {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Mobile text adjustments */
+    .mobile-text-adjust {
+        @apply text-base md:text-lg leading-relaxed;
+    }
+
+    .mobile-heading {
+        @apply text-2xl md:text-4xl lg:text-6xl font-bold;
+    }
+
+    /* Improved mobile scrolling */
+    .smooth-scroll {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Mobile-friendly spacing */
+    .mobile-spacing {
+        @apply p-4 md:p-6 lg:p-8;
+    }
+
+    .mobile-gap {
+        @apply gap-4 md:gap-6 lg:gap-8;
+    }
+}
+
+/* Custom animations optimized for mobile */
+@layer components {
+    .animate-safe {
+        @media (prefers-reduced-motion: no-preference) {
+            @apply transition-all duration-300;
+        }
+    }
+
+    .hover-safe {
+        @media (hover: hover) {
+            @apply hover:scale-105 transition-transform duration-300;
+        }
+    }
+
+    /* Mobile-optimized loading states */
+    .loading-skeleton {
+        @apply animate-pulse bg-gray-200 dark:bg-gray-700 rounded;
+    }
+}
+
+/* Font optimizations */
+@layer base {
+    /* Optimize font loading */
+    @font-face {
+        font-family: 'Comic Sans MS';
+        font-display: swap;
+    }
+
+    /* Responsive font sizes */
+    :root {
+        font-size: 14px;
+    }
+
+    @screen md {
+        :root {
+            font-size: 16px;
+        }
+    }
+
+    @screen lg {
+        :root {
+            font-size: 18px;
+        }
+    }
+}
+
+/* Mobile-specific media queries */
+@media (max-width: 640px) {
+    .font-comic {
+        letter-spacing: -0.02em;
+    }
+
+    /* Prevent zoom on input focus */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}
+
+/* Prevent pull-to-refresh on mobile Safari */
+@supports (-webkit-touch-callout: none) {
+    body {
+        overscroll-behavior-y: none;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Improved tap highlights for mobile */
+@media (hover: none) {
+    a:active,
+    button:active {
+        opacity: 0.7;
+    }
+
+    .tap-highlight {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Mobile gesture animations */
+@layer components {
+    .gesture-fade {
+        opacity: 1;
+        transition: opacity 0.2s ease-out;
+    }
+
+    .gesture-fade:active {
+        opacity: 0.6;
+    }
+}
+
+/* Enhanced mobile card styles */
+.mobile-card {
+    @apply rounded-lg shadow-md p-4 bg-white dark:bg-gray-800;
+    @apply transform transition-transform duration-200;
+    @apply active:scale-95; /* Subtle press effect */
+}
+
+/* Mobile-friendly button styles */
+.mobile-button {
+    @apply px-4 py-3 rounded-full;
+    @apply active:transform active:scale-95;
+    @apply touch-manipulation;
+    @apply select-none;
+    min-height: 44px; /* iOS minimum touch target size */
 }

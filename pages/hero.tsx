@@ -40,17 +40,17 @@ const NABHero = () => {
             </div>
 
             {/* Hero Content */}
-            <div className="relative z-10 max-w-4xl mx-auto pt-16 pb-24 px-4 sm:px-6 lg:px-8 text-center mt-40">
+            <div className="relative z-10 max-w-4xl mx-auto pt-8 md:pt-16 pb-12 md:pb-24 px-4 text-center mt-20 md:mt-40">
                 {/* Sparkly Header */}
                 <div className="flex justify-center items-center gap-2 mb-6">
-                    <Sparkles className="h-8 w-8 text-moon-yellow animate-pulse" />
-                    <h1 className="text-8xl font-comic font-bold text-moon-yellow transform -rotate-2">
+                    <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-moon-yellow animate-pulse" />
+                    <h1 className="text-4xl md:text-8xl font-comic font-bold text-moon-yellow transform -rotate-2">
                         number, always, bigger
                     </h1>
-                    <Sparkles className="h-8 w-8 text-moon-yellow animate-pulse" />
+                    <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-moon-yellow animate-pulse" />
                 </div>
 
-                <p className="text-2xl text-white mb-12 transform text-black rotate-1">
+                <p className="text-xl md:text-2xl text-black mb-8 md:mb-12 transform rotate-1">
                     (NAB)
                 </p>
 
@@ -60,8 +60,8 @@ const NABHero = () => {
                 />
 
                 {/* Tagline */}
-                <div className="text-2xl text-black font-comic space-y-8 ">
-                    <p className="transform rotate-1 mt-12">
+                <div className="text-xl md:text-2xl text-black font-comic space-y-6 md:space-y-8">
+                    <p className="transform rotate-1 mt-8 md:mt-12">
                         a token where the price just goes up
                     </p>
                 </div>
