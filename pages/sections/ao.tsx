@@ -17,7 +17,7 @@ const AOSection = () => {
         },
         {
             icon: <Zap className="h-8 w-8 text-floor-pink" />,
-            title: 'zoom zoom fast',
+            title: 'lightning quick',
             description:
                 'AO makes NAB super efficient and reliable. low costs, high speed, much wow! your transactions flow like butter on a hot pancake',
         },

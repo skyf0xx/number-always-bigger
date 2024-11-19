@@ -11,8 +11,12 @@ const FAQSection = () => {
             answer: 'If the price drops below its highest low, NAB reduces the global supply (everywhere) to bring the price back up. number always wins!',
         },
         {
+            question: 'Are all tokens reduced from circulation?',
+            answer: "Yes, during a rebase, the supply reduction is applied equally across all wallets. This ensures fairness, as everyone’s share of the total market remains unchanged while helping stabilize and grow NAB's value.",
+        },
+        {
             question: 'wen buy dip?',
-            answer: 'When the supply is reduced, NAB becomes rarer, so frens buy it before the price adjusts. faster fingers = bigger gains!',
+            answer: 'When the supply is reduced, NAB becomes rarer, but a time gap exists between reduction and price adjustment. so frens buy it before the price adjusts. faster fingers = bigger gains!',
         },
         {
             question: 'does making supply smol hurt my NAB?',
@@ -42,6 +46,10 @@ const FAQSection = () => {
         {
             question: 'how NAB get its value?',
             answer: "NAB is created through staking to ensure it has value from the start. Frens must lock up valuable assets like stETH or LP tokens to mint NAB. This process ties NAB's value to real, productive assets, creating a stronger price floor and rewarding users for contributing to its stability.",
+        },
+        {
+            question: 'sounds too good to be true! Where is the catch?',
+            answer: "Like all tokens, NAB still depends on market perception and demand. NAB's algorithms are designed to incentivize and support market growth, and a steady price floor but is still reliant on market drivers.",
         },
     ];
 
