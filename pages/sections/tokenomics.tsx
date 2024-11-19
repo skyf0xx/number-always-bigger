@@ -1,5 +1,5 @@
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { TrendingUp, Sparkles, Rocket } from 'lucide-react';
+import { TrendingUp, Sparkles, Rocket, Lock, Calendar } from 'lucide-react';
 import { useState } from 'react';
 
 const Tokenomics: React.FC = () => {
@@ -71,41 +71,103 @@ const Tokenomics: React.FC = () => {
                         }`}
                     >
                         <div className="overflow-hidden">
-                            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {/* Left Column - Text Content */}
-                                <div className="space-y-4">
-                                    <p className="text-lg">
-                                        NAB follows Bitcoin&apos;s economic
-                                        model with a maximum supply of 21
-                                        million tokens and a similar 4-year
-                                        halving cycle.
-                                    </p>
-                                    <p className="text-lg">
-                                        New tokens are distributed every 5
-                                        minutes to minters who stake approved
-                                        yield-bearing tokens like stETH or LP
-                                        tokens.
-                                    </p>
-                                    <p className="text-lg">
-                                        The yield earned from staked tokens
-                                        belongs to NAB&apos;s contract and is
-                                        used to buy and burn NAB from its AMM,
-                                        making number go even bigger!
-                                    </p>
-                                    <p className="text-lg font-bold text-crypto-green">
-                                        remember: number always bigger because
-                                        math said so
-                                    </p>
-                                </div>
+                            <div className="p-6 space-y-8">
+                                {/* Fair Launch Section */}
+                                <Alert className="border-4 border-crypto-green">
+                                    <AlertTitle className="text-xl mb-2 flex items-center gap-2">
+                                        <Rocket className="h-6 w-6 text-crypto-green" />
+                                        100% Fair Launch
+                                    </AlertTitle>
+                                    <AlertDescription className="space-y-2">
+                                        <p>
+                                            • NO SALE! NAB is only generated
+                                            through minting
+                                        </p>
+                                        <p>
+                                            • Initial price: $0.00099 (5,050 NAB
+                                            / $5.05 USD pool on{' '}
+                                            <a
+                                                target="_blank"
+                                                className="text-meme-blue"
+                                                href="https://botega.arweave.dev/#/pools"
+                                            >
+                                                Botega
+                                            </a>
+                                            )
+                                        </p>
+                                        <p className="text-sm text-gray-600 italic">
+                                            hat tip to the{' '}
+                                            <a
+                                                target="_blank"
+                                                href="https://x.com/marttimalmi/status/423455561703624704?"
+                                                className="text-meme-blue"
+                                            >
+                                                first
+                                            </a>{' '}
+                                            Bitcoin transaction
+                                        </p>
+                                    </AlertDescription>
+                                </Alert>
 
-                                {/* Right Column - Professor Image */}
-                                <div className="flex items-center justify-center">
-                                    <img
-                                        src="./teacher_pepe.jpg"
-                                        alt="Professor explaining tokenomics"
-                                        className="rounded-lg border-4 border-tech-purple transform rotate-2 hover:rotate-0 transition-transform duration-300"
-                                    />
-                                </div>
+                                {/* Minting Benefits */}
+                                <Alert className="border-4 border-moon-yellow">
+                                    <AlertTitle className="text-xl mb-2">
+                                        Minting Benefits
+                                    </AlertTitle>
+                                    <AlertDescription className="space-y-2">
+                                        <p>
+                                            • NAB follows Bitcoin&apos;s model:
+                                            21M max supply, 4-year halving cycle
+                                        </p>
+                                        <p>
+                                            • New tokens every 5 minutes to
+                                            minters
+                                        </p>
+                                        <p>
+                                            • qAR/AGENT LP stakers KEEP their LP
+                                            gains + mint NAB for{' '}
+                                            <span className="font-bold">
+                                                free
+                                            </span>
+                                        </p>
+                                        <p>
+                                            • Other staking tokens: yields will
+                                            be used to buy & burn NAB from
+                                            Botega
+                                        </p>
+                                    </AlertDescription>
+                                </Alert>
+
+                                {/* Launch Timeline */}
+                                <Alert className="border-4 border-floor-pink">
+                                    <AlertTitle className="text-xl mb-2 flex items-center gap-2">
+                                        <Calendar className="h-6 w-6 text-floor-pink" />
+                                        Launch Timeline
+                                    </AlertTitle>
+                                    <AlertDescription className="space-y-2">
+                                        <div className="flex items-center gap-2">
+                                            <Lock className="h-5 w-5 text-floor-pink" />
+                                            <p>
+                                                NAB transfers locked until FEB
+                                                2025
+                                            </p>
+                                        </div>
+                                        <p className="font-bold">
+                                            After FEB 2025:
+                                        </p>
+                                        <ul className="list-disc pl-6 space-y-1">
+                                            <li>
+                                                Minters can freely trade NAB
+                                            </li>
+                                            <li>
+                                                Additional staking tokens added
+                                            </li>
+                                            <li>
+                                                Buy & burn contract activation
+                                            </li>
+                                        </ul>
+                                    </AlertDescription>
+                                </Alert>
                             </div>
                         </div>
                     </div>
