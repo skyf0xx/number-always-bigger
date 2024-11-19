@@ -53,7 +53,7 @@ const NABHeader = () => {
                             onClick={() => scrollToSection('stake')}
                             className="text-lg hover:text-crypto-green transition-colors"
                         >
-                            stake frens
+                            get NAB
                         </button>
                         <button
                             onClick={() => scrollToSection('paper')}
