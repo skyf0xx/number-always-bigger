@@ -64,7 +64,7 @@ const WhitepaperSection = () => {
                     {/* Whitepaper link */}
                     <div className="flex flex-col items-center gap-4 pt-4">
                         <a
-                            href="https://fde7mye2jlxwd44ljgpwh2iyjrqany55bjxgsn36fnelftwhdo2q.arweave.net/KMn2YJpK72Hzi0mfY-kYTGAG470Kbmk3fitIss7HG7U"
+                            href="./Mithril_Whitepaper.pdf"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="group bg-tech-purple text-white px-8 py-4 rounded-full font-comic text-xl transform hover:scale-105 transition-all hover:-rotate-2 border-4 border-black flex items-center gap-3"
