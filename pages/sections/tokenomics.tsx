@@ -1,5 +1,12 @@
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { TrendingUp, Sparkles, Rocket, Lock, Calendar } from 'lucide-react';
+import {
+    TrendingUp,
+    Sparkles,
+    Rocket,
+    Lock,
+    Calendar,
+    ChevronDown,
+} from 'lucide-react';
 import { useState } from 'react';
 
 const Tokenomics: React.FC = () => {
@@ -46,23 +53,36 @@ const Tokenomics: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Accordion Section */}
-                <div className="mt-8">
+                {/* Enhanced Accordion Section */}
+                <div className="mt-8 relative">
+                    {/* Attention-grabbing floating elements */}
+                    <div className="absolute -top-6 -right-6 animate-bounce">
+                        <div className="bg-moon-yellow text-black px-4 py-2 rounded-full transform rotate-12 text-sm font-bold border-2 border-black">
+                            important stuff here!
+                        </div>
+                    </div>
+
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full text-left p-4 bg-moon-yellow/20 rounded-lg hover:bg-moon-yellow/30 transition-all duration-300 flex items-center justify-between font-comic text-xl"
+                        className="w-full text-left p-6 bg-gradient-to-r from-moon-yellow via-crypto-green to-floor-pink rounded-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden border-4 border-black"
                     >
-                        <span className="font-bold flex items-center gap-2">
-                            <Sparkles className="h-6 w-6" />
-                            tell me moar
-                        </span>
-                        <span
-                            className={`transform transition-transform duration-300 ${
-                                isExpanded ? 'rotate-180' : ''
-                            }`}
-                        >
-                            ▼
-                        </span>
+                        {/* Animated background */}
+                        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 group-hover:translate-x-full transition-transform duration-700" />
+
+                        <div className="flex items-center justify-between relative z-10">
+                            <span className="font-bold flex items-center gap-3 text-2xl">
+                                <Sparkles className="h-8 w-8 animate-pulse" />
+                                tell me moar
+                                <span className="text-sm bg-black text-white px-3 py-1 rounded-full ml-2">
+                                    super important!
+                                </span>
+                            </span>
+                            <ChevronDown
+                                className={`h-8 w-8 transition-transform duration-500 ${
+                                    isExpanded ? 'rotate-180' : 'animate-bounce'
+                                }`}
+                            />
+                        </div>
                     </button>
 
                     <div
@@ -71,11 +91,11 @@ const Tokenomics: React.FC = () => {
                         }`}
                     >
                         <div className="overflow-hidden">
-                            <div className="p-6 space-y-8">
+                            <div className="p-6 space-y-8 border-x-4 border-b-4 border-black rounded-b-lg bg-white/95">
                                 {/* Fair Launch Section */}
-                                <Alert className="border-4 border-crypto-green">
+                                <Alert className="border-4 border-crypto-green transform hover:scale-[1.02] transition-transform">
                                     <AlertTitle className="text-xl mb-2 flex items-center gap-2">
-                                        <Rocket className="h-6 w-6 text-crypto-green" />
+                                        <Rocket className="h-6 w-6 text-crypto-green animate-bounce" />
                                         100% Fair Launch
                                     </AlertTitle>
                                     <AlertDescription className="space-y-2">
@@ -88,7 +108,7 @@ const Tokenomics: React.FC = () => {
                                             / $5.05 USD pool on{' '}
                                             <a
                                                 target="_blank"
-                                                className="text-meme-blue"
+                                                className="text-meme-blue hover:text-crypto-green transition-colors"
                                                 href="https://botega.arweave.dev/#/pools"
                                             >
                                                 Botega
@@ -100,7 +120,7 @@ const Tokenomics: React.FC = () => {
                                             <a
                                                 target="_blank"
                                                 href="https://x.com/marttimalmi/status/423455561703624704?"
-                                                className="text-meme-blue"
+                                                className="text-meme-blue hover:text-crypto-green transition-colors"
                                             >
                                                 first
                                             </a>{' '}
@@ -110,8 +130,9 @@ const Tokenomics: React.FC = () => {
                                 </Alert>
 
                                 {/* Minting Benefits */}
-                                <Alert className="border-4 border-moon-yellow">
-                                    <AlertTitle className="text-xl mb-2">
+                                <Alert className="border-4 border-moon-yellow transform hover:scale-[1.02] transition-transform">
+                                    <AlertTitle className="text-xl mb-2 flex items-center gap-2">
+                                        <Sparkles className="h-6 w-6 text-moon-yellow" />
                                         Minting Benefits
                                     </AlertTitle>
                                     <AlertDescription className="space-y-2">
@@ -126,7 +147,7 @@ const Tokenomics: React.FC = () => {
                                         <p>
                                             • qAR/AGENT LP stakers KEEP their LP
                                             gains + mint NAB for{' '}
-                                            <span className="font-bold">
+                                            <span className="font-bold bg-crypto-green/20 px-2 py-1 rounded">
                                                 free
                                             </span>
                                         </p>
@@ -139,7 +160,7 @@ const Tokenomics: React.FC = () => {
                                 </Alert>
 
                                 {/* Launch Timeline */}
-                                <Alert className="border-4 border-floor-pink">
+                                <Alert className="border-4 border-floor-pink transform hover:scale-[1.02] transition-transform">
                                     <AlertTitle className="text-xl mb-2 flex items-center gap-2">
                                         <Calendar className="h-6 w-6 text-floor-pink" />
                                         Launch Timeline
