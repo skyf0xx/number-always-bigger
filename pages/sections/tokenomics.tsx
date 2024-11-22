@@ -56,7 +56,7 @@ const Tokenomics: React.FC = () => {
                 {/* Enhanced Accordion Section */}
                 <div className="mt-8 relative">
                     {/* Attention-grabbing floating elements */}
-                    <div className="absolute -top-6 -right-6 animate-bounce">
+                    <div className="absolute -top-6 -right-6 animate-bounce z-10">
                         <div className="bg-moon-yellow text-black px-4 py-2 rounded-full transform rotate-12 text-sm font-bold border-2 border-black">
                             important stuff here!
                         </div>
