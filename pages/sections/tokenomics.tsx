@@ -6,6 +6,7 @@ import {
     Lock,
     Calendar,
     ChevronDown,
+    Crown,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -96,12 +97,29 @@ const Tokenomics: React.FC = () => {
                                 <Alert className="border-4 border-crypto-green transform hover:scale-[1.02] transition-transform">
                                     <AlertTitle className="text-xl mb-2 flex items-center gap-2">
                                         <Rocket className="h-6 w-6 text-crypto-green animate-bounce" />
-                                        100% Fair Launch
+                                        100% Fair Launch (and Ultra Rare!)
                                     </AlertTitle>
                                     <AlertDescription className="space-y-2">
+                                        <div className="flex items-center gap-2 bg-floor-pink/10 p-2 rounded-lg border-2 border-dashed border-floor-pink">
+                                            <Crown className="h-5 w-5 text-floor-pink" />
+                                            <p className="font-bold">
+                                                NO SALE! NAB is ultra rare and
+                                                only generated through minting
+                                                (like finding diamonds... but
+                                                better)
+                                            </p>
+                                        </div>
                                         <p>
-                                            • NO SALE! NAB is only generated
-                                            through minting
+                                            • 5,050 NAB pre-minted for liquidity
+                                            and{' '}
+                                            <a
+                                                target="_blank"
+                                                className="text-meme-blue hover:text-crypto-green transition-colors"
+                                                href="https://docs.autonomous.finance/products/platforms/coinmaker/lock-up-liquidity#liquidity-locking-process-on-botega"
+                                            >
+                                                locked
+                                            </a>{' '}
+                                            on Botega for 4 years.
                                         </p>
                                         <p>
                                             • Initial price: $0.00099 (5,050 NAB
