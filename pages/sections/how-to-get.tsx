@@ -46,6 +46,10 @@ const HowToGet: React.FC = () => {
                             </li>
                             <li className="flex items-center gap-2">
                                 <Sparkles className="text-moon-yellow" />
+                                qAR (next)
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <Sparkles className="text-moon-yellow" />
                                 stETH (soon)
                             </li>
                             <li className="flex items-center gap-2">
