@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Mascot from './mascot';
+import { getNABPrice } from '@/lib/prices';
 
 const NABHero = () => {
-    const [currentPrice, setCurrentPrice] = useState('812.92');
-    const [floor, setFloor] = useState('891.99');
-
-    // Simulate price updates
+    const [currentPrice, setCurrentPrice] = useState('...');
+    const [floor, setFloor] = useState('...');
     useEffect(() => {
-        const interval = setInterval(() => {
-            const current = parseFloat(currentPrice);
-            const increase = (Math.random() * 2 + 1).toFixed(2);
-            setCurrentPrice((current + parseFloat(increase)).toFixed(2));
-            setFloor((current + parseFloat(increase) + 79.07).toFixed(2));
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [currentPrice]);
+        getNABPrice().then((price) => {
+            if (price === false) return;
+            setCurrentPrice(price.toString());
+            setFloor(price.toString());
+        });
+    }, []);
 
     return (
         <div className="relative min-h-screen bg-meme-blue">
