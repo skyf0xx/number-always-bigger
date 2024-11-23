@@ -65,7 +65,7 @@ export default function Home() {
 
                 {/* Additional SEO */}
                 <meta name="theme-color" content="#4287f5" />
-                <link rel="icon" href="/favicon.ico" />
+                <link rel="icon" href="./favicon.ico" />
             </Head>
             <div className="min-h-screen bg-gradient-to-b from-meme-blue via-floor-pink to-moon-yellow p-4 font-comic w-full overflow-x-hidden">
                 {' '}
