@@ -105,8 +105,6 @@ const Tokenomics: React.FC = () => {
                                             <p className="font-bold">
                                                 NO SALE! NAB is ultra rare and
                                                 only generated through minting
-                                                (like finding diamonds... but
-                                                better)
                                             </p>
                                         </div>
                                         <p>
