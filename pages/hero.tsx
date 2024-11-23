@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Mascot from './mascot';
 import { getNABPrice } from '@/lib/prices';
+import CountUp from 'react-countup';
 
 const NABHero = () => {
-    const [currentPrice, setCurrentPrice] = useState('...');
-    const [floor, setFloor] = useState('...');
+    const [currentPrice, setCurrentPrice] = useState(0);
+    const [floor, setFloor] = useState(0);
     useEffect(() => {
         getNABPrice().then((price) => {
             if (price === false) return;
-            setCurrentPrice(price.toString());
-            setFloor(price.toString());
+            setCurrentPrice(price);
+            setFloor(price);
         });
     }, []);
 
@@ -72,7 +73,19 @@ const NABHero = () => {
                                                 />
                                             </div>
                                             <span className="font-sour-gummy text-3xl md:text-5xl text-white">
-                                                ${currentPrice}
+                                                $
+                                                <CountUp
+                                                    end={currentPrice}
+                                                    start={0}
+                                                    easingFn={(t, b, c, d) =>
+                                                        c * (t /= d) * t + b
+                                                    }
+                                                    separator=","
+                                                    decimals={6}
+                                                    decimal="."
+                                                    duration={1}
+                                                    preserveValue={true}
+                                                />
                                             </span>
                                         </div>
                                     </div>
@@ -88,7 +101,19 @@ const NABHero = () => {
                                     <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
                                         <div className="flex items-center gap-2">
                                             <span className="font-sour-gummy text-3xl md:text-5xl text-white">
-                                                ${floor}
+                                                $
+                                                <CountUp
+                                                    end={floor}
+                                                    start={0}
+                                                    easingFn={(t, b, c, d) =>
+                                                        c * (t /= d) * t + b
+                                                    }
+                                                    separator=","
+                                                    decimals={6}
+                                                    decimal="."
+                                                    duration={1}
+                                                    preserveValue={true}
+                                                />
                                             </span>
                                             <div className="w-10 h-10 md:w-14 md:h-14">
                                                 <Image
