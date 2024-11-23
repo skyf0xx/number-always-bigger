@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Mascot from './mascot';
 
 const NABHero = () => {
     const [currentPrice, setCurrentPrice] = useState('812.92');
@@ -127,6 +128,7 @@ const NABHero = () => {
                     </div>
                 </div>
             </div>
+            <Mascot />
         </div>
     );
 };
