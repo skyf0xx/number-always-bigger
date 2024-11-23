@@ -1,69 +1,127 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles } from 'lucide-react';
-import NABMascot from './mascot';
-import PriceTicker from './sections/price-ticker';
+import Image from 'next/image';
 
 const NABHero = () => {
-    const [currentFloor, setCurrentFloor] = useState('420.69');
-    const [nextFloor, setNextFloor] = useState('429.42');
+    const [currentFloor, setCurrentFloor] = useState('812.92');
+    const [nextFloor, setNextFloor] = useState('891.99');
 
     // Simulate price updates
     useEffect(() => {
         const interval = setInterval(() => {
             const current = parseFloat(currentFloor);
-            const increase = (Math.random() * 2).toFixed(2);
+            const increase = (Math.random() * 2 + 1).toFixed(2);
             setCurrentFloor((current + parseFloat(increase)).toFixed(2));
-            setNextFloor((current + parseFloat(increase) + 8.73).toFixed(2));
+            setNextFloor((current + parseFloat(increase) + 79.07).toFixed(2));
         }, 5000);
 
         return () => clearInterval(interval);
     }, [currentFloor]);
 
+    // Add the tailwind class to your styles
+    const styles = {
+        '@keyframes spin-slow': {
+            '0%': { transform: 'rotate(0deg)' },
+            '100%': { transform: 'rotate(360deg)' },
+        },
+        '.animate-spin-slow': {
+            animation: 'spin-slow 60s linear infinite',
+        },
+    };
+
     return (
-        <div className="relative overflow-hidden">
-            <NABMascot />
-            {/* Animated background with floating elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                {[...Array(20)].map((_, i) => (
-                    <div
-                        key={i}
-                        className="absolute text-floor-pink opacity-20 animate-float"
-                        style={{
-                            left: `${Math.random() * 100}%`,
-                            top: `${Math.random() * 100}%`,
-                            animationDelay: `${Math.random() * 5}s`,
-                        }}
-                    >
-                        {i % 2 === 0 ? '📈' : '🚀'}
-                    </div>
-                ))}
+        <div className="relative min-h-screen bg-meme-blue overflow-hidden">
+            {/* Radial background */}
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] animate-pulse" />
+            {/* Sunburst background */}
+            <div className="absolute inset-0 w-full h-full overflow-hidden">
+                <div className="absolute inset-[-100%] w-[300%] h-[300%] animate-spin-slow origin-center">
+                    <Image
+                        src="/sunburst.svg"
+                        alt="Sunburst Background"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </div>
             </div>
 
-            {/* Hero Content */}
-            <div className="relative z-10 max-w-4xl mx-auto pt-8 md:pt-16 pb-12 md:pb-24 px-4 text-center mt-20 md:mt-40">
-                {/* Sparkly Header */}
-                <div className="flex justify-center items-center gap-2 mb-6">
-                    <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-moon-yellow animate-pulse" />
-                    <h1 className="text-4xl md:text-8xl font-comic font-bold text-moon-yellow transform -rotate-2">
-                        number, always, bigger
+            {/* Content container */}
+            <div className="relative z-10 max-w-7xl mx-auto pt-32 px-4">
+                {/* Top text section */}
+                <div className="text-center mb-12">
+                    <div className="text-white text-sm mb-2">NAB token</div>
+                    <h1 className="font-sour-gummy text-white text-6xl md:text-8xl mb-4">
+                        number, always,
+                        <br />
+                        bigger
                     </h1>
-                    <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-moon-yellow animate-pulse" />
+                    <p className="text-yellow-300 text-xl md:text-2xl font-sour-gummy">
+                        (a token where the price just goes up)
+                    </p>
                 </div>
 
-                <p className="text-xl md:text-2xl text-black mb-8 md:mb-12 transform rotate-1">
-                    (NAB)
-                </p>
+                {/* Main content area with prices and mascot */}
+                <div className="relative max-w-6xl mx-auto">
+                    {/* Current floor - Left side */}
+                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2">
+                        <div className="flex flex-col items-center">
+                            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-6 h-6">
+                                        <Image
+                                            src="./arrow.svg"
+                                            alt="Up arrow"
+                                            width={24}
+                                            height={24}
+                                            className="w-full h-full"
+                                        />
+                                    </div>
+                                    <span className="font-sour-gummy text-5xl text-white">
+                                        ${currentFloor}
+                                    </span>
+                                </div>
+                            </div>
+                            <div className="text-yellow-300 font-sour-gummy text-2xl">
+                                current floor
+                            </div>
+                        </div>
+                    </div>
 
-                <PriceTicker
-                    currentPrice={currentFloor}
-                    nextPrice={nextFloor}
-                />
+                    {/* Mascot - Center */}
+                    <div className="flex justify-center">
+                        <Image
+                            src="/pepe-up.png"
+                            alt="NAB Mascot"
+                            width={400}
+                            height={400}
+                            className="w-96"
+                        />
+                    </div>
 
-                {/* Tagline */}
-                <div className="text-xl md:text-2xl text-black font-comic space-y-6 md:space-y-8">
-                    <p className="transform rotate-1 mt-8 md:mt-12">
-                        a token where the price just goes up
-                    </p>
+                    {/* Next floor - Right side */}
+                    <div className="absolute right-0 top-1/2 transform -translate-y-1/2">
+                        <div className="flex flex-col items-center">
+                            <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
+                                <div className="flex items-center gap-2">
+                                    <span className="font-sour-gummy text-5xl text-white">
+                                        ${nextFloor}
+                                    </span>
+                                    <div className="w-6 h-6">
+                                        <Image
+                                            src="./rocket.svg"
+                                            alt="Rocket"
+                                            width={24}
+                                            height={24}
+                                            className="w-full h-full"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="text-yellow-300 font-sour-gummy text-2xl">
+                                next floor
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -60,6 +60,7 @@ export default {
                 'stability-gray': '#cccccc',
             },
             fontFamily: {
+                'sour-gummy': ['Sour Gummy', 'cursive'],
                 comic: [
                     'Comic Sans MS',
                     'Comic Sans',
@@ -87,8 +88,13 @@ export default {
                 'glow-pulse': 'glowPulse 2s ease-in-out infinite',
                 'glow-intensify': 'glowIntensify 0.5s ease-in-out infinite',
                 flame: 'flame 0.2s ease-in-out infinite',
+                'spin-slow': 'spin-slow 400s linear infinite',
             },
             keyframes: {
+                'spin-slow': {
+                    '0%': { transform: 'rotate(0deg)' },
+                    '100%': { transform: 'rotate(360deg)' },
+                },
                 bounce: {
                     '0%, 100%': {
                         transform: 'translateY(-10%)',
