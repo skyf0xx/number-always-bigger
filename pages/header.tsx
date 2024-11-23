@@ -23,7 +23,7 @@ const NABHeader = () => {
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <div className="flex items-center gap-2">
-                        <span className="text-2xl font-sour-gummy text-yellow-300">
+                        <span className="text-2xl font-sour-gummy text-yellow-300 font-bold -rotate-3">
                             Number Always Bigger
                         </span>
                     </div>
