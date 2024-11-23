@@ -42,7 +42,7 @@ const NABHero = () => {
                         <div className="text-white mb-2 font-bold">
                             NAB token
                         </div>
-                        <h1 className="font-sour-gummy text-white text-4xl sm:text-6xl md:text-8xl mb-4">
+                        <h1 className="font-sour-gummy text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-4 leading-tight">
                             number, always,
                             <br />
                             bigger
