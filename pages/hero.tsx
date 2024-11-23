@@ -26,7 +26,7 @@ const NABHero = () => {
             <div className="absolute inset-0 w-full h-full">
                 <div className="absolute inset-[-100%] w-[300%] h-[300%] animate-spin-slow origin-center">
                     <Image
-                        src="/sunburst.svg"
+                        src="./sunburst.svg"
                         alt="Sunburst Background"
                         fill
                         className="object-cover"
@@ -117,7 +117,7 @@ const NABHero = () => {
                 <div className="absolute bottom-0 w-full flex justify-center">
                     <div className="max-w-sm md:max-w-xl -ml-8 md:-ml-32">
                         <Image
-                            src="/pepe-up.png"
+                            src="./pepe-up.png"
                             alt="NAB Mascot"
                             width={700}
                             height={700}
