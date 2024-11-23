@@ -49,7 +49,15 @@ const HowItWorks: React.FC = () => {
                         {steps.map((step, index) => (
                             <div key={index} className="group relative">
                                 <div
-                                    className={`bg-${step.color} rounded-lg p-6 transform transition-all duration-300 hover:scale-105 hover:rotate-2 border-4 border-black shadow-lg`}
+                                    className={`rounded-lg p-6 transform transition-all duration-300 hover:scale-105 hover:rotate-2 border-4 border-black shadow-lg ${
+                                        step.color === 'meme-blue'
+                                            ? 'bg-meme-blue'
+                                            : step.color === 'crypto-green'
+                                            ? 'bg-crypto-green'
+                                            : step.color === 'floor-pink'
+                                            ? 'bg-floor-pink'
+                                            : 'bg-moon-yellow'
+                                    }`}
                                 >
                                     <div className="flex flex-col items-center text-center space-y-4">
                                         <div className="bg-white rounded-full p-4">
