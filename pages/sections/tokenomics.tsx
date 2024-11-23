@@ -111,15 +111,14 @@ const Tokenomics: React.FC = () => {
                                         </div>
                                         <p>
                                             • 5,050 NAB pre-minted for liquidity
-                                            and{' '}
+                                            and LP{' '}
                                             <a
                                                 target="_blank"
                                                 className="text-meme-blue hover:text-crypto-green transition-colors"
-                                                href="https://docs.autonomous.finance/products/platforms/coinmaker/lock-up-liquidity#liquidity-locking-process-on-botega"
+                                                href="https://www.ao.link/#/entity/thisAddressEatsNAB0000000000000000000000000?tab=transfers"
                                             >
-                                                locked
-                                            </a>{' '}
-                                            on Botega for 4 years.
+                                                burned
+                                            </a>
                                         </p>
                                         <p>
                                             • Initial price: $0.00099 (5,050 NAB
