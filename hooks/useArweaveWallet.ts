@@ -1,7 +1,7 @@
+import React from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from './use-toast';
-import React from 'react';
 
 interface ArweaveWalletState {
     address: string | null;
@@ -10,7 +10,32 @@ interface ArweaveWalletState {
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
+    scrollToStakingDashboard: () => void;
 }
+
+export const scrollToDashboard = () => {
+    setTimeout(() => {
+        const dashboard = document.getElementById('staking-dashboard');
+        if (dashboard) {
+            const headerHeight = 64;
+            const dashboardRect = dashboard.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+
+            // Calculate position to center the dashboard
+            const elementPosition =
+                window.scrollY +
+                dashboardRect.top -
+                viewportHeight / 2 +
+                dashboardRect.height / 2 -
+                headerHeight;
+
+            window.scrollTo({
+                top: elementPosition,
+                behavior: 'smooth',
+            });
+        }
+    }, 100);
+};
 
 export const useArweaveWalletStore = create<ArweaveWalletState>()(
     devtools(
@@ -18,6 +43,11 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
             address: null,
             connecting: false,
             connected: false,
+
+            scrollToStakingDashboard: () => {
+                // Allow time for the dashboard to render
+                scrollToDashboard();
+            },
 
             checkConnection: async () => {
                 try {
@@ -72,6 +102,9 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         connecting: false,
                         connected: true,
                     });
+
+                    // Scroll to staking dashboard after successful connection
+                    get().scrollToStakingDashboard();
 
                     toast({
                         title: 'Wallet Connected',

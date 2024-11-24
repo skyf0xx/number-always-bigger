@@ -201,16 +201,3 @@ const StakingDashboard = () => {
 };
 
 export default StakingDashboard;
-
-// Add scroll handling
-export const scrollToDashboard = () => {
-    const dashboard = document.getElementById('staking-dashboard');
-    if (dashboard) {
-        const headerHeight = 64; // Account for fixed header
-        const elementPosition = dashboard.offsetTop - headerHeight;
-        window.scrollTo({
-            top: elementPosition,
-            behavior: 'smooth',
-        });
-    }
-};
