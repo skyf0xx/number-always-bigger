@@ -23,7 +23,6 @@ export const getNABPrice = async (): Promise<number | false> => {
         { name: 'Quantity', value: quantity },
     ];
 
-    console.log('getting the price');
     try {
         const messageId = await sendMessage(target, tags);
 
