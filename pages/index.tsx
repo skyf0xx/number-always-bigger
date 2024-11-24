@@ -1,10 +1,9 @@
 'use client';
 import React, { useState } from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-import NABHero from './hero';
-import NABHeader from './header';
+import NABHero from './sections/hero';
+import NABHeader from './sections/header';
 import HowItWorks from './sections/how-it-works';
 import PriceChart from './sections/price-chart';
 import Head from 'next/head';
