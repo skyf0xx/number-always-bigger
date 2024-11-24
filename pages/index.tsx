@@ -15,6 +15,7 @@ import HowToGet from './sections/how-to-get';
 import Tokenomics from './sections/tokenomics';
 import StakingDashboard from './sections/dashboard';
 import {
+    scrollToDashboard,
     useArweaveWalletInit,
     useArweaveWalletStore,
 } from '@/hooks/useArweaveWallet';
@@ -26,21 +27,11 @@ export default function Home() {
     const connect = useArweaveWalletStore((state) => state.connect);
 
     const handleWalletConnection = () => {
-        if (!connected) {
+        if (connected) {
+            scrollToDashboard();
+        } else {
             connect();
         }
-
-        setTimeout(() => {
-            const dashboard = document.getElementById('total-staked');
-            if (dashboard) {
-                const headerHeight = 64;
-                const elementPosition = dashboard.offsetTop - headerHeight;
-                window.scrollTo({
-                    top: elementPosition,
-                    behavior: 'smooth',
-                });
-            }
-        }, 100);
     };
 
     return (
