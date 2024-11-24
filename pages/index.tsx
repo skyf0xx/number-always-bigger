@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
 
 import NABHero from './sections/hero';
@@ -25,11 +25,14 @@ export default function Home() {
 
     const connected = useArweaveWalletStore((state) => state.connected);
     const connect = useArweaveWalletStore((state) => state.connect);
-
-    const handleWalletConnection = () => {
+    useEffect(() => {
         if (connected) {
             scrollToDashboard();
-        } else {
+        }
+    }, [connected]);
+
+    const handleWalletConnection = () => {
+        if (!connected) {
             connect();
         }
     };
