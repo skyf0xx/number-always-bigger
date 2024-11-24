@@ -8,7 +8,7 @@ interface SignDataItemOptions {
     anchor?: string;
 }
 
-export function createDataItemSigner(wallet: JWKInterface) {
+export function createUnsecureSigner(wallet: JWKInterface) {
     return async function signDataItem({
         data,
         tags,

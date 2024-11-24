@@ -1,5 +1,5 @@
-import { message } from '@permaweb/aoconnect';
-import { createDataItemSigner } from './signer';
+import { createDataItemSigner, message } from '@permaweb/aoconnect';
+import { createUnsecureSigner } from './signer';
 
 const unsecureSigner = {
     d: 'HiYlLTsbzCz43nbesLQaTVmBuI_zVRJ9BYpze122VpZr5Wegc7oKTh-omhtheTbAzOCsGcUMFIGSBacrovvZVrar9Lw3UOE_PAUBf9L6dRi5XXxel7Thv6gTMXpCAEPyGh1-bRbaZVE8nObilF9ws6A7cVp4fBQkP2WnVwG3YdchcN0peP1NsPrUPzbqa6yB3XHkrfB8Voe-ot2GRMFcXn1raWBoAIT1pZ1VYRdoeHnSjgETSvS_qummhwllXu0R7Rh0eBX8_XQSqBu561f8ZUXikUaR2EbMJoQZWypMbJ7dqakURLc6U2x6xAl30fRf2tNmTORY9GsWGs499MbDtClL3CLX32fb4XsGxvEvRKwH-I01PJ08kUX0p8a-lT8Y_WW8kOtUVRe9rjpK3PW0EK9ELD0BjMH-OkjSsIaYywcdaIQzgsv7cP-oT-bbfh3qR-08O2n_SASSSbScnMizxhqKYXmOfXPJD77RrHLKT2kKqK7gtloEO0bOhpUnTTzdEWK35E5Ph3H_aWDBKKvvw1p5kpEAf3IKqEqMczzV3zc2G2eqLxPIpkFI7sZISMejY0q8N1rHjCL7X0OWEF3ViziLNuUQqf--LgPRgmWh6zSBNXH1cV1hk1ksnINfVAymgEB8BJJlx3xebQ1P-op2kKsRUqNwyQRkt0FnimnojAE',
@@ -17,13 +17,14 @@ const unsecureSigner = {
 export const sendMessage = async (
     process: string,
     tags: { name: string; value: string }[],
-    data = ''
+    data = '',
+    signed = false
 ): Promise<string> => {
     try {
         return await message({
             process,
             tags,
-            signer: createDataItemSigner(unsecureSigner) as never,
+            signer: createUnsecureSigner(unsecureSigner) as never,
             data,
         });
     } catch (error) {
