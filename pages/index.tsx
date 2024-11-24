@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
 
 import NABHero from './sections/hero';
@@ -14,10 +14,22 @@ import AOSection from './sections/ao';
 import HowToGet from './sections/how-to-get';
 import Tokenomics from './sections/tokenomics';
 import StakingDashboard from './sections/dashboard';
+import {
+    useArweaveWalletInit,
+    useArweaveWalletStore,
+} from '@/hooks/useArweaveWallet';
 
 export default function Home() {
-    const [isWalletConnected, setIsWalletConnected] = useState(false);
+    useArweaveWalletInit();
+
+    const connected = useArweaveWalletStore((state) => state.connected);
+    const connect = useArweaveWalletStore((state) => state.connect);
+
     const handleWalletConnection = () => {
+        if (!connected) {
+            connect();
+        }
+
         setTimeout(() => {
             const dashboard = document.getElementById('total-staked');
             if (dashboard) {
@@ -85,7 +97,7 @@ export default function Home() {
                 <NABHeader />
                 <NABHero />
                 {/* Staking Dashboard - only shown when wallet is connected */}
-                {isWalletConnected && (
+                {connected && (
                     <section className="py-16 px-4 relative">
                         <div className="absolute inset-0 bg-gradient-to-b from-meme-blue to-transparent opacity-50" />
                         <div className="relative">
@@ -122,7 +134,7 @@ export default function Home() {
                         onClick={handleWalletConnection}
                         className="bg-moon-yellow hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-2xl transform hover:scale-105 transition-all hover:-rotate-2 border-4 border-black shadow-lg"
                     >
-                        {isWalletConnected ? (
+                        {connected ? (
                             <span className="flex items-center gap-2">
                                 <Rocket className="animate-pulse" />
                                 printer go brrrrrrrr!!!!!

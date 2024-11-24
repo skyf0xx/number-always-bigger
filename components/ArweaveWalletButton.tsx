@@ -1,10 +1,17 @@
 import React from 'react';
 import { Wallet, Loader2 } from 'lucide-react';
-import { useArweaveWallet } from '@/hooks/useArweaveWallet';
+import {
+    useArweaveWalletInit,
+    useArweaveWalletStore,
+} from '@/hooks/useArweaveWallet';
 
 export const ArweaveWalletButton: React.FC = () => {
+    // Initialize wallet event listeners
+    useArweaveWalletInit();
+
+    // Get state and actions from the store
     const { address, connecting, connected, connect, disconnect } =
-        useArweaveWallet();
+        useArweaveWalletStore();
 
     const formatAddress = (addr: string) => {
         if (!addr) return '';
