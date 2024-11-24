@@ -13,9 +13,23 @@ import RealityCheckSection from './sections/reality';
 import AOSection from './sections/ao';
 import HowToGet from './sections/how-to-get';
 import Tokenomics from './sections/tokenomics';
+import StakingDashboard from './sections/dashboard';
 
 export default function Home() {
     const [isWalletConnected, setIsWalletConnected] = useState(false);
+    const handleWalletConnection = () => {
+        setTimeout(() => {
+            const dashboard = document.getElementById('total-staked');
+            if (dashboard) {
+                const headerHeight = 64;
+                const elementPosition = dashboard.offsetTop - headerHeight;
+                window.scrollTo({
+                    top: elementPosition,
+                    behavior: 'smooth',
+                });
+            }
+        }, 100);
+    };
 
     return (
         <>
@@ -70,6 +84,15 @@ export default function Home() {
                 {' '}
                 <NABHeader />
                 <NABHero />
+                {/* Staking Dashboard - only shown when wallet is connected */}
+                {isWalletConnected && (
+                    <section className="py-16 px-4 relative">
+                        <div className="absolute inset-0 bg-gradient-to-b from-meme-blue to-transparent opacity-50" />
+                        <div className="relative">
+                            <StakingDashboard />
+                        </div>
+                    </section>
+                )}
                 {/* Hero Section */}
                 <header className="max-w-6xl mx-auto pt-8 text-center">
                     <div className="animate-bounce mb-4">
@@ -96,7 +119,7 @@ export default function Home() {
                     </div>
 
                     <button
-                        onClick={() => setIsWalletConnected(!isWalletConnected)}
+                        onClick={handleWalletConnection}
                         className="bg-moon-yellow hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-2xl transform hover:scale-105 transition-all hover:-rotate-2 border-4 border-black shadow-lg"
                     >
                         {isWalletConnected ? (
