@@ -137,7 +137,7 @@ const NABHero = () => {
 
                 {/* Mascot section - Responsive positioning */}
                 <div className="absolute bottom-0 w-full flex justify-center">
-                    <div className="max-w-sm md:max-w-xl -ml-8 md:-ml-32">
+                    <div className="max-w-sm md:max-w-lg -ml-8 md:-ml-32">
                         <Image
                             src="./pepe-up.png"
                             alt="NAB Mascot"
