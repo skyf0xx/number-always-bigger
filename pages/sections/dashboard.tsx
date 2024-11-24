@@ -103,7 +103,7 @@ const StakingDashboard = () => {
                 <CardHeader>
                     <div className="flex justify-between items-center">
                         <CardTitle className="font-comic text-2xl">
-                            make ur number bigger
+                            stake to start earning
                         </CardTitle>
                         <div className="flex gap-2">
                             <button
