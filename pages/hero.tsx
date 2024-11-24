@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Mascot from './mascot';
-import { getNABPrice } from '@/lib/prices';
+import { getNABPrice } from '@/lib/wallet-actions';
 import CountUp from 'react-countup';
 
 const NABHero = () => {
