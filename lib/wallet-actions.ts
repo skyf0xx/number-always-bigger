@@ -267,8 +267,12 @@ export async function stakeToken(
             );
             const result = await sendAndGetResult(token, tags, signer as any);
 
-            const transferId = findTagValue(result, 'Transfer-Id');
-            return transferId || false;
+            if ((result as any).Error) {
+                throw new Error('Error: ' + (result as any).Error);
+            }
+            console.log({ result });
+            const debitNotice = findTagValue(result, 'Debit-Notice');
+            return debitNotice || false;
         },
         false
     );
