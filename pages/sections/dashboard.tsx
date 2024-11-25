@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import {
-    Sparkles,
-    ArrowUpCircle,
-    ArrowDownCircle,
-    Timer,
-    Coins,
-    PieChart,
-} from 'lucide-react';
+import { Sparkles, ArrowUpCircle, Coins, PieChart } from 'lucide-react';
 import {
     getStakedBalances,
     StakedBalances,
     getStakeOwnership,
 } from '@/lib/wallet-actions';
 import { useArweaveWalletStore } from '@/hooks/useArweaveWallet';
+import Staker from './staker';
 
 const StakingDashboard = () => {
     const [stakedBalances, setStakedBalances] = useState<StakedBalances>([]);
     const [stakeOwnership, setStakeOwnership] = useState<number>(0);
-    const [stakeInput, setStakeInput] = useState('');
-    const [unstakeInput, setUnstakeInput] = useState('');
     const [showStakePanel, setShowStakePanel] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -66,24 +58,6 @@ const StakingDashboard = () => {
         const integerPart = value / BigInt(1e8);
         const decimalPart = value % BigInt(1e8);
         return `${integerPart}.${decimalPart.toString().padStart(8, '0')}`;
-    };
-
-    // Mock stake function
-    const handleStake = (e: React.FormEvent) => {
-        e.preventDefault();
-        const amount = parseFloat(stakeInput);
-        if (isNaN(amount) || amount <= 0) return;
-        setStakeInput('');
-        // TODO: Implement actual staking
-    };
-
-    // Mock unstake function
-    const handleUnstake = (e: React.FormEvent) => {
-        e.preventDefault();
-        const amount = parseFloat(unstakeInput);
-        if (isNaN(amount) || amount <= 0) return;
-        setUnstakeInput('');
-        // TODO: Implement actual unstaking
     };
 
     if (isLoading) {
@@ -222,71 +196,7 @@ const StakingDashboard = () => {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent>
-                    {showStakePanel ? (
-                        <form onSubmit={handleStake} className="space-y-4">
-                            <div className="flex gap-4">
-                                <input
-                                    type="number"
-                                    value={stakeInput}
-                                    onChange={(e) =>
-                                        setStakeInput(e.target.value)
-                                    }
-                                    placeholder="enter amount to stake"
-                                    className="flex-1 p-3 rounded-lg border-2 border-crypto-green font-comic focus:outline-none focus:ring-2 focus:ring-crypto-green"
-                                />
-                                <button
-                                    type="submit"
-                                    className="bg-crypto-green text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center gap-2"
-                                >
-                                    <ArrowUpCircle className="h-5 w-5" />
-                                    stake it!
-                                </button>
-                            </div>
-                            <Alert className="bg-crypto-green/10 border-crypto-green">
-                                <Sparkles className="h-4 w-4" />
-                                <AlertTitle className="font-comic">
-                                    protip:
-                                </AlertTitle>
-                                <AlertDescription className="font-comic">
-                                    the more u stake, the bigger ur share of the
-                                    rewards!
-                                </AlertDescription>
-                            </Alert>
-                        </form>
-                    ) : (
-                        <form onSubmit={handleUnstake} className="space-y-4">
-                            <div className="flex gap-4">
-                                <input
-                                    type="number"
-                                    value={unstakeInput}
-                                    onChange={(e) =>
-                                        setUnstakeInput(e.target.value)
-                                    }
-                                    placeholder="enter amount to unstake"
-                                    className="flex-1 p-3 rounded-lg border-2 border-floor-pink font-comic focus:outline-none focus:ring-2 focus:ring-floor-pink"
-                                />
-                                <button
-                                    type="submit"
-                                    className="bg-floor-pink text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center gap-2"
-                                >
-                                    <ArrowDownCircle className="h-5 w-5" />
-                                    unstake
-                                </button>
-                            </div>
-                            <Alert className="bg-floor-pink/10 border-floor-pink">
-                                <Timer className="h-4 w-4" />
-                                <AlertTitle className="font-comic">
-                                    heads up fren:
-                                </AlertTitle>
-                                <AlertDescription className="font-comic">
-                                    unstaking takes 24 hours to process. number
-                                    still go up during this time!
-                                </AlertDescription>
-                            </Alert>
-                        </form>
-                    )}
-                </CardContent>
+                <CardContent>{showStakePanel ? <Staker /> : <></>}</CardContent>
             </Card>
         </div>
     );
