@@ -1,6 +1,12 @@
 import { result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
+
+// Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
+const NAB_PRICE_TARGET = 'bxpz3u2USXv8Ictxb0aso3l8V9UTimaiGp9henzDsl8';
+const NAB_TOKEN = 'OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU';
+
+// Types
 export interface JWK {
     kty: string;
     n?: string;
@@ -12,6 +18,7 @@ export interface JWK {
     dq?: string;
     qi?: string;
 }
+
 export interface StakedBalance {
     name: string;
     amount: string;
@@ -19,174 +26,150 @@ export interface StakedBalance {
 
 export type StakedBalances = StakedBalance[];
 
-export const getStakedBalances = async (
+interface MessageResult {
+    Messages: Array<{
+        Data?: string;
+        Tags: Array<{
+            name: string;
+            value: string;
+        }>;
+    }>;
+}
+
+// Helper Functions
+async function sendAndGetResult(
+    target: string,
+    tags: { name: string; value: string }[]
+): Promise<MessageResult> {
+    const messageId = await sendMessage(target, tags);
+    if (!messageId) {
+        throw new Error('Failed to send message');
+    }
+
+    return await result({
+        message: messageId,
+        process: target,
+    });
+}
+
+function parseMessageData<T>(result: MessageResult, errorMessage: string): T {
+    if (!result.Messages?.[0]?.Data) {
+        throw new Error(errorMessage);
+    }
+    return JSON.parse(result.Messages[0].Data);
+}
+
+function findTagValue(
+    result: MessageResult,
+    tagName: string
+): string | undefined {
+    return result.Messages[0].Tags.find((tag) => tag.name === tagName)?.value;
+}
+
+function handleError<T>(error: unknown, context: string, defaultValue?: T): T {
+    console.error(`Error ${context}:`, error);
+    if (defaultValue !== undefined) {
+        return defaultValue;
+    }
+    throw error;
+}
+
+// Main Functions
+export async function getStakedBalances(
     address: string
-): Promise<StakedBalances> => {
+): Promise<StakedBalances> {
     const tags = [
         { name: 'Action', value: 'Get-Staked-Balances' },
         { name: 'Staker', value: address },
     ];
 
     try {
-        console.log('tags', tags);
-        const messageId = await sendMessage(STAKE_CONTRACT, tags);
-        console.log('messageId', messageId);
-        if (!messageId) {
-            throw new Error('Failed to send message');
-        }
-
-        const { Messages } = await result({
-            message: messageId,
-            process: STAKE_CONTRACT,
-        });
-
-        if (!Messages?.[0]?.Data) {
-            throw new Error('No data in response');
-        }
-        console.log('parsed', JSON.parse(Messages[0].Data));
-        return JSON.parse(Messages[0].Data);
+        const result = await sendAndGetResult(STAKE_CONTRACT, tags);
+        return parseMessageData(result, 'No staked balances data in response');
     } catch (error) {
-        console.error('Error getting staked balances:', error);
-        throw error;
+        return handleError(error, 'getting staked balances', []);
     }
-};
+}
 
-export const getNABPrice = async (): Promise<number | false> => {
-    const target = 'bxpz3u2USXv8Ictxb0aso3l8V9UTimaiGp9henzDsl8';
-    const token = 'OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU';
-    const quantity = (1 * Math.pow(10, 8)).toString(); //8 decimal places
+export async function getNABPrice(): Promise<number | false> {
+    const quantity = (1 * Math.pow(10, 8)).toString(); // 8 decimal places
     const tags = [
         { name: 'Action', value: 'Get-Price' },
-        { name: 'Token', value: token },
+        { name: 'Token', value: NAB_TOKEN },
         { name: 'Quantity', value: quantity },
     ];
 
     try {
-        const messageId = await sendMessage(target, tags);
+        const result = await sendAndGetResult(NAB_PRICE_TARGET, tags);
+        const priceValue = findTagValue(result, 'Price');
 
-        if (!messageId) {
-            return false;
-        }
-
-        const { Messages } = await result({
-            message: messageId,
-            process: target,
-        });
-
-        // Find the price tag in the response
-        const priceTag = Messages[0].Tags.find(
-            (tag: { name: string }) => tag.name === 'Price'
-        );
-
-        if (!priceTag) {
+        if (!priceValue) {
             console.error('Price tag not found in response');
             return false;
         }
 
-        return parseFloat(priceTag.value) / Math.pow(10, 6);
+        return parseFloat(priceValue) / Math.pow(10, 6);
     } catch (error) {
-        console.error('Error getting NAB price:', error);
-        throw error;
+        return handleError(error, 'getting NAB price', false);
     }
-};
+}
 
-export const getStakeOwnership = async (address: string): Promise<number> => {
+export async function getStakeOwnership(address: string): Promise<number> {
     const tags = [
         { name: 'Action', value: 'Get-Stake-Ownership' },
         { name: 'Staker', value: address },
     ];
 
     try {
-        const messageId = await sendMessage(STAKE_CONTRACT, tags);
-        if (!messageId) {
-            return 0;
-        }
+        const result = await sendAndGetResult(STAKE_CONTRACT, tags);
+        const ownershipData = parseMessageData<{
+            percentage: string;
+        }>(result, 'No ownership data in response');
 
-        const { Messages } = await result({
-            message: messageId,
-            process: STAKE_CONTRACT,
-        });
-
-        if (!Messages?.[0]?.Data) {
-            return 0;
-        }
-
-        // Parse the JSON response
-        const response = JSON.parse(Messages[0].Data);
-
-        // The percentage is already calculated in the contract (multiplied by 100)
-        // Convert from string to number and ensure it's not NaN
-        const percentage = Number(response.percentage);
+        const percentage = Number(ownershipData.percentage);
         return isNaN(percentage) ? 0 : percentage;
     } catch (error) {
-        console.error('Error getting stake ownership:', error);
-        return 0;
+        return handleError(error, 'getting stake ownership', 0);
     }
-};
-/*
-export const sendToken = async (
-    recipient: string,
+}
+
+export async function getTokenDenomination(token: string): Promise<number> {
+    const tags = [{ name: 'Action', value: 'Info' }];
+
+    try {
+        const result = await sendAndGetResult(token, tags);
+        const infoData = parseMessageData<{
+            denomination: number;
+        }>(result, 'No token denomination data in response');
+
+        return infoData.denomination;
+    } catch (error) {
+        return handleError(error, 'getting token denomination', 8); // Default to 8 decimals
+    }
+}
+
+export async function stakeToken(
     amount: number,
     token: string,
-    data = '',
-    unsecureSigner = ''
-): Promise<string | boolean> => {
-    const quantity = Math.floor(
-        amount * Math.pow(10, TOKEN_DENOMINATION)
-    ).toString();
-    const tags = [
-        { name: 'Action', value: 'Transfer' },
-        { name: 'Recipient', value: recipient },
-        { name: 'Quantity', value: quantity },
-    ];
-
+    data = ''
+): Promise<string | boolean> {
     try {
-        const messageId = await sendMessage(token, tags, data, unsecureSigner);
-        if (!messageId) {
-            return false;
-        }
-        return messageId;
+        const denomination = await getTokenDenomination(token);
+        const quantity = Math.floor(
+            amount * Math.pow(10, denomination)
+        ).toString();
+
+        const tags = [
+            { name: 'Action', value: 'Transfer' },
+            { name: 'Recipient', value: STAKE_CONTRACT },
+            { name: 'Quantity', value: quantity },
+        ];
+
+        const result = await sendAndGetResult(token, tags);
+        const transferId = findTagValue(result, 'Transfer-Id');
+
+        return transferId || false;
     } catch (error) {
-        console.error('Error sending token:', error);
-        throw error;
+        return handleError(error, 'staking token', false);
     }
-};
-
-export const getBalance = async (
-    address: string,
-    token: string,
-    jwk = ''
-): Promise<number> => {
-    const denomination = getDenomination();
-    const tags = [
-        { name: 'Action', value: 'Balance' },
-        { name: 'Recipient', value: address },
-    ];
-
-    try {
-        const messageId = await sendMessage(token, tags, '', jwk);
-        const { Messages, Error } = await result({
-            message: messageId,
-            process: JOY_TOKEN,
-        });
-
-        if (Error) {
-            throw new Error(`Error in balance result: ${Error}`);
-        }
-
-        const balanceData = Messages?.[0]?.Data;
-        if (!balanceData) {
-            throw new Error('No balance data found');
-        }
-
-        const balance = BigNumber.from(balanceData)
-            .div(BigNumber.from(10).pow(denomination))
-            .toNumber();
-
-        return balance;
-    } catch (error) {
-        console.error('Error fetching balance:', error, { address, token });
-        throw error;
-    }
-};
-*/
+}
