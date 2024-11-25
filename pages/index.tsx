@@ -33,7 +33,7 @@ export default function Home() {
 
     const handleWalletConnection = () => {
         if (!connected) {
-            connect();
+            connect().then(() => scrollToDashboard());
         } else {
             scrollToDashboard();
         }
