@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Sparkles, ArrowUpCircle, Coins, PieChart } from 'lucide-react';
+import { Sparkles, Coins, PieChart } from 'lucide-react';
 import {
     getStakedBalances,
     StakedBalances,
