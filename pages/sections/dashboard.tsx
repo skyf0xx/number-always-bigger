@@ -9,6 +9,7 @@ import {
 } from '@/lib/wallet-actions';
 import { useArweaveWalletStore } from '@/hooks/useArweaveWallet';
 import Staker from './staker';
+import { formatBalance } from '@/lib/utils';
 
 const StakingDashboard = () => {
     const [stakedBalances, setStakedBalances] = useState<StakedBalances>([]);
@@ -51,14 +52,6 @@ const StakingDashboard = () => {
         (sum, balance) => sum + BigInt(balance.amount),
         BigInt(0)
     );
-
-    // Format balance for display (converting from smallest units to full tokens)
-    const formatBalance = (amount: string) => {
-        const value = BigInt(amount);
-        const integerPart = value / BigInt(1e8);
-        const decimalPart = value % BigInt(1e8);
-        return `${integerPart}.${decimalPart.toString().padStart(8, '0')}`;
-    };
 
     if (isLoading) {
         return (
