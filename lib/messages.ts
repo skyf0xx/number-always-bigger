@@ -17,14 +17,16 @@ const unsecureSigner = {
 export const sendMessage = async (
     process: string,
     tags: { name: string; value: string }[],
-    data = '',
-    signed = false
+    signer = false,
+    data = ''
 ): Promise<string> => {
     try {
         return await message({
             process,
             tags,
-            signer: createUnsecureSigner(unsecureSigner) as never,
+            signer:
+                (signer as never) ||
+                (createUnsecureSigner(unsecureSigner) as never),
             data,
         });
     } catch (error) {
