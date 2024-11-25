@@ -16,6 +16,7 @@ import {
     getBalance,
     TokenBalance,
 } from '@/lib/wallet-actions';
+import RewardsDisplay from './rewards';
 
 interface StakerProps {
     walletAddress: string;
@@ -238,6 +239,8 @@ const Staker = ({
 
     return (
         <div className="space-y-4">
+            <RewardsDisplay walletAddress={walletAddress} />
+
             {error && (
                 <Alert className="bg-red-50 border-red-400">
                     <AlertTitle className="font-comic">oopsie!</AlertTitle>
