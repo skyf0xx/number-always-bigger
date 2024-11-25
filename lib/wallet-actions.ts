@@ -1,5 +1,6 @@
 import { createDataItemSigner, result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
+import { adjustDecimalString } from './utils';
 
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
@@ -129,7 +130,6 @@ export async function getBalance(
 
     try {
         const result = await sendAndGetResult(token, tags);
-
         // Get values from tags
         const balance = findTagValue(result, 'Balance');
         const ticker = findTagValue(result, 'Ticker');
@@ -140,8 +140,12 @@ export async function getBalance(
             return null;
         }
 
+        const denomination = await getTokenDenomination(token);
+        const adjustedBalance = adjustDecimalString(balance, denomination);
+
+
         return {
-            balance: balance,
+            balance: adjustedBalance,
             ticker: ticker,
             account: account,
         };
