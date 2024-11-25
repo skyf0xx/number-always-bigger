@@ -36,13 +36,29 @@ interface MessageResult {
     }>;
 }
 
-// New types for allowed tokens
 export interface AllowedTokens {
-    addresses: { [key: string]: string }; // token_key -> address mapping
-    names: { [key: string]: string }; // token_key -> display name mapping
+    addresses: { [key: string]: string };
+    names: { [key: string]: string };
+}
+
+interface ArweaveWallet {
+    connect(permissions: string[]): Promise<void>;
+    disconnect(): Promise<void>;
 }
 
 // Helper Functions
+async function connectWallet(): Promise<ArweaveWallet> {
+    if (!('arweaveWallet' in globalThis)) {
+        throw new Error(
+            'Arweave wallet is not available. Please install or enable it.'
+        );
+    }
+
+    const arweaveWallet = (globalThis as any).arweaveWallet as ArweaveWallet;
+    await arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION']);
+    return arweaveWallet;
+}
+
 async function sendAndGetResult(
     target: string,
     tags: { name: string; value: string }[],
@@ -79,6 +95,19 @@ function handleError<T>(error: unknown, context: string, defaultValue?: T): T {
         return defaultValue;
     }
     throw error;
+}
+
+async function executeWalletAction<T>(
+    actionName: string,
+    action: () => Promise<T>,
+    defaultValue: T
+): Promise<T> {
+    try {
+        await connectWallet();
+        return await action();
+    } catch (error) {
+        return handleError(error, actionName, defaultValue);
+    }
 }
 
 // Main Functions
@@ -120,7 +149,7 @@ export async function getStakedBalances(
 }
 
 export async function getNABPrice(): Promise<number | false> {
-    const quantity = (1 * Math.pow(10, 8)).toString(); // 8 decimal places
+    const quantity = (1 * Math.pow(10, 8)).toString();
     const tags = [
         { name: 'Action', value: 'Get-Price' },
         { name: 'Token', value: NAB_TOKEN },
@@ -172,98 +201,70 @@ export async function getTokenDenomination(token: string): Promise<number> {
 
         return infoData.denomination;
     } catch (error) {
-        return handleError(error, 'getting token denomination', 8); // Default to 8 decimals
+        return handleError(error, 'getting token denomination', 8);
     }
 }
 
 export async function unstakeToken(token: string): Promise<boolean> {
-    try {
-        // Check if arweaveWallet exists on globalThis
-        if (!('arweaveWallet' in globalThis)) {
-            throw new Error(
-                'Arweave wallet is not available. Please install or enable it.'
+    return executeWalletAction(
+        'unstaking token',
+        async () => {
+            const tags = [
+                { name: 'Action', value: 'Unstake' },
+                { name: 'Token', value: token },
+            ];
+
+            const signer = createDataItemSigner(
+                (globalThis as any).arweaveWallet
             );
-        }
-
-        const arweaveWallet = (globalThis as any).arweaveWallet as {
-            connect(permissions: string[]): Promise<void>;
-            disconnect(): Promise<void>;
-        };
-
-        // Connect wallet with required permissions
-        await arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION']);
-
-        const tags = [
-            { name: 'Action', value: 'Unstake' },
-            { name: 'Token', value: token },
-        ];
-
-        const signer = createDataItemSigner(arweaveWallet);
-
-        // Send unstake request to the staking contract
-        const result = await sendAndGetResult(
-            STAKE_CONTRACT,
-            tags,
-            signer as any
-        );
-
-        // Check if we received a successful response
-        if (result.Messages && result.Messages.length > 0) {
-            // Look for any error indicators in the response
-            const errorTag = result.Messages[0].Tags.find(
-                (tag) => tag.name === 'Error'
+            const result = await sendAndGetResult(
+                STAKE_CONTRACT,
+                tags,
+                signer as any
             );
-            if (errorTag) {
-                console.error('Unstake error:', errorTag.value);
-                return false;
+
+            if (result.Messages && result.Messages.length > 0) {
+                const errorTag = result.Messages[0].Tags.find(
+                    (tag) => tag.name === 'Error'
+                );
+                if (errorTag) {
+                    console.error('Unstake error:', errorTag.value);
+                    return false;
+                }
+                return true;
             }
-            return true;
-        }
-
-        return false;
-    } catch (error) {
-        return handleError(error, 'unstaking token', false);
-    }
+            return false;
+        },
+        false
+    );
 }
 
 export async function stakeToken(
     amount: number,
     token: string
 ): Promise<string | boolean> {
-    try {
-        // Check if arweaveWallet exists on globalThis
-        if (!('arweaveWallet' in globalThis)) {
-            throw new Error(
-                'Arweave wallet is not available. Please install or enable it.'
+    return executeWalletAction(
+        'staking token',
+        async () => {
+            const denomination = await getTokenDenomination(token);
+            const quantity = Math.floor(
+                amount * Math.pow(10, denomination)
+            ).toString();
+
+            const tags = [
+                { name: 'Action', value: 'Transfer' },
+                { name: 'Recipient', value: STAKE_CONTRACT },
+                { name: 'Quantity', value: quantity },
+            ];
+
+            const signer = createDataItemSigner(
+                (globalThis as any).arweaveWallet
             );
-        }
+            const result = await sendAndGetResult(token, tags, signer as any);
 
-        const arweaveWallet = (globalThis as any).arweaveWallet as {
-            connect(permissions: string[]): Promise<void>;
-            disconnect(): Promise<void>;
-        };
-
-        await arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION']);
-
-        const denomination = await getTokenDenomination(token);
-        const quantity = Math.floor(
-            amount * Math.pow(10, denomination)
-        ).toString();
-
-        const tags = [
-            { name: 'Action', value: 'Transfer' },
-            { name: 'Recipient', value: STAKE_CONTRACT },
-            { name: 'Quantity', value: quantity },
-        ];
-
-        const signer = createDataItemSigner(arweaveWallet);
-
-        const result = await sendAndGetResult(token, tags, signer as any);
-
-        const transferId = findTagValue(result, 'Transfer-Id');
-        return transferId || false;
-    } catch (error) {
-        console.error('Error staking token:', error);
-        return handleError(error, 'staking token', false);
-    }
+            const transferId = findTagValue(result, 'Transfer-Id');
+            return transferId || false;
+        },
+        false
+    );
 }
