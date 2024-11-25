@@ -196,7 +196,16 @@ const StakingDashboard = () => {
                         </div>
                     </div>
                 </CardHeader>
-                <CardContent>{showStakePanel ? <Staker /> : <></>}</CardContent>
+                <CardContent>
+                    {showStakePanel && walletAddress ? (
+                        <Staker
+                            walletAddress={walletAddress}
+                            stakedBalances={stakedBalances}
+                        />
+                    ) : (
+                        <></>
+                    )}
+                </CardContent>
             </Card>
         </div>
     );
