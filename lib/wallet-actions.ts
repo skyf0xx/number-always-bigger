@@ -195,11 +195,16 @@ export async function getTokenDenomination(token: string): Promise<number> {
 
     try {
         const result = await sendAndGetResult(token, tags);
-        const infoData = parseMessageData<{
-            denomination: number;
-        }>(result, 'No token denomination data in response');
+        const denominationTag = result.Messages[0]?.Tags.find(
+            (tag) => tag.name === 'Denomination'
+        );
 
-        return infoData.denomination;
+        if (!denominationTag) {
+            throw new Error('Denomination tag not found in response');
+        }
+
+        const denomination = Number(denominationTag.value);
+        return isNaN(denomination) ? 8 : denomination;
     } catch (error) {
         return handleError(error, 'getting token denomination', 8);
     }
