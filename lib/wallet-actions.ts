@@ -133,10 +133,7 @@ export async function getBalance(
         // Get values from tags
         const balance = findTagValue(result, 'Balance');
         const ticker = findTagValue(result, 'Ticker');
-        const account = findTagValue(result, 'Account');
-
-        // Also check Data field which contains balance
-        const dataBalance = result.Messages[0]?.Data;
+        const account = address;
 
         if (!balance || !ticker || !account) {
             console.error('Missing required balance information in response');
