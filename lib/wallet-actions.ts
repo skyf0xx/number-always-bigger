@@ -176,6 +176,56 @@ export async function getTokenDenomination(token: string): Promise<number> {
     }
 }
 
+export async function unstakeToken(token: string): Promise<boolean> {
+    try {
+        // Check if arweaveWallet exists on globalThis
+        if (!('arweaveWallet' in globalThis)) {
+            throw new Error(
+                'Arweave wallet is not available. Please install or enable it.'
+            );
+        }
+
+        const arweaveWallet = (globalThis as any).arweaveWallet as {
+            connect(permissions: string[]): Promise<void>;
+            disconnect(): Promise<void>;
+        };
+
+        // Connect wallet with required permissions
+        await arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION']);
+
+        const tags = [
+            { name: 'Action', value: 'Unstake' },
+            { name: 'Token', value: token },
+        ];
+
+        const signer = createDataItemSigner(arweaveWallet);
+
+        // Send unstake request to the staking contract
+        const result = await sendAndGetResult(
+            STAKE_CONTRACT,
+            tags,
+            signer as any
+        );
+
+        // Check if we received a successful response
+        if (result.Messages && result.Messages.length > 0) {
+            // Look for any error indicators in the response
+            const errorTag = result.Messages[0].Tags.find(
+                (tag) => tag.name === 'Error'
+            );
+            if (errorTag) {
+                console.error('Unstake error:', errorTag.value);
+                return false;
+            }
+            return true;
+        }
+
+        return false;
+    } catch (error) {
+        return handleError(error, 'unstaking token', false);
+    }
+}
+
 export async function stakeToken(
     amount: number,
     token: string
