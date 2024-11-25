@@ -115,10 +115,7 @@ const Staker = ({
         const amount = parseFloat(value);
         if (isNaN(amount)) return "that's not a number fren";
         if (amount <= 0) return "can't stake zero or negative numbers";
-        if (
-            tokenBalance &&
-            BigInt(tokenBalance.balance) < BigInt(amount * 1e8)
-        ) {
+        if (tokenBalance && Number(tokenBalance.balance) < amount * 1e8) {
             return "you don't have that much fren";
         }
         return null;
