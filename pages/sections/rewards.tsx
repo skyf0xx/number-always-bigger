@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RefreshCw, Gift } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { getBalance, TokenBalance } from '@/lib/wallet-actions';
+import { formatBalance } from '@/lib/utils';
 
 const NAB_TOKEN = 'OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU';
 
@@ -34,13 +35,6 @@ const RewardsDisplay = ({ walletAddress }: RewardsDisplayProps) => {
         const interval = setInterval(fetchRewards, 5 * 60 * 1000);
         return () => clearInterval(interval);
     }, [walletAddress]);
-
-    const formatBalance = (amount: string): string => {
-        const value = BigInt(amount);
-        const integerPart = value / BigInt(1e8);
-        const decimalPart = value % BigInt(1e8);
-        return `${integerPart}.${decimalPart.toString().padStart(8, '0')}`;
-    };
 
     if (isLoading) {
         return (

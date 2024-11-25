@@ -17,6 +17,7 @@ import {
     TokenBalance,
 } from '@/lib/wallet-actions';
 import RewardsDisplay from './rewards';
+import { formatBalance } from '@/lib/utils';
 
 interface StakerProps {
     walletAddress: string;
@@ -90,14 +91,6 @@ const Staker = ({
 
         fetchTokenBalance();
     }, [selectedToken, walletAddress]);
-
-    // Format balance for display
-    const formatBalance = (amount: string): string => {
-        const value = BigInt(amount);
-        const integerPart = value / BigInt(1e8);
-        const decimalPart = value % BigInt(1e8);
-        return `${integerPart}.${decimalPart.toString().padStart(8, '0')}`;
-    };
 
     // Get token name from address
     const getTokenName = (address: string): string => {
