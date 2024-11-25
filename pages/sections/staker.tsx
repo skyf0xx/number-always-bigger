@@ -1,10 +1,10 @@
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { Card } from '@/components/ui/card';
 import { ArrowDownCircle, ArrowUpCircle, Timer, RefreshCw } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
     getAllowedTokens,
     stakeToken,
+    unstakeToken,
     StakedBalances,
     AllowedTokens,
 } from '@/lib/wallet-actions';
@@ -30,6 +30,7 @@ const Staker = ({
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [success, setSuccess] = useState<string | null>(null);
 
     // Fetch allowed tokens on component mount
     useEffect(() => {
@@ -55,6 +56,14 @@ const Staker = ({
         fetchAllowedTokens();
     }, []);
 
+    // Get token name from address
+    const getTokenName = (address: string): string => {
+        const tokenKey = Object.entries(allowedTokens.addresses).find(
+            ([_, addr]) => addr === address
+        )?.[0];
+        return tokenKey ? allowedTokens.names[tokenKey] : address;
+    };
+
     // Handle stake function
     const handleStake = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,12 +82,16 @@ const Staker = ({
         try {
             setIsProcessing(true);
             setError(null);
+            setSuccess(null);
 
             const result = await stakeToken(amount, selectedToken);
             if (!result) {
                 throw new Error('Staking failed');
             }
 
+            setSuccess(
+                `successfully staked ${amount} ${getTokenName(selectedToken)}`
+            );
             setStakeInput('');
             if (onStakeComplete) {
                 onStakeComplete();
@@ -94,25 +107,35 @@ const Staker = ({
     // Handle unstake function
     const handleUnstake = async (e: React.FormEvent) => {
         e.preventDefault();
-        const amount = parseFloat(unstakeInput);
 
         if (!selectedToken) {
             setError('please select a token to unstake');
             return;
         }
 
-        if (isNaN(amount) || amount <= 0) {
-            setError('please enter a valid amount fren');
+        // Get current staked balance for selected token
+        const currentBalance = stakedBalances.find(
+            (balance) => balance.name === getTokenName(selectedToken)
+        );
+
+        if (!currentBalance || BigInt(currentBalance.amount) === BigInt(0)) {
+            setError('you have no tokens staked to unstake');
             return;
         }
 
         try {
             setIsProcessing(true);
             setError(null);
+            setSuccess(null);
 
-            // TODO: Implement actual unstaking logic here
-            // This would involve calling your contract functions
+            const result = await unstakeToken(selectedToken);
+            if (!result) {
+                throw new Error('Unstaking failed');
+            }
 
+            setSuccess(
+                `successfully unstaked your ${getTokenName(selectedToken)}`
+            );
             setUnstakeInput('');
             if (onStakeComplete) {
                 onStakeComplete();
@@ -145,6 +168,15 @@ const Staker = ({
                 </Alert>
             )}
 
+            {success && (
+                <Alert className="bg-green-50 border-green-400">
+                    <AlertTitle className="font-comic">nice!</AlertTitle>
+                    <AlertDescription className="font-comic">
+                        {success}
+                    </AlertDescription>
+                </Alert>
+            )}
+
             {/* Token Selection */}
             <div className="mb-4">
                 <label className="block text-sm font-comic mb-2">
@@ -165,6 +197,22 @@ const Staker = ({
                 </select>
             </div>
 
+            {/* Current Staked Amount */}
+            {selectedToken && (
+                <div className="p-4 bg-gray-50 rounded-lg mb-4">
+                    <p className="font-comic text-sm">
+                        currently staked:{' '}
+                        <span className="font-bold">
+                            {stakedBalances.find(
+                                (balance) =>
+                                    balance.name === getTokenName(selectedToken)
+                            )?.amount ?? '0'}{' '}
+                            {getTokenName(selectedToken)}
+                        </span>
+                    </p>
+                </div>
+            )}
+
             {/* Stake Form */}
             <form onSubmit={handleStake} className="space-y-4">
                 <div className="flex gap-4">
@@ -183,7 +231,11 @@ const Staker = ({
                             isProcessing || !walletAddress || !selectedToken
                         }
                     >
-                        <ArrowUpCircle className="h-5 w-5" />
+                        <ArrowUpCircle
+                            className={`h-5 w-5 ${
+                                isProcessing ? 'animate-spin' : ''
+                            }`}
+                        />
                         {isProcessing ? 'processing...' : 'stake'}
                     </button>
                 </div>
@@ -192,23 +244,19 @@ const Staker = ({
             {/* Unstake Form */}
             <form onSubmit={handleUnstake} className="space-y-4">
                 <div className="flex gap-4">
-                    <input
-                        type="number"
-                        value={unstakeInput}
-                        onChange={(e) => setUnstakeInput(e.target.value)}
-                        placeholder="enter amount to unstake"
-                        className="flex-1 p-3 rounded-lg border-2 border-floor-pink font-comic focus:outline-none focus:ring-2 focus:ring-floor-pink"
-                        disabled={isProcessing}
-                    />
                     <button
                         type="submit"
-                        className="bg-floor-pink text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-floor-pink text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={
                             isProcessing || !walletAddress || !selectedToken
                         }
                     >
-                        <ArrowDownCircle className="h-5 w-5" />
-                        {isProcessing ? 'processing...' : 'unstake'}
+                        <ArrowDownCircle
+                            className={`h-5 w-5 ${
+                                isProcessing ? 'animate-spin' : ''
+                            }`}
+                        />
+                        {isProcessing ? 'processing...' : 'unstake all'}
                     </button>
                 </div>
             </form>
