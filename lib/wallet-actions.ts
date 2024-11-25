@@ -110,6 +110,49 @@ async function executeWalletAction<T>(
     }
 }
 
+// Balance response interface
+export interface TokenBalance {
+    balance: string;
+    ticker: string;
+    account: string;
+}
+
+// New getBalance function
+export async function getBalance(
+    address: string,
+    token: string
+): Promise<TokenBalance | null> {
+    const tags = [
+        { name: 'Action', value: 'Balance' },
+        { name: 'Target', value: address },
+    ];
+
+    try {
+        const result = await sendAndGetResult(token, tags);
+
+        // Get values from tags
+        const balance = findTagValue(result, 'Balance');
+        const ticker = findTagValue(result, 'Ticker');
+        const account = findTagValue(result, 'Account');
+
+        // Also check Data field which contains balance
+        const dataBalance = result.Messages[0]?.Data;
+
+        if (!balance || !ticker || !account) {
+            console.error('Missing required balance information in response');
+            return null;
+        }
+
+        return {
+            balance: balance,
+            ticker: ticker,
+            account: account,
+        };
+    } catch (error) {
+        return handleError(error, 'getting token balance', null);
+    }
+}
+
 // Main Functions
 export async function getAllowedTokens(): Promise<AllowedTokens> {
     const tags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
