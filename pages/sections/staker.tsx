@@ -256,7 +256,11 @@ const Staker = ({
                                 isProcessing ? 'animate-spin' : ''
                             }`}
                         />
-                        {isProcessing ? 'processing...' : 'unstake all'}
+                        {isProcessing
+                            ? 'processing...'
+                            : selectedToken
+                            ? `unstake all ${getTokenName(selectedToken)}`
+                            : 'unstake all'}
                     </button>
                 </div>
             </form>
