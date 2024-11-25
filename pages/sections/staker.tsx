@@ -85,8 +85,12 @@ const Staker = ({
             setSuccess(null);
 
             const result = await stakeToken(amount, selectedToken);
-            if (!result) {
-                throw new Error('Staking failed');
+
+            // Handle error messages from the contract
+            if (result === false) {
+                throw new Error(
+                    'Staking failed - insufficient balance or not approved'
+                );
             }
 
             setSuccess(
@@ -96,8 +100,11 @@ const Staker = ({
             if (onStakeComplete) {
                 onStakeComplete();
             }
-        } catch (err) {
-            setError('oopsie! something went wrong while staking');
+        } catch (err: any) {
+            // Display the error message from the contract or a fallback
+            setError(
+                err?.message || 'oopsie! something went wrong while staking'
+            );
             console.error('Staking error:', err);
         } finally {
             setIsProcessing(false);
@@ -140,8 +147,10 @@ const Staker = ({
             if (onStakeComplete) {
                 onStakeComplete();
             }
-        } catch (err) {
-            setError('oopsie! something went wrong while unstaking');
+        } catch (err: any) {
+            setError(
+                err?.message || 'oopsie! something went wrong while unstaking'
+            );
             console.error('Unstaking error:', err);
         } finally {
             setIsProcessing(false);
