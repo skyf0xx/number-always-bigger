@@ -7,12 +7,18 @@ import {
     ArrowDownCircle,
     Timer,
     Coins,
+    PieChart,
 } from 'lucide-react';
-import { getStakedBalances, StakedBalances } from '@/lib/wallet-actions';
+import {
+    getStakedBalances,
+    StakedBalances,
+    getStakeOwnership,
+} from '@/lib/wallet-actions';
 import { useArweaveWalletStore } from '@/hooks/useArweaveWallet';
 
 const StakingDashboard = () => {
     const [stakedBalances, setStakedBalances] = useState<StakedBalances>([]);
+    const [stakeOwnership, setStakeOwnership] = useState<number>(0);
     const [stakeInput, setStakeInput] = useState('');
     const [unstakeInput, setUnstakeInput] = useState('');
     const [showStakePanel, setShowStakePanel] = useState(true);
@@ -21,26 +27,30 @@ const StakingDashboard = () => {
 
     const walletAddress = useArweaveWalletStore((state) => state.address);
 
-    // Fetch staked balances
+    // Fetch staked balances and ownership
     useEffect(() => {
         if (!walletAddress) return;
 
-        const fetchBalances = async () => {
+        const fetchData = async () => {
             try {
                 setIsLoading(true);
-                const balances = await getStakedBalances(walletAddress);
+                const [balances, ownership] = await Promise.all([
+                    getStakedBalances(walletAddress),
+                    getStakeOwnership(walletAddress),
+                ]);
                 setStakedBalances(balances);
+                setStakeOwnership(ownership);
             } catch (err) {
-                setError('Failed to fetch staked balances');
-                console.error('Error fetching balances:', err);
+                setError('Failed to fetch staking data');
+                console.error('Error fetching data:', err);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchBalances();
+        fetchData();
         // Refresh every 5 minutes
-        const interval = setInterval(fetchBalances, 5 * 60 * 1000);
+        const interval = setInterval(fetchData, 5 * 60 * 1000);
         return () => clearInterval(interval);
     }, [walletAddress]);
 
@@ -104,6 +114,31 @@ const StakingDashboard = () => {
 
     return (
         <div id="staking-dashboard" className="max-w-4xl mx-auto p-4">
+            {/* Ownership Stats Card */}
+            <Card className="bg-white/95 backdrop-blur-sm border-2 border-tech-purple mb-6 transform hover:scale-105 transition-transform">
+                <CardContent className="pt-6">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <PieChart className="h-8 w-8 text-tech-purple" />
+                            <div>
+                                <h3 className="text-xl font-comic">
+                                    your stake ownership
+                                </h3>
+                                <p className="text-sm text-gray-600">
+                                    you earn this much of the total rewards
+                                    every 5 minutes. Stake more to earn more
+                                </p>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <span className="text-4xl font-bold font-comic text-tech-purple">
+                                {stakeOwnership}%
+                            </span>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
             {/* Column Headers */}
             <div className="flex items-center justify-between px-6 py-3 bg-meme-blue/10 rounded-lg border-2 border-meme-blue bg-white">
                 <div className="flex items-center gap-2">
@@ -113,9 +148,10 @@ const StakingDashboard = () => {
                     </h3>
                 </div>
                 <span className="text-lg font-comic text-meme-blue">
-                    ur staked amount
+                    staked amount
                 </span>
             </div>
+
             {/* Staked Balances Cards */}
             <div className="grid grid-cols-1 gap-4 mb-6">
                 {stakedBalances.map((balance) => (

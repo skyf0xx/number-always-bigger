@@ -90,6 +90,39 @@ export const getNABPrice = async (): Promise<number | false> => {
     }
 };
 
+export const getStakeOwnership = async (address: string): Promise<number> => {
+    const tags = [
+        { name: 'Action', value: 'Get-Stake-Ownership' },
+        { name: 'Staker', value: address },
+    ];
+
+    try {
+        const messageId = await sendMessage(STAKE_CONTRACT, tags);
+        if (!messageId) {
+            return 0;
+        }
+
+        const { Messages } = await result({
+            message: messageId,
+            process: STAKE_CONTRACT,
+        });
+
+        if (!Messages?.[0]?.Data) {
+            return 0;
+        }
+
+        // Parse the JSON response
+        const response = JSON.parse(Messages[0].Data);
+
+        // The percentage is already calculated in the contract (multiplied by 100)
+        // Convert from string to number and ensure it's not NaN
+        const percentage = Number(response.percentage);
+        return isNaN(percentage) ? 0 : percentage;
+    } catch (error) {
+        console.error('Error getting stake ownership:', error);
+        return 0;
+    }
+};
 /*
 export const sendToken = async (
     recipient: string,
