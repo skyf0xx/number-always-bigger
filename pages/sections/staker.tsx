@@ -1,5 +1,11 @@
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { ArrowDownCircle, ArrowUpCircle, Timer, RefreshCw } from 'lucide-react';
+import {
+    ArrowDownCircle,
+    ArrowUpCircle,
+    Timer,
+    RefreshCw,
+    Wallet,
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
     getAllowedTokens,
@@ -7,6 +13,8 @@ import {
     unstakeToken,
     StakedBalances,
     AllowedTokens,
+    getBalance,
+    TokenBalance,
 } from '@/lib/wallet-actions';
 
 interface StakerProps {
@@ -31,6 +39,8 @@ const Staker = ({
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [success, setSuccess] = useState<string | null>(null);
+    const [tokenBalance, setTokenBalance] = useState<TokenBalance | null>(null);
+    const [isLoadingBalance, setIsLoadingBalance] = useState(false);
 
     // Fetch allowed tokens on component mount
     useEffect(() => {
@@ -56,6 +66,37 @@ const Staker = ({
         fetchAllowedTokens();
     }, []);
 
+    // Fetch token balance when selected token changes
+    useEffect(() => {
+        const fetchTokenBalance = async () => {
+            if (!selectedToken || !walletAddress) {
+                setTokenBalance(null);
+                return;
+            }
+
+            try {
+                setIsLoadingBalance(true);
+                const balance = await getBalance(walletAddress, selectedToken);
+                setTokenBalance(balance);
+            } catch (err) {
+                console.error('Error fetching token balance:', err);
+                setTokenBalance(null);
+            } finally {
+                setIsLoadingBalance(false);
+            }
+        };
+
+        fetchTokenBalance();
+    }, [selectedToken, walletAddress]);
+
+    // Format balance for display
+    const formatBalance = (amount: string): string => {
+        const value = BigInt(amount);
+        const integerPart = value / BigInt(1e8);
+        const decimalPart = value % BigInt(1e8);
+        return `${integerPart}.${decimalPart.toString().padStart(8, '0')}`;
+    };
+
     // Get token name from address
     const getTokenName = (address: string): string => {
         const tokenKey = Object.entries(allowedTokens.addresses).find(
@@ -79,6 +120,14 @@ const Staker = ({
             return;
         }
 
+        if (
+            tokenBalance &&
+            BigInt(tokenBalance.balance) < BigInt(amount * 1e8)
+        ) {
+            setError('insufficient balance fren');
+            return;
+        }
+
         try {
             setIsProcessing(true);
             setError(null);
@@ -86,7 +135,6 @@ const Staker = ({
 
             const result = await stakeToken(amount, selectedToken);
 
-            // Handle error messages from the contract
             if (result === false) {
                 throw new Error(
                     'Staking failed - insufficient balance or not approved'
@@ -101,7 +149,6 @@ const Staker = ({
                 onStakeComplete();
             }
         } catch (err: any) {
-            // Display the error message from the contract or a fallback
             setError(
                 err?.message || 'oopsie! something went wrong while staking'
             );
@@ -120,7 +167,6 @@ const Staker = ({
             return;
         }
 
-        // Get current staked balance for selected token
         const currentBalance = stakedBalances.find(
             (balance) => balance.name === getTokenName(selectedToken)
         );
@@ -206,19 +252,48 @@ const Staker = ({
                 </select>
             </div>
 
-            {/* Current Staked Amount */}
+            {/* Balances Display */}
             {selectedToken && (
-                <div className="p-4 bg-gray-50 rounded-lg mb-4">
-                    <p className="font-comic text-sm">
-                        currently staked:{' '}
-                        <span className="font-bold">
-                            {stakedBalances.find(
-                                (balance) =>
-                                    balance.name === getTokenName(selectedToken)
-                            )?.amount ?? '0'}{' '}
-                            {getTokenName(selectedToken)}
-                        </span>
-                    </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg mb-4">
+                    {/* Wallet Balance */}
+                    <div className="flex items-center space-x-2">
+                        <Wallet className="h-5 w-5 text-meme-blue" />
+                        <div>
+                            <p className="font-comic text-sm text-gray-600">
+                                wallet balance:
+                            </p>
+                            <p className="font-comic font-bold">
+                                {isLoadingBalance ? (
+                                    <RefreshCw className="animate-spin h-4 w-4 inline" />
+                                ) : tokenBalance ? (
+                                    formatBalance(tokenBalance.balance)
+                                ) : (
+                                    '0'
+                                )}{' '}
+                                {getTokenName(selectedToken)}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Staked Balance */}
+                    <div className="flex items-center space-x-2">
+                        <ArrowUpCircle className="h-5 w-5 text-crypto-green" />
+                        <div>
+                            <p className="font-comic text-sm text-gray-600">
+                                staked balance:
+                            </p>
+                            <p className="font-comic font-bold">
+                                {formatBalance(
+                                    stakedBalances.find(
+                                        (balance) =>
+                                            balance.name ===
+                                            getTokenName(selectedToken)
+                                    )?.amount ?? '0'
+                                )}{' '}
+                                {getTokenName(selectedToken)}
+                            </p>
+                        </div>
+                    </div>
                 </div>
             )}
 
