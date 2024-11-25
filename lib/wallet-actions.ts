@@ -1,6 +1,6 @@
 import { result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
-
+const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
 export interface JWK {
     kty: string;
     n?: string;
@@ -12,6 +12,44 @@ export interface JWK {
     dq?: string;
     qi?: string;
 }
+export interface StakedBalance {
+    name: string;
+    amount: string;
+}
+
+export type StakedBalances = StakedBalance[];
+
+export const getStakedBalances = async (
+    address: string
+): Promise<StakedBalances> => {
+    const tags = [
+        { name: 'Action', value: 'Get-Staked-Balances' },
+        { name: 'Staker', value: address },
+    ];
+
+    try {
+        console.log('tags', tags);
+        const messageId = await sendMessage(STAKE_CONTRACT, tags);
+        console.log('messageId', messageId);
+        if (!messageId) {
+            throw new Error('Failed to send message');
+        }
+
+        const { Messages } = await result({
+            message: messageId,
+            process: STAKE_CONTRACT,
+        });
+
+        if (!Messages?.[0]?.Data) {
+            throw new Error('No data in response');
+        }
+        console.log('parsed', JSON.parse(Messages[0].Data));
+        return JSON.parse(Messages[0].Data);
+    } catch (error) {
+        console.error('Error getting staked balances:', error);
+        throw error;
+    }
+};
 
 export const getNABPrice = async (): Promise<number | false> => {
     const target = 'bxpz3u2USXv8Ictxb0aso3l8V9UTimaiGp9henzDsl8';
@@ -51,6 +89,7 @@ export const getNABPrice = async (): Promise<number | false> => {
         throw error;
     }
 };
+
 /*
 export const sendToken = async (
     recipient: string,
