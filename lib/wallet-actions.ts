@@ -36,6 +36,12 @@ interface MessageResult {
     }>;
 }
 
+// New types for allowed tokens
+export interface AllowedTokens {
+    addresses: { [key: string]: string }; // token_key -> address mapping
+    names: { [key: string]: string }; // token_key -> display name mapping
+}
+
 // Helper Functions
 async function sendAndGetResult(
     target: string,
@@ -76,6 +82,27 @@ function handleError<T>(error: unknown, context: string, defaultValue?: T): T {
 }
 
 // Main Functions
+export async function getAllowedTokens(): Promise<AllowedTokens> {
+    const tags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
+
+    try {
+        const result = await sendAndGetResult(STAKE_CONTRACT, tags);
+        const [addresses, names] = parseMessageData<
+            [{ [key: string]: string }, { [key: string]: string }]
+        >(result, 'No allowed tokens data in response');
+
+        return {
+            addresses,
+            names,
+        };
+    } catch (error) {
+        return handleError(error, 'getting allowed tokens', {
+            addresses: {},
+            names: {},
+        });
+    }
+}
+
 export async function getStakedBalances(
     address: string
 ): Promise<StakedBalances> {
