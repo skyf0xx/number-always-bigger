@@ -1,4 +1,4 @@
-import { result } from '@permaweb/aoconnect';
+import { createDataItemSigner, result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
 
 // Constants
@@ -39,9 +39,10 @@ interface MessageResult {
 // Helper Functions
 async function sendAndGetResult(
     target: string,
-    tags: { name: string; value: string }[]
+    tags: { name: string; value: string }[],
+    signer = false
 ): Promise<MessageResult> {
-    const messageId = await sendMessage(target, tags);
+    const messageId = await sendMessage(target, tags, signer);
     if (!messageId) {
         throw new Error('Failed to send message');
     }
@@ -150,10 +151,23 @@ export async function getTokenDenomination(token: string): Promise<number> {
 
 export async function stakeToken(
     amount: number,
-    token: string,
-    data = ''
+    token: string
 ): Promise<string | boolean> {
     try {
+        // Check if arweaveWallet exists on globalThis
+        if (!('arweaveWallet' in globalThis)) {
+            throw new Error(
+                'Arweave wallet is not available. Please install or enable it.'
+            );
+        }
+
+        const arweaveWallet = (globalThis as any).arweaveWallet as {
+            connect(permissions: string[]): Promise<void>;
+            disconnect(): Promise<void>;
+        };
+
+        await arweaveWallet.connect(['ACCESS_ADDRESS', 'SIGN_TRANSACTION']);
+
         const denomination = await getTokenDenomination(token);
         const quantity = Math.floor(
             amount * Math.pow(10, denomination)
@@ -165,11 +179,14 @@ export async function stakeToken(
             { name: 'Quantity', value: quantity },
         ];
 
-        const result = await sendAndGetResult(token, tags);
-        const transferId = findTagValue(result, 'Transfer-Id');
+        const signer = createDataItemSigner(arweaveWallet);
 
+        const result = await sendAndGetResult(token, tags, signer as any);
+
+        const transferId = findTagValue(result, 'Transfer-Id');
         return transferId || false;
     } catch (error) {
+        console.error('Error staking token:', error);
         return handleError(error, 'staking token', false);
     }
 }
