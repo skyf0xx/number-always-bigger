@@ -172,28 +172,6 @@ const StakingDashboard = () => {
                         <CardTitle className="font-comic text-2xl">
                             stake to start earning
                         </CardTitle>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setShowStakePanel(true)}
-                                className={`px-4 py-2 rounded-full font-comic ${
-                                    showStakePanel
-                                        ? 'bg-crypto-green text-white'
-                                        : 'bg-gray-200'
-                                }`}
-                            >
-                                stake
-                            </button>
-                            <button
-                                onClick={() => setShowStakePanel(false)}
-                                className={`px-4 py-2 rounded-full font-comic ${
-                                    !showStakePanel
-                                        ? 'bg-floor-pink text-white'
-                                        : 'bg-gray-200'
-                                }`}
-                            >
-                                unstake
-                            </button>
-                        </div>
                     </div>
                 </CardHeader>
                 <CardContent>
