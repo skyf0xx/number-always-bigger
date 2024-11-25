@@ -5,97 +5,154 @@ import {
     Sparkles,
     ArrowUpCircle,
     ArrowDownCircle,
-    Percent,
     Timer,
     Coins,
 } from 'lucide-react';
+import { getStakedBalances, StakedBalances } from '@/lib/wallet-actions';
+import { useArweaveWalletStore } from '@/hooks/useArweaveWallet';
 
 const StakingDashboard = () => {
-    // State management for staking interface
-    const [stakedAmount, setStakedAmount] = useState(0);
+    const [stakedBalances, setStakedBalances] = useState<StakedBalances>([]);
     const [stakeInput, setStakeInput] = useState('');
     const [unstakeInput, setUnstakeInput] = useState('');
-    const [earnings, setEarnings] = useState(0);
-    const [totalStaked, setTotalStaked] = useState(1000000);
-    const [stakingPercentage, setStakingPercentage] = useState(0);
     const [showStakePanel, setShowStakePanel] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Calculate percentage of total stake
+    const walletAddress = useArweaveWalletStore((state) => state.address);
+
+    // Fetch staked balances
     useEffect(() => {
-        const percentage = (stakedAmount / totalStaked) * 100;
-        setStakingPercentage(percentage);
-    }, [stakedAmount, totalStaked]);
+        if (!walletAddress) return;
+
+        const fetchBalances = async () => {
+            try {
+                setIsLoading(true);
+                const balances = await getStakedBalances(walletAddress);
+                setStakedBalances(balances);
+            } catch (err) {
+                setError('Failed to fetch staked balances');
+                console.error('Error fetching balances:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBalances();
+        // Refresh every 5 minutes
+        const interval = setInterval(fetchBalances, 5 * 60 * 1000);
+        return () => clearInterval(interval);
+    }, [walletAddress]);
+
+    // Calculate total staked value in smallest units
+    const totalStaked = stakedBalances.reduce(
+        (sum, balance) => sum + BigInt(balance.amount),
+        BigInt(0)
+    );
+
+    // Format balance for display (converting from smallest units to full tokens)
+    const formatBalance = (amount: string) => {
+        const value = BigInt(amount);
+        const integerPart = value / BigInt(1e8);
+        const decimalPart = value % BigInt(1e8);
+        return `${integerPart}.${decimalPart.toString().padStart(8, '0')}`;
+    };
 
     // Mock stake function
-    const handleStake = (e: { preventDefault: () => void }) => {
+    const handleStake = (e: React.FormEvent) => {
         e.preventDefault();
         const amount = parseFloat(stakeInput);
         if (isNaN(amount) || amount <= 0) return;
-        setStakedAmount((prev) => prev + amount);
         setStakeInput('');
+        // TODO: Implement actual staking
     };
 
     // Mock unstake function
-    const handleUnstake = (e: { preventDefault: () => void }) => {
+    const handleUnstake = (e: React.FormEvent) => {
         e.preventDefault();
         const amount = parseFloat(unstakeInput);
-        if (isNaN(amount) || amount <= 0 || amount > stakedAmount) return;
-        setStakedAmount((prev) => prev - amount);
+        if (isNaN(amount) || amount <= 0) return;
         setUnstakeInput('');
+        // TODO: Implement actual unstaking
     };
+
+    if (isLoading) {
+        return (
+            <div className="max-w-4xl mx-auto p-4 text-center">
+                <Card className="bg-white/95 backdrop-blur-sm">
+                    <CardContent className="pt-6">
+                        <div className="animate-pulse flex gap-2 justify-center items-center">
+                            <Sparkles className="animate-spin" />
+                            <span>calculating ur numbers fren...</span>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="max-w-4xl mx-auto p-4">
+                <Alert className="bg-red-50 border-red-400">
+                    <AlertTitle>oopsie!</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            </div>
+        );
+    }
 
     return (
         <div id="staking-dashboard" className="max-w-4xl mx-auto p-4">
-            {/* Main Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <Card className="bg-white/95 backdrop-blur-sm border-2 border-meme-blue transform hover:scale-105 transition-transform">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Coins className="h-5 w-5 text-meme-blue" />
-                                <h3
-                                    className="text-lg font-comic"
-                                    id="total-staked"
-                                >
-                                    Total Staked
-                                </h3>
+            {/* Column Headers */}
+            <div className="flex items-center justify-between px-6 py-3 bg-meme-blue/10 rounded-lg border-2 border-meme-blue bg-white">
+                <div className="flex items-center gap-2">
+                    <Coins className="h-5 w-5 text-meme-blue" />
+                    <h3 className="text-lg font-comic text-meme-blue">
+                        allowed tokens
+                    </h3>
+                </div>
+                <span className="text-lg font-comic text-meme-blue">
+                    ur staked amount
+                </span>
+            </div>
+            {/* Staked Balances Cards */}
+            <div className="grid grid-cols-1 gap-4 mb-6">
+                {stakedBalances.map((balance) => (
+                    <Card
+                        key={balance.name}
+                        className="bg-white/95 backdrop-blur-sm border-2 border-meme-blue transform hover:scale-105 transition-transform"
+                    >
+                        <CardContent className="pt-6">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Coins className="h-5 w-5 text-meme-blue" />
+                                    <h3 className="text-lg font-comic">
+                                        {balance.name}
+                                    </h3>
+                                </div>
+                                <span className="text-2xl font-bold font-comic">
+                                    {formatBalance(balance.amount)}
+                                </span>
                             </div>
-                            <span className="text-2xl font-bold font-comic">
-                                {stakedAmount.toFixed(2)}
-                            </span>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                ))}
 
-                <Card className="bg-white/95 backdrop-blur-sm border-2 border-crypto-green transform hover:scale-105 transition-transform">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Sparkles className="h-5 w-5 text-crypto-green" />
-                                <h3 className="text-lg font-comic">Earnings</h3>
+                {stakedBalances.length === 0 && (
+                    <Card className="bg-white/95 backdrop-blur-sm border-2 border-moon-yellow">
+                        <CardContent className="pt-6">
+                            <div className="text-center">
+                                <p className="text-lg font-comic">
+                                    no tokens staked yet fren!
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                    stake some tokens to see them here
+                                </p>
                             </div>
-                            <span className="text-2xl font-bold font-comic text-crypto-green">
-                                +{earnings.toFixed(2)}
-                            </span>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="bg-white/95 backdrop-blur-sm border-2 border-floor-pink transform hover:scale-105 transition-transform">
-                    <CardContent className="pt-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <Percent className="h-5 w-5 text-floor-pink" />
-                                <h3 className="text-lg font-comic">
-                                    Your Share
-                                </h3>
-                            </div>
-                            <span className="text-2xl font-bold font-comic text-floor-pink">
-                                {stakingPercentage.toFixed(2)}%
-                            </span>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
 
             {/* Staking Interface */}
@@ -171,7 +228,6 @@ const StakingDashboard = () => {
                                         setUnstakeInput(e.target.value)
                                     }
                                     placeholder="enter amount to unstake"
-                                    max={stakedAmount}
                                     className="flex-1 p-3 rounded-lg border-2 border-floor-pink font-comic focus:outline-none focus:ring-2 focus:ring-floor-pink"
                                 />
                                 <button
