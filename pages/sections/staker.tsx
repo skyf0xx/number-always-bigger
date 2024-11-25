@@ -2,9 +2,9 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import {
     ArrowDownCircle,
     ArrowUpCircle,
-    Timer,
     RefreshCw,
     Wallet,
+    Sparkles,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
@@ -28,7 +28,6 @@ const Staker = ({
     onStakeComplete,
     stakedBalances = [],
 }: StakerProps) => {
-    const [unstakeInput, setUnstakeInput] = useState('');
     const [stakeInput, setStakeInput] = useState('');
     const [selectedToken, setSelectedToken] = useState('');
     const [allowedTokens, setAllowedTokens] = useState<AllowedTokens>({
@@ -41,6 +40,7 @@ const Staker = ({
     const [success, setSuccess] = useState<string | null>(null);
     const [tokenBalance, setTokenBalance] = useState<TokenBalance | null>(null);
     const [isLoadingBalance, setIsLoadingBalance] = useState(false);
+    const [inputTouched, setInputTouched] = useState(false);
 
     // Fetch allowed tokens on component mount
     useEffect(() => {
@@ -49,8 +49,6 @@ const Staker = ({
                 setIsLoading(true);
                 const tokens = await getAllowedTokens();
                 setAllowedTokens(tokens);
-
-                // Set first token as default selected if available
                 const firstTokenKey = Object.keys(tokens.addresses)[0];
                 if (firstTokenKey) {
                     setSelectedToken(tokens.addresses[firstTokenKey]);
@@ -78,6 +76,9 @@ const Staker = ({
                 setIsLoadingBalance(true);
                 const balance = await getBalance(walletAddress, selectedToken);
                 setTokenBalance(balance);
+                // Reset input when token changes
+                setStakeInput('');
+                setInputTouched(false);
             } catch (err) {
                 console.error('Error fetching token balance:', err);
                 setTokenBalance(null);
@@ -105,26 +106,45 @@ const Staker = ({
         return tokenKey ? allowedTokens.names[tokenKey] : address;
     };
 
-    // Handle stake function
-    const handleStake = async (e: React.FormEvent) => {
-        e.preventDefault();
-        const amount = parseFloat(stakeInput);
-
-        if (!selectedToken) {
-            setError('please select a token to stake');
-            return;
+    // Handle max button click
+    const handleMaxClick = () => {
+        if (tokenBalance) {
+            const maxAmount = formatBalance(tokenBalance.balance);
+            setStakeInput(maxAmount);
+            setInputTouched(true);
         }
+    };
 
-        if (isNaN(amount) || amount <= 0) {
-            setError('please enter a valid amount fren');
-            return;
-        }
-
+    // Validate input amount
+    const validateInput = (value: string): string | null => {
+        if (!value) return null;
+        const amount = parseFloat(value);
+        if (isNaN(amount)) return "that's not a number fren";
+        if (amount <= 0) return "can't stake zero or negative numbers";
         if (
             tokenBalance &&
             BigInt(tokenBalance.balance) < BigInt(amount * 1e8)
         ) {
-            setError('insufficient balance fren');
+            return "you don't have that much fren";
+        }
+        return null;
+    };
+
+    // Handle input change with validation
+    const handleInputChange = (value: string) => {
+        setStakeInput(value);
+        setInputTouched(true);
+        setError(null);
+    };
+
+    // Handle stake function
+    const handleStake = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const amount = parseFloat(stakeInput);
+        const validationError = validateInput(stakeInput);
+
+        if (validationError) {
+            setError(validationError);
             return;
         }
 
@@ -145,6 +165,7 @@ const Staker = ({
                 `successfully staked ${amount} ${getTokenName(selectedToken)}`
             );
             setStakeInput('');
+            setInputTouched(false);
             if (onStakeComplete) {
                 onStakeComplete();
             }
@@ -189,7 +210,6 @@ const Staker = ({
             setSuccess(
                 `successfully unstaked your ${getTokenName(selectedToken)}`
             );
-            setUnstakeInput('');
             if (onStakeComplete) {
                 onStakeComplete();
             }
@@ -211,6 +231,10 @@ const Staker = ({
             </div>
         );
     }
+
+    // Calculate validation state
+    const inputError = inputTouched ? validateInput(stakeInput) : null;
+    const isValidInput = inputTouched && !inputError && stakeInput !== '';
 
     return (
         <div className="space-y-4">
@@ -299,54 +323,77 @@ const Staker = ({
 
             {/* Stake Form */}
             <form onSubmit={handleStake} className="space-y-4">
-                <div className="flex gap-4">
-                    <input
-                        type="number"
-                        value={stakeInput}
-                        onChange={(e) => setStakeInput(e.target.value)}
-                        placeholder="enter amount to stake"
-                        className="flex-1 p-3 rounded-lg border-2 border-crypto-green font-comic focus:outline-none focus:ring-2 focus:ring-crypto-green"
-                        disabled={isProcessing}
-                    />
-                    <button
-                        type="submit"
-                        className="bg-crypto-green text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={
-                            isProcessing || !walletAddress || !selectedToken
-                        }
-                    >
-                        <ArrowUpCircle
-                            className={`h-5 w-5 ${
-                                isProcessing ? 'animate-spin' : ''
-                            }`}
-                        />
-                        {isProcessing ? 'processing...' : 'stake'}
-                    </button>
+                <div className="relative">
+                    <div className="flex gap-2">
+                        <div className="flex-1 relative">
+                            <input
+                                type="number"
+                                value={stakeInput}
+                                onChange={(e) =>
+                                    handleInputChange(e.target.value)
+                                }
+                                placeholder="enter amount to stake"
+                                className={`w-full p-3 rounded-lg border-2 font-comic focus:outline-none focus:ring-2 ${
+                                    inputError
+                                        ? 'border-red-400 focus:ring-red-400'
+                                        : isValidInput
+                                        ? 'border-crypto-green focus:ring-crypto-green'
+                                        : 'border-meme-blue focus:ring-meme-blue'
+                                }`}
+                                disabled={isProcessing}
+                                step="any"
+                            />
+                            {selectedToken && tokenBalance && (
+                                <button
+                                    type="button"
+                                    onClick={handleMaxClick}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-moon-yellow hover:bg-yellow-400 text-black rounded font-comic transition-colors"
+                                >
+                                    max
+                                </button>
+                            )}
+                        </div>
+                        <button
+                            type="submit"
+                            className="bg-crypto-green text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={
+                                isProcessing || !isValidInput || !selectedToken
+                            }
+                        >
+                            {isProcessing ? (
+                                <RefreshCw className="h-5 w-5 animate-spin" />
+                            ) : (
+                                <Sparkles className="h-5 w-5" />
+                            )}
+                            {isProcessing ? 'processing...' : 'stake'}
+                        </button>
+                    </div>
+                    {inputError && (
+                        <p className="text-red-500 text-sm font-comic mt-1">
+                            {inputError}
+                        </p>
+                    )}
                 </div>
             </form>
 
             {/* Unstake Form */}
             <form onSubmit={handleUnstake} className="space-y-4">
-                <div className="flex gap-4">
-                    <button
-                        type="submit"
-                        className="w-full bg-floor-pink text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={
-                            isProcessing || !walletAddress || !selectedToken
-                        }
-                    >
-                        <ArrowDownCircle
-                            className={`h-5 w-5 ${
-                                isProcessing ? 'animate-spin' : ''
-                            }`}
-                        />
-                        {isProcessing
-                            ? 'processing...'
-                            : selectedToken
-                            ? `unstake all ${getTokenName(selectedToken)}`
-                            : 'unstake all'}
-                    </button>
-                </div>
+                <button
+                    type="submit"
+                    className="w-full bg-floor-pink text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isProcessing || !selectedToken}
+                >
+                    {isProcessing ? (
+                        <RefreshCw className="h-5 w-5 animate-spin" />
+                    ) : (
+                        <ArrowDownCircle className="h-5 w-5" />
+                    )}
+                    {isProcessing
+                        ? 'processing...'
+                        : selectedToken
+                        ? `unstake all ${getTokenName(selectedToken)}`
+                        : 'unstake all'}
+                </button>
             </form>
         </div>
     );
