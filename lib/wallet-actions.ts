@@ -358,9 +358,17 @@ export async function stakeToken(
             if ((result as any).Error) {
                 throw new Error('Error: ' + (result as any).Error);
             }
-            console.log({ result });
-            const debitNotice = findTagValue(result, 'Debit-Notice');
-            return debitNotice || false;
+
+            // Check all messages for the Debit-Notice action
+            const hasDebitNotice = result.Messages?.some((message) =>
+                message.Tags.some(
+                    (tag) =>
+                        tag.name === 'Action' && tag.value === 'Debit-Notice'
+                )
+            );
+
+            // If we found a Debit-Notice, transaction was successful
+            return hasDebitNotice ? true : false;
         },
         false
     );
