@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Sparkles, Coins, PieChart } from 'lucide-react';
@@ -7,7 +7,10 @@ import {
     StakedBalances,
     getStakeOwnership,
 } from '@/lib/wallet-actions';
-import { useArweaveWalletStore } from '@/hooks/useArweaveWallet';
+import {
+    scrollToDashboard,
+    useArweaveWalletStore,
+} from '@/hooks/useArweaveWallet';
 import Staker from './staker';
 import { formatBalance } from '@/lib/utils';
 
@@ -41,7 +44,9 @@ const StakingDashboard = () => {
     };
 
     useEffect(() => {
-        fetchStakingData();
+        fetchStakingData().then(() => {
+            scrollToDashboard();
+        });
     }, [walletAddress]);
 
     // Calculate total staked value in smallest units
