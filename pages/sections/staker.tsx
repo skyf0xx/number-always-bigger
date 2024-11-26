@@ -153,12 +153,27 @@ const Staker = ({
             }
 
             setSuccess(
-                `successfully staked ${amount} ${getTokenName(selectedToken)}`
+                `successfully staked ${amount} ${getTokenName(
+                    selectedToken
+                )} - refreshing`
             );
             setStakeInput('');
             setInputTouched(false);
+
+            // Call the onStakeComplete callback to trigger a refresh
             if (onStakeComplete) {
-                onStakeComplete();
+                setTimeout(() => {
+                    onStakeComplete();
+                }, 3000);
+            }
+
+            // Refresh the token balance after successful stake
+            if (selectedToken && walletAddress) {
+                const newBalance = await getBalance(
+                    walletAddress,
+                    selectedToken
+                );
+                setTokenBalance(newBalance);
             }
         } catch (err: any) {
             setError(
