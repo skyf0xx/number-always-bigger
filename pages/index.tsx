@@ -25,17 +25,20 @@ export default function Home() {
 
     const connected = useArweaveWalletStore((state) => state.connected);
     const connect = useArweaveWalletStore((state) => state.connect);
+    const [isInitialRender, setIsInitialRender] = React.useState(true);
+
     useEffect(() => {
-        if (connected) {
+        // Only scroll if it's not the initial render and wallet is connected
+        if (!isInitialRender && connected) {
             scrollToDashboard();
         }
-    }, [connected]);
+        // Mark initial render complete
+        setIsInitialRender(false);
+    }, [connected, isInitialRender]);
 
     const handleWalletConnection = () => {
         if (!connected) {
-            connect().then(() => scrollToDashboard());
-        } else {
-            scrollToDashboard();
+            connect();
         }
     };
 
