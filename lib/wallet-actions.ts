@@ -143,7 +143,6 @@ export async function getBalance(
         const denomination = await getTokenDenomination(token);
         const adjustedBalance = adjustDecimalString(balance, denomination);
 
-
         return {
             balance: adjustedBalance,
             ticker: ticker,
@@ -186,7 +185,52 @@ export async function getStakedBalances(
 
     try {
         const result = await sendAndGetResult(STAKE_CONTRACT, tags);
-        return parseMessageData(result, 'No staked balances data in response');
+        const rawBalances = parseMessageData<StakedBalances>(
+            result,
+            'No staked balances data in response'
+        );
+
+        // Get all allowed tokens to map names to addresses
+        const allowedTokens = await getAllowedTokens();
+        const tokenAddressByName = Object.entries(allowedTokens.names).reduce(
+            (acc, [key, name]) => ({
+                ...acc,
+                [name]: allowedTokens.addresses[key],
+            }),
+            {} as { [key: string]: string }
+        );
+
+        // Fetch denominations and adjust balances
+        const adjustedBalances = await Promise.all(
+            rawBalances.map(async (balance) => {
+                const tokenAddress = tokenAddressByName[balance.name];
+                if (!tokenAddress) {
+                    console.warn(`Token address not found for ${balance.name}`);
+                    return balance;
+                }
+
+                try {
+                    const denomination = await getTokenDenomination(
+                        tokenAddress
+                    );
+                    return {
+                        ...balance,
+                        amount: adjustDecimalString(
+                            balance.amount,
+                            denomination
+                        ),
+                    };
+                } catch (error) {
+                    console.error(
+                        `Error getting denomination for ${balance.name}:`,
+                        error
+                    );
+                    return balance;
+                }
+            })
+        );
+
+        return adjustedBalances;
     } catch (error) {
         return handleError(error, 'getting staked balances', []);
     }
