@@ -1,10 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
-import NABHero from './hero';
-import NABHeader from './header';
+import NABHero from './sections/hero';
+import NABHeader from './sections/header';
 import HowItWorks from './sections/how-it-works';
 import PriceChart from './sections/price-chart';
 import Head from 'next/head';
@@ -14,9 +13,34 @@ import RealityCheckSection from './sections/reality';
 import AOSection from './sections/ao';
 import HowToGet from './sections/how-to-get';
 import Tokenomics from './sections/tokenomics';
+import StakingDashboard from './sections/dashboard';
+import {
+    scrollToDashboard,
+    useArweaveWalletInit,
+    useArweaveWalletStore,
+} from '@/hooks/useArweaveWallet';
 
 export default function Home() {
-    const [isWalletConnected, setIsWalletConnected] = useState(false);
+    useArweaveWalletInit();
+
+    const connected = useArweaveWalletStore((state) => state.connected);
+    const connect = useArweaveWalletStore((state) => state.connect);
+    const [isInitialRender, setIsInitialRender] = React.useState(true);
+
+    useEffect(() => {
+        // Only scroll if it's not the initial render and wallet is connected
+        if (!isInitialRender && connected) {
+            scrollToDashboard();
+        }
+        // Mark initial render complete
+        setIsInitialRender(false);
+    }, [connected, isInitialRender]);
+
+    const handleWalletConnection = () => {
+        if (!connected) {
+            connect();
+        }
+    };
 
     return (
         <>
@@ -71,6 +95,15 @@ export default function Home() {
                 {' '}
                 <NABHeader />
                 <NABHero />
+                {/* Staking Dashboard - only shown when wallet is connected */}
+                {connected && (
+                    <section className="py-16 px-4 relative">
+                        <div className="absolute inset-0 bg-gradient-to-b from-meme-blue to-transparent opacity-50" />
+                        <div className="relative">
+                            <StakingDashboard />
+                        </div>
+                    </section>
+                )}
                 {/* Hero Section */}
                 <header className="max-w-6xl mx-auto pt-8 text-center">
                     <div className="animate-bounce mb-4">
@@ -97,10 +130,10 @@ export default function Home() {
                     </div>
 
                     <button
-                        onClick={() => setIsWalletConnected(!isWalletConnected)}
+                        onClick={handleWalletConnection}
                         className="bg-moon-yellow hover:bg-yellow-400 text-black font-bold py-6 px-12 rounded-full text-2xl transform hover:scale-105 transition-all hover:-rotate-2 border-4 border-black shadow-lg"
                     >
-                        {isWalletConnected ? (
+                        {connected ? (
                             <span className="flex items-center gap-2">
                                 <Rocket className="animate-pulse" />
                                 printer go brrrrrrrr!!!!!
@@ -164,16 +197,21 @@ export default function Home() {
                     </p>
                     <div className="flex justify-center gap-8 mb-8">
                         <a
+                            target="_blank"
                             href="https://x.com/AlwaysBigger"
                             className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
                         >
                             Twitter: @AlwaysBigger
                         </a>
+                        <a
+                            target="_blank"
+                            href="https://t.me/AlwaysBigger"
+                            className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
+                        >
+                            Telegram: @AlwaysBigger
+                        </a>
                         <span className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black">
                             Discord: NAB Fren Zone (soon)
-                        </span>
-                        <span className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black">
-                            Telegram: Number Watchers (soon)
                         </span>
                     </div>
                     <p className="mt-8 text-sm bg-white inline-block px-4 py-2 rounded-full transform rotate-1">

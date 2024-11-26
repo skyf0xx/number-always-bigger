@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Wallet, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import { ArweaveWalletButton } from '@/components/ArweaveWalletButton';
 
 const NABHeader = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    // Navigation items with correct section IDs
     const navItems = [
         { label: 'how it works', id: 'how-it-works' },
         { label: 'get NAB', id: 'stake' },
@@ -15,7 +15,7 @@ const NABHeader = () => {
         setIsMobileMenuOpen(false);
         const element = document.getElementById(sectionId);
         if (element) {
-            const headerHeight = 64; // Height of the fixed header
+            const headerHeight = 64;
             const elementPosition = element.offsetTop - headerHeight;
             window.scrollTo({
                 top: elementPosition,
@@ -47,12 +47,7 @@ const NABHeader = () => {
                             </button>
                         ))}
 
-                        <button className="bg-green-400 hover:bg-green-500 text-black font-sour-gummy py-2 px-6 rounded-full text-lg transition-all">
-                            <span className="flex items-center gap-2">
-                                <Wallet className="h-5 w-5" />
-                                connect wallet
-                            </span>
-                        </button>
+                        <ArweaveWalletButton />
                     </nav>
 
                     {/* Mobile Menu Button */}
@@ -83,12 +78,9 @@ const NABHeader = () => {
                                 {item.label}
                             </button>
                         ))}
-                        <button className="w-full bg-green-400 hover:bg-green-500 text-black font-sour-gummy py-4 px-6 rounded-full text-xl transition-all">
-                            <span className="flex items-center justify-center gap-2">
-                                <Wallet className="h-5 w-5" />
-                                connect wallet
-                            </span>
-                        </button>
+                        <div className="flex justify-center">
+                            <ArweaveWalletButton />
+                        </div>
                     </div>
                 </div>
             )}
