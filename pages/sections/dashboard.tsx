@@ -42,9 +42,6 @@ const StakingDashboard = () => {
 
     useEffect(() => {
         fetchStakingData();
-        // Refresh every 5 minutes
-        const interval = setInterval(fetchStakingData, 5 * 60 * 1000);
-        return () => clearInterval(interval);
     }, [walletAddress]);
 
     // Calculate total staked value in smallest units
