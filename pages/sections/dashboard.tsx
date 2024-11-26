@@ -21,29 +21,29 @@ const StakingDashboard = () => {
     const walletAddress = useArweaveWalletStore((state) => state.address);
 
     // Fetch staked balances and ownership
-    useEffect(() => {
+    const fetchStakingData = async () => {
         if (!walletAddress) return;
 
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                const [balances, ownership] = await Promise.all([
-                    getStakedBalances(walletAddress),
-                    getStakeOwnership(walletAddress),
-                ]);
-                setStakedBalances(balances);
-                setStakeOwnership(ownership);
-            } catch (err) {
-                setError('Failed to fetch staking data');
-                console.error('Error fetching data:', err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
+        try {
+            setIsLoading(true);
+            const [balances, ownership] = await Promise.all([
+                getStakedBalances(walletAddress),
+                getStakeOwnership(walletAddress),
+            ]);
+            setStakedBalances(balances);
+            setStakeOwnership(ownership);
+        } catch (err) {
+            setError('Failed to fetch staking data');
+            console.error('Error fetching data:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-        fetchData();
+    useEffect(() => {
+        fetchStakingData();
         // Refresh every 5 minutes
-        const interval = setInterval(fetchData, 5 * 60 * 1000);
+        const interval = setInterval(fetchStakingData, 5 * 60 * 1000);
         return () => clearInterval(interval);
     }, [walletAddress]);
 
@@ -78,6 +78,10 @@ const StakingDashboard = () => {
             </div>
         );
     }
+
+    const handleStakeComplete = () => {
+        fetchStakingData();
+    };
 
     return (
         <div id="staking-dashboard" className="max-w-4xl mx-auto p-4">
@@ -168,13 +172,23 @@ const StakingDashboard = () => {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {showStakePanel && walletAddress ? (
-                        <Staker
-                            walletAddress={walletAddress}
-                            stakedBalances={stakedBalances}
-                        />
-                    ) : (
-                        <></>
+                    {showStakePanel && walletAddress && (
+                        <Card className="bg-white/95 backdrop-blur-sm border-2 border-moon-yellow">
+                            <CardHeader>
+                                <div className="flex justify-between items-center">
+                                    <CardTitle className="font-comic text-2xl">
+                                        stake to start earning
+                                    </CardTitle>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <Staker
+                                    walletAddress={walletAddress}
+                                    stakedBalances={stakedBalances}
+                                    onStakeComplete={handleStakeComplete}
+                                />
+                            </CardContent>
+                        </Card>
                     )}
                 </CardContent>
             </Card>
