@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Mascot from './mascot';
+import { getNABPrice } from '@/lib/wallet-actions';
+import CountUp from 'react-countup';
 
 const NABHero = () => {
-    const [currentPrice, setCurrentPrice] = useState('812.92');
-    const [floor, setFloor] = useState('891.99');
-
-    // Simulate price updates
+    const [currentPrice, setCurrentPrice] = useState(0);
+    const [floor, setFloor] = useState(0);
     useEffect(() => {
-        const interval = setInterval(() => {
-            const current = parseFloat(currentPrice);
-            const increase = (Math.random() * 2 + 1).toFixed(2);
-            setCurrentPrice((current + parseFloat(increase)).toFixed(2));
-            setFloor((current + parseFloat(increase) + 79.07).toFixed(2));
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, [currentPrice]);
+        getNABPrice().then((price) => {
+            if (price === false) return;
+            setCurrentPrice(price);
+            setFloor(price);
+        });
+    }, []);
 
     return (
         <div className="relative min-h-screen bg-meme-blue">
@@ -45,7 +42,7 @@ const NABHero = () => {
                         <div className="text-white mb-2 font-bold">
                             NAB token
                         </div>
-                        <h1 className="font-sour-gummy text-white text-4xl sm:text-6xl md:text-8xl mb-4">
+                        <h1 className="font-sour-gummy text-white text-6xl sm:text-7xl md:text-8xl lg:text-9xl mb-4 leading-tight">
                             number, always,
                             <br />
                             bigger
@@ -76,7 +73,19 @@ const NABHero = () => {
                                                 />
                                             </div>
                                             <span className="font-sour-gummy text-3xl md:text-5xl text-white">
-                                                ${currentPrice}
+                                                $
+                                                <CountUp
+                                                    end={currentPrice}
+                                                    start={0}
+                                                    easingFn={(t, b, c, d) =>
+                                                        c * (t /= d) * t + b
+                                                    }
+                                                    separator=","
+                                                    decimals={6}
+                                                    decimal="."
+                                                    duration={1}
+                                                    preserveValue={true}
+                                                />
                                             </span>
                                         </div>
                                     </div>
@@ -92,7 +101,19 @@ const NABHero = () => {
                                     <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
                                         <div className="flex items-center gap-2">
                                             <span className="font-sour-gummy text-3xl md:text-5xl text-white">
-                                                ${floor}
+                                                $
+                                                <CountUp
+                                                    end={floor}
+                                                    start={0}
+                                                    easingFn={(t, b, c, d) =>
+                                                        c * (t /= d) * t + b
+                                                    }
+                                                    separator=","
+                                                    decimals={6}
+                                                    decimal="."
+                                                    duration={1}
+                                                    preserveValue={true}
+                                                />
                                             </span>
                                             <div className="w-10 h-10 md:w-14 md:h-14">
                                                 <Image
@@ -116,7 +137,7 @@ const NABHero = () => {
 
                 {/* Mascot section - Responsive positioning */}
                 <div className="absolute bottom-0 w-full flex justify-center">
-                    <div className="max-w-sm md:max-w-xl -ml-8 md:-ml-32">
+                    <div className="max-w-[40%] sm:max-w-[35%] md:max-w-[27%] -ml-4 sm:-ml-8 md:-ml-16">
                         <Image
                             src="./pepe-up.png"
                             alt="NAB Mascot"
