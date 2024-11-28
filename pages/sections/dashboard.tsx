@@ -170,13 +170,6 @@ const StakingDashboard = () => {
                 <CardContent>
                     {showStakePanel && walletAddress && (
                         <Card className="bg-white/95 backdrop-blur-sm border-2 border-moon-yellow">
-                            <CardHeader>
-                                <div className="flex justify-between items-center">
-                                    <CardTitle className="font-comic text-2xl">
-                                        stake to start earning
-                                    </CardTitle>
-                                </div>
-                            </CardHeader>
                             <CardContent>
                                 <Staker
                                     walletAddress={walletAddress}
