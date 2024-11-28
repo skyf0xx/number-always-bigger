@@ -49,12 +49,6 @@ const StakingDashboard = () => {
         });
     }, [walletAddress]);
 
-    // Calculate total staked value in smallest units
-    const totalStaked = stakedBalances.reduce(
-        (sum, balance) => sum + BigInt(balance.amount),
-        BigInt(0)
-    );
-
     if (isLoading) {
         return (
             <div className="max-w-4xl mx-auto p-4 text-center">
