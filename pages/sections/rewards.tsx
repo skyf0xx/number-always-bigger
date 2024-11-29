@@ -38,7 +38,7 @@ const RewardsDisplay = ({ walletAddress }: RewardsDisplayProps) => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center p-4 bg-white/80 rounded-lg border-2 border-moon-yellow">
+            <div className="flex items-center justify-center p-4 bg-white/80 rounded-lg border-2 border-moon-yellow mt-6">
                 <RefreshCw className="animate-spin h-5 w-5 mr-2 text-moon-yellow" />
                 <span className="font-comic">calculating your rewards...</span>
             </div>
@@ -57,7 +57,7 @@ const RewardsDisplay = ({ walletAddress }: RewardsDisplayProps) => {
     }
 
     return (
-        <div className="p-4 bg-white/80 rounded-lg border-2 border-moon-yellow">
+        <div className="p-4 bg-white/80 rounded-lg border-2 border-moon-yellow mt-6">
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                     <Gift className="h-5 w-5 text-moon-yellow" />
