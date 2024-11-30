@@ -3,15 +3,19 @@ import Image from 'next/image';
 import Mascot from './mascot';
 import { getNABPrice } from '@/lib/wallet-actions';
 import CountUp from 'react-countup';
+import PriceLoader from '../components/price-loader';
 
 const NABHero = () => {
     const [currentPrice, setCurrentPrice] = useState(0);
     const [floor, setFloor] = useState(0);
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         getNABPrice().then((price) => {
             if (price === false) return;
             setCurrentPrice(price);
             setFloor(price);
+            setIsLoading(false);
         });
     }, []);
 
@@ -59,77 +63,96 @@ const NABHero = () => {
                         {/* Price containers with responsive layout */}
                         <div className="flex flex-col md:flex-row justify-center items-center md:items-start gap-8 md:gap-0 mt-24 md:mt-0">
                             {/* Current price */}
-                            <div className="md:absolute md:left-[-20%] md:mt-24 md:transform md:-translate-y-1/2">
-                                <div className="flex flex-col items-center">
-                                    <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-10 h-10 md:w-14 md:h-14">
-                                                <Image
-                                                    src="./arrow.svg"
-                                                    alt="Up arrow"
-                                                    width={14}
-                                                    height={14}
-                                                    className="w-full h-full"
-                                                />
-                                            </div>
-                                            <span className="font-sour-gummy text-3xl md:text-5xl text-white">
-                                                $
-                                                <CountUp
-                                                    end={currentPrice}
-                                                    start={0}
-                                                    easingFn={(t, b, c, d) =>
-                                                        c * (t /= d) * t + b
-                                                    }
-                                                    separator=","
-                                                    decimals={6}
-                                                    decimal="."
-                                                    duration={1}
-                                                    preserveValue={true}
-                                                />
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div className="text-yellow-300 font-sour-gummy text-2xl md:text-3xl">
-                                        current price
-                                    </div>
-                                </div>
-                            </div>
 
-                            {/* Current floor */}
-                            <div className="md:absolute md:-right-[25%] md:mt-48 md:transform md:-translate-y-1/2">
-                                <div className="flex flex-col items-center">
-                                    <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-sour-gummy text-3xl md:text-5xl text-white">
-                                                $
-                                                <CountUp
-                                                    end={floor}
-                                                    start={0}
-                                                    easingFn={(t, b, c, d) =>
-                                                        c * (t /= d) * t + b
-                                                    }
-                                                    separator=","
-                                                    decimals={6}
-                                                    decimal="."
-                                                    duration={1}
-                                                    preserveValue={true}
-                                                />
-                                            </span>
-                                            <div className="w-10 h-10 md:w-14 md:h-14">
-                                                <Image
-                                                    src="./rocket.svg"
-                                                    alt="Rocket"
-                                                    width={14}
-                                                    height={14}
-                                                    className="w-full h-full"
-                                                />
+                            <div className="md:absolute md:left-[-20%] md:mt-24 md:transform md:-translate-y-1/2">
+                                {isLoading ? (
+                                    <PriceLoader type="price" />
+                                ) : (
+                                    <div className="flex flex-col items-center">
+                                        <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-10 h-10 md:w-14 md:h-14">
+                                                    <Image
+                                                        src="./arrow.svg"
+                                                        alt="Up arrow"
+                                                        width={14}
+                                                        height={14}
+                                                        className="w-full h-full"
+                                                    />
+                                                </div>
+                                                <span className="font-sour-gummy text-3xl md:text-5xl text-white">
+                                                    $
+                                                    <CountUp
+                                                        end={currentPrice}
+                                                        start={0}
+                                                        easingFn={(
+                                                            t,
+                                                            b,
+                                                            c,
+                                                            d
+                                                        ) =>
+                                                            c * (t /= d) * t + b
+                                                        }
+                                                        separator=","
+                                                        decimals={6}
+                                                        decimal="."
+                                                        duration={1}
+                                                        preserveValue={true}
+                                                    />
+                                                </span>
                                             </div>
                                         </div>
+                                        <div className="text-yellow-300 font-sour-gummy text-2xl md:text-3xl">
+                                            current price
+                                        </div>
                                     </div>
-                                    <div className="text-yellow-300 font-sour-gummy text-2xl md:text-3xl">
-                                        current floor
+                                )}
+                            </div>
+                            {/* Current floor */}
+
+                            <div className="md:absolute md:-right-[25%] md:mt-48 md:transform md:-translate-y-1/2">
+                                {isLoading ? (
+                                    <PriceLoader type="floor" />
+                                ) : (
+                                    <div className="flex flex-col items-center">
+                                        <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-sour-gummy text-3xl md:text-5xl text-white">
+                                                    $
+                                                    <CountUp
+                                                        end={floor}
+                                                        start={0}
+                                                        easingFn={(
+                                                            t,
+                                                            b,
+                                                            c,
+                                                            d
+                                                        ) =>
+                                                            c * (t /= d) * t + b
+                                                        }
+                                                        separator=","
+                                                        decimals={6}
+                                                        decimal="."
+                                                        duration={1}
+                                                        preserveValue={true}
+                                                    />
+                                                </span>
+                                                <div className="w-10 h-10 md:w-14 md:h-14">
+                                                    <Image
+                                                        src="./rocket.svg"
+                                                        alt="Rocket"
+                                                        width={14}
+                                                        height={14}
+                                                        className="w-full h-full"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="text-yellow-300 font-sour-gummy text-2xl md:text-3xl">
+                                            current floor
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
                         </div>
                     </div>
