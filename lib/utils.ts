@@ -26,5 +26,11 @@ export function adjustDecimalString(value: string, decimals: number): string {
 }
 
 export const formatBalance = (amount: string) => {
-    return amount;
+    const num = parseFloat(amount);
+
+    return new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 20, // Using 20 as it's the maximum supported
+        useGrouping: true,
+    }).format(num);
 };
