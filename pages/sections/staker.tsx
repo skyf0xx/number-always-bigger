@@ -104,7 +104,7 @@ const Staker = ({
     // Handle max button click
     const handleMaxClick = () => {
         if (tokenBalance) {
-            const maxAmount = formatBalance(tokenBalance.balance);
+            const maxAmount = tokenBalance.balance;
             setStakeInput(maxAmount);
             setInputTouched(true);
         }
