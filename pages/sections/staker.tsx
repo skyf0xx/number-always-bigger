@@ -19,7 +19,7 @@ import {
 } from '@/lib/wallet-actions';
 import RewardsDisplay from './rewards';
 import { formatBalance } from '@/lib/utils';
-
+import Image from 'next/image';
 interface StakerProps {
     walletAddress: string;
     onStakeComplete?: () => void;
@@ -104,7 +104,7 @@ const Staker = ({
     // Handle max button click
     const handleMaxClick = () => {
         if (tokenBalance) {
-            const maxAmount = formatBalance(tokenBalance.balance);
+            const maxAmount = tokenBalance.balance;
             setStakeInput(maxAmount);
             setInputTouched(true);
         }
@@ -270,7 +270,9 @@ const Staker = ({
                             </div>
                         </div>
                         <div className="flex justify-center items-center">
-                            <img
+                            <Image
+                                width={500}
+                                height={500}
                                 src="./teacher_pepe.jpg"
                                 alt="Maintenance"
                                 className="max-w-full h-auto max-h-64 object-contain"
