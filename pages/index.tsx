@@ -19,6 +19,7 @@ import {
     useArweaveWalletInit,
     useArweaveWalletStore,
 } from '@/hooks/useArweaveWallet';
+import PartnershipsSection from './sections/partnerships';
 
 export default function Home() {
     useArweaveWalletInit();
@@ -190,6 +191,7 @@ export default function Home() {
                 <WhitepaperSection />
                 <FAQSection />
                 <RealityCheckSection />
+                <PartnershipsSection />
                 {/* Footer */}
                 <footer className="max-w-6xl mx-auto text-center py-8">
                     <p className="mb-4 text-2xl">
