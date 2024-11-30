@@ -25,7 +25,6 @@ export function adjustDecimalString(value: string, decimals: number): string {
     return result.replace(/\.?0+$/, '');
 }
 
-// Format balance for display (converting from smallest units to full tokens)
 export const formatBalance = (amount: string) => {
     return amount;
 };
