@@ -20,6 +20,11 @@ export interface JWK {
     qi?: string;
 }
 
+export interface TotalSupplyResponse {
+    Action: string;
+    Data: string;
+    Ticker: string;
+}
 export interface StakedBalance {
     name: string;
     amount: string;
@@ -373,3 +378,28 @@ export async function stakeToken(
         false
     );
 }
+
+/**
+ * Fetches the current total supply of NAB tokens in circulation
+ * @returns The total supply as a formatted string, or null if the fetch fails
+ */
+export const getTotalSupply = async (): Promise<string | null> => {
+    const tags = [{ name: 'Action', value: 'Total-Supply' }];
+
+    try {
+        const result = await sendAndGetResult(NAB_TOKEN, tags);
+        if (!result.Messages?.[0]?.Data) {
+            throw new Error('No total supply data in response');
+        }
+
+        // Get token denomination for proper decimal formatting
+        const denomination = await getTokenDenomination(NAB_TOKEN);
+
+        // Format the total supply with proper decimal places
+        return Number.parseFloat(
+            adjustDecimalString(result.Messages[0].Data, denomination)
+        ).toLocaleString(undefined, { maximumFractionDigits: denomination });
+    } catch (error) {
+        return handleError(error, 'getting total supply', null);
+    }
+};

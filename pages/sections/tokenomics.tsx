@@ -1,6 +1,6 @@
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { getTotalSupply } from '@/lib/wallet-actions';
 import {
-    TrendingUp,
     Sparkles,
     Rocket,
     Lock,
@@ -8,10 +8,19 @@ import {
     ChevronDown,
     Crown,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const Tokenomics: React.FC = () => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const [currentSupply, setCurrentSupply] = useState<string | null>(null);
+
+    useEffect(() => {
+        getTotalSupply().then((supply) => {
+            if (supply) {
+                setCurrentSupply(supply);
+            }
+        });
+    }, []);
 
     return (
         <section className="max-w-4xl mx-auto my-16">
@@ -29,9 +38,11 @@ const Tokenomics: React.FC = () => {
                         </span>
                     </div>
                     <div className="flex items-center justify-between text-xl">
-                        <span className="font-bold">current supply:</span>
+                        <span className="font-bold">
+                            current supply in circulation:
+                        </span>
                         <span className="text-crypto-green">
-                            exactly what it needs to be
+                            {currentSupply ?? 'loading...'} NAB
                         </span>
                     </div>
                     <div className="flex items-center justify-between text-xl">
