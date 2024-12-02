@@ -14,7 +14,7 @@ const NABHero = () => {
         getNABPrice().then((price) => {
             if (price === false) return;
             setCurrentPrice(price);
-            setFloor(price);
+            setFloor(0.01721567); //TODO: fetch dynamically
             setIsLoading(false);
         });
     }, []);
