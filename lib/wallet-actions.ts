@@ -244,7 +244,10 @@ export async function getNABPrice(): Promise<number | false> {
         { name: 'Quantity', value: quantity },
     ];
 
-    try {
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 seconds
+    return 0.00099;
+    //TODO: Enable when we start trading NAB
+    /* try {
         const result = await sendAndGetResult(NAB_PRICE_TARGET, tags);
         const priceValue = findTagValue(result, 'Price');
 
@@ -256,7 +259,7 @@ export async function getNABPrice(): Promise<number | false> {
         return parseFloat(priceValue) / Math.pow(10, 6);
     } catch (error) {
         return handleError(error, 'getting NAB price', false);
-    }
+    }*/
 }
 
 export async function getStakeOwnership(address: string): Promise<number> {
