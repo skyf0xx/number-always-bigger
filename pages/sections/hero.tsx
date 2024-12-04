@@ -4,6 +4,7 @@ import Mascot from './mascot';
 import { getNABPrice } from '@/lib/wallet-actions';
 import CountUp from 'react-countup';
 import PriceLoader from '../components/price-loader';
+import FloorDisplay from '../components/floor-display';
 
 const NABHero = () => {
     const [currentPrice, setCurrentPrice] = useState(0);
@@ -114,44 +115,10 @@ const NABHero = () => {
                                 {isLoading ? (
                                     <PriceLoader type="floor" />
                                 ) : (
-                                    <div className="flex flex-col items-center">
-                                        <div className="bg-white/10 backdrop-blur-sm p-3 rounded-lg mb-4">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-sour-gummy text-3xl md:text-5xl text-white">
-                                                    $
-                                                    <CountUp
-                                                        end={floor}
-                                                        start={0}
-                                                        easingFn={(
-                                                            t,
-                                                            b,
-                                                            c,
-                                                            d
-                                                        ) =>
-                                                            c * (t /= d) * t + b
-                                                        }
-                                                        separator=","
-                                                        decimals={6}
-                                                        decimal="."
-                                                        duration={1}
-                                                        preserveValue={true}
-                                                    />
-                                                </span>
-                                                <div className="w-10 h-10 md:w-14 md:h-14">
-                                                    <Image
-                                                        src="./rocket.svg"
-                                                        alt="Rocket"
-                                                        width={14}
-                                                        height={14}
-                                                        className="w-full h-full"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="text-yellow-300 font-sour-gummy text-2xl md:text-3xl">
-                                            current floor
-                                        </div>
-                                    </div>
+                                    <FloorDisplay
+                                        floor={floor}
+                                        isLoading={isLoading}
+                                    />
                                 )}
                             </div>
                         </div>
