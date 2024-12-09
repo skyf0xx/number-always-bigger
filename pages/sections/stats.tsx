@@ -45,18 +45,24 @@ const EcosystemStats = () => {
             prefix: '$',
             icon: <TrendingUp className="h-6 w-6 text-crypto-green" />,
             tooltip: 'total NAB ecosystem value',
+            decimals: 0,
+            isNumeric: true,
         },
         {
             title: 'total stakers',
             value: stats?.unique_stakers.toString() || '0',
             icon: <Users2 className="h-6 w-6 text-floor-pink" />,
             tooltip: 'number of frens making number bigger',
+            decimals: 0,
+            isNumeric: true,
         },
         {
             title: 'total supply',
             value: stats?.total_supply || '0',
             icon: <Coins className="h-6 w-6 text-moon-yellow" />,
             tooltip: 'NAB tokens in existence',
+            decimals: 0,
+            isNumeric: true,
         },
         {
             title: 'total $NAB rewards daily',
@@ -64,13 +70,15 @@ const EcosystemStats = () => {
             suffix: ' NAB/day',
             icon: <Printer className="h-6 w-6 text-meme-blue" />,
             tooltip: 'printer prints less each day, like Bitcoin',
+            decimals: 0,
+            isNumeric: true,
         },
         {
             title: 'current floor',
-            value: 'Locked in on FEB 2025', //stats?.floor_price || '0',
-            prefix: '$',
+            value: 'Locked in on FEB 2025',
             icon: <CandlestickChart className="h-6 w-6 text-tech-purple" />,
             tooltip: 'lowest number can go (before supply reduction)',
+            isNumeric: false,
         },
     ];
 
@@ -114,12 +122,16 @@ const EcosystemStats = () => {
                             </div>
                             <div className="text-2xl font-bold font-comic">
                                 {item.prefix}
-                                <CountUp
-                                    end={parseFloat(item.value)}
-                                    decimals={2}
-                                    duration={2}
-                                    separator=","
-                                />
+                                {item.isNumeric ? (
+                                    <CountUp
+                                        end={parseFloat(item.value)}
+                                        decimals={item.decimals}
+                                        duration={2}
+                                        separator=","
+                                    />
+                                ) : (
+                                    item.value
+                                )}
                                 {item.suffix}
                             </div>
                             <div className="text-sm text-gray-500 mt-2">
