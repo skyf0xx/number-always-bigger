@@ -5,6 +5,7 @@ import { adjustDecimalString } from './utils';
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
 const NAB_PRICE_TARGET = 'bxpz3u2USXv8Ictxb0aso3l8V9UTimaiGp9henzDsl8';
+const NAB_STATS_TARGET = 'dNmk7_vhghAG06yFnRjm0IrFKPQFhqlF0pU7Bk3RmkM';
 const NAB_TOKEN = 'OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU';
 
 // Types
@@ -45,6 +46,16 @@ interface MessageResult {
 export interface AllowedTokens {
     addresses: { [key: string]: string };
     names: { [key: string]: string };
+}
+
+export interface NABStats {
+    timestamp: number;
+    total_supply: string;
+    price: string;
+    floor_price: string;
+    market_cap: string;
+    unique_stakers: number;
+    daily_mint_rate: string;
 }
 
 interface ArweaveWallet {
@@ -403,3 +414,33 @@ export const getTotalSupply = async (): Promise<string | null> => {
         return handleError(error, 'getting total supply', null);
     }
 };
+
+export async function getNABStats(): Promise<NABStats | null> {
+    const tags = [{ name: 'Action', value: 'Get-Latest-Stats' }];
+
+    try {
+        const result = await sendAndGetResult(NAB_STATS_TARGET, tags);
+        if (!result.Messages?.[0]?.Data) {
+            throw new Error('No stats data in response');
+        }
+
+        const rawStats = parseMessageData<NABStats>(
+            result,
+            'Failed to parse stats data'
+        );
+
+        // Adjust decimal places for monetary values
+        const adjustedStats = {
+            ...rawStats,
+            price: adjustDecimalString(rawStats.price, 6),
+            floor_price: adjustDecimalString(rawStats.floor_price, 6),
+            market_cap: adjustDecimalString(rawStats.market_cap, 6),
+            total_supply: adjustDecimalString(rawStats.total_supply, 8),
+            daily_mint_rate: adjustDecimalString(rawStats.daily_mint_rate, 8),
+        };
+
+        return adjustedStats;
+    } catch (error) {
+        return handleError(error, 'getting NAB stats', null);
+    }
+}
