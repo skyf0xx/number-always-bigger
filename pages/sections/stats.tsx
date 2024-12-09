@@ -10,21 +10,33 @@ import {
     Sparkles,
 } from 'lucide-react';
 import CountUp from 'react-countup';
-import { getNABStats } from '@/lib/wallet-actions';
+import {
+    getNABStats,
+    getNabTokenDeets,
+    TokenBreakdown,
+} from '@/lib/wallet-actions';
+import TokenDeets from './token-deets';
 
 const EcosystemStats = () => {
     const [stats, setStats] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [tokenDeets, setTokenDeets] = useState([]);
 
     const fetchStats = async () => {
         try {
             setIsLoading(true);
-            const stats = await getNABStats();
-            if (!stats) {
+            const [statsData, deetsData] = await Promise.all([
+                getNABStats(),
+                getNabTokenDeets(),
+            ]);
+
+            if (!statsData) {
                 throw new Error('Failed to fetch stats');
             }
-            setStats(stats);
+
+            setStats(statsData);
+            setTokenDeets(deetsData as any);
             setError(null);
         } catch (err) {
             setError('oopsie! stats machine broke');
@@ -140,6 +152,18 @@ const EcosystemStats = () => {
                         </CardContent>
                     </Card>
                 ))}
+            </div>
+            <div className="mt-12">
+                <div className="text-center mb-8">
+                    <h3 className="text-3xl font-sour-gummy text-white flex items-center justify-center gap-2">
+                        <Coins className="h-6 w-6 text-moon-yellow" />
+                        staked tokens details
+                    </h3>
+                    <p className="text-lg text-white/90 font-comic">
+                        (what our frens are staking)
+                    </p>
+                </div>
+                <TokenDeets data={tokenDeets} isLoading={isLoading} />
             </div>
         </section>
     );

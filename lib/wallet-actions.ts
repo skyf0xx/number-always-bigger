@@ -58,6 +58,15 @@ export interface NABStats {
     daily_mint_rate: string;
 }
 
+export interface TokenBreakdown {
+    num_stakers: number;
+    token_name: string;
+    token_address: string;
+    total_staked: string;
+    id: number;
+    timestamp: number;
+}
+
 interface ArweaveWallet {
     connect(permissions: string[]): Promise<void>;
     disconnect(): Promise<void>;
@@ -442,5 +451,49 @@ export async function getNABStats(): Promise<NABStats | null> {
         return adjustedStats;
     } catch (error) {
         return handleError(error, 'getting NAB stats', null);
+    }
+}
+
+export async function getNabTokenDeets(): Promise<TokenBreakdown[]> {
+    const tags = [{ name: 'Action', value: 'Get-Token-Breakdown' }];
+
+    try {
+        const result = await sendAndGetResult(NAB_STATS_TARGET, tags);
+        if (!result.Messages?.[0]?.Data) {
+            throw new Error('No token breakdown data in response');
+        }
+
+        const tokenData = parseMessageData<TokenBreakdown[]>(
+            result,
+            'Failed to parse token breakdown data'
+        );
+
+        // Adjust the total_staked values with proper decimal places
+        const adjustedTokenData = await Promise.all(
+            tokenData.map(async (token) => {
+                try {
+                    const denomination = await getTokenDenomination(
+                        token.token_address
+                    );
+                    return {
+                        ...token,
+                        total_staked: adjustDecimalString(
+                            token.total_staked,
+                            denomination
+                        ),
+                    };
+                } catch (error) {
+                    console.error(
+                        `Error adjusting decimals for token ${token.token_name}:`,
+                        error
+                    );
+                    return token;
+                }
+            })
+        );
+
+        return adjustedTokenData;
+    } catch (error) {
+        return handleError(error, 'getting token breakdown', []);
     }
 }
