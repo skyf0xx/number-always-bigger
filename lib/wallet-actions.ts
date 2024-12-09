@@ -432,11 +432,11 @@ export async function getNABStats(): Promise<NABStats | null> {
         // Adjust decimal places for monetary values
         const adjustedStats = {
             ...rawStats,
-            price: adjustDecimalString(rawStats.price, 6),
-            floor_price: adjustDecimalString(rawStats.floor_price, 6),
-            market_cap: adjustDecimalString(rawStats.market_cap, 6),
-            total_supply: adjustDecimalString(rawStats.total_supply, 8),
-            daily_mint_rate: adjustDecimalString(rawStats.daily_mint_rate, 8),
+            price: rawStats.price,
+            floor_price: rawStats.floor_price,
+            market_cap: rawStats.market_cap,
+            total_supply: rawStats.total_supply,
+            daily_mint_rate: rawStats.daily_mint_rate,
         };
 
         return adjustedStats;
