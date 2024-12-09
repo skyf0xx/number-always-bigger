@@ -154,15 +154,6 @@ const EcosystemStats = () => {
                 ))}
             </div>
             <div className="mt-12">
-                <div className="text-center mb-8">
-                    <h3 className="text-3xl font-sour-gummy text-white flex items-center justify-center gap-2">
-                        <Coins className="h-6 w-6 text-moon-yellow" />
-                        staked tokens details
-                    </h3>
-                    <p className="text-lg text-white/90 font-comic">
-                        (what our frens are staking)
-                    </p>
-                </div>
                 <TokenDeets data={tokenDeets} isLoading={isLoading} />
             </div>
         </section>
