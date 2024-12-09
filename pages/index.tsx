@@ -20,6 +20,7 @@ import {
     useArweaveWalletStore,
 } from '@/hooks/useArweaveWallet';
 import PartnershipsSection from './sections/partnerships';
+import EcosystemStats from './sections/stats';
 
 export default function Home() {
     useArweaveWalletInit();
@@ -96,6 +97,7 @@ export default function Home() {
                 {' '}
                 <NABHeader />
                 <NABHero />
+                <EcosystemStats />
                 {/* Staking Dashboard - only shown when wallet is connected */}
                 {connected && (
                     <section className="py-16 px-4 relative">
