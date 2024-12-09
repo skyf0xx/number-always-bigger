@@ -44,7 +44,7 @@ const EcosystemStats = () => {
             value: stats?.market_cap || '0',
             prefix: '$',
             icon: <TrendingUp className="h-6 w-6 text-crypto-green" />,
-            tooltip: 'total NAB ecosystem value (trust me bro)',
+            tooltip: 'total NAB ecosystem value',
         },
         {
             title: 'total stakers',
@@ -70,7 +70,7 @@ const EcosystemStats = () => {
             value: 'Locked in on FEB 2025', //stats?.floor_price || '0',
             prefix: '$',
             icon: <CandlestickChart className="h-6 w-6 text-tech-purple" />,
-            tooltip: "lowest number can go (but it won't)",
+            tooltip: 'lowest number can go (before supply reduction)',
         },
     ];
 
@@ -96,7 +96,7 @@ const EcosystemStats = () => {
                     <Sparkles className="h-8 w-8 text-moon-yellow" />
                 </h2>
                 <p className="text-xl text-white/90 font-comic">
-                    (trust me bro, these numbers are definitely real)
+                    (how fast is $NAB growing?)
                 </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
