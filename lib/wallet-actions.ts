@@ -1,6 +1,6 @@
 import { createDataItemSigner, result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
-import { adjustDecimalString } from './utils';
+import { adjustDecimalString, withRetry } from './utils';
 
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
@@ -307,17 +307,19 @@ export async function getTokenDenomination(token: string): Promise<number> {
     const tags = [{ name: 'Action', value: 'Info' }];
 
     try {
-        const result = await sendAndGetResult(token, tags);
-        const denominationTag = result.Messages[0]?.Tags.find(
-            (tag) => tag.name === 'Denomination'
-        );
+        return await withRetry(async () => {
+            const result = await sendAndGetResult(token, tags);
+            const denominationTag = result.Messages[0]?.Tags.find(
+                (tag) => tag.name === 'Denomination'
+            );
 
-        if (!denominationTag) {
-            throw new Error('Denomination tag not found in response');
-        }
+            if (!denominationTag) {
+                throw new Error('Denomination tag not found in response');
+            }
 
-        const denomination = Number(denominationTag.value);
-        return isNaN(denomination) ? 8 : denomination;
+            const denomination = Number(denominationTag.value);
+            return isNaN(denomination) ? 8 : denomination;
+        });
     } catch (error) {
         return handleError(error, 'getting token denomination', 8);
     }

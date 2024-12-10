@@ -34,3 +34,64 @@ export const formatBalance = (amount: string) => {
         useGrouping: true,
     }).format(num);
 };
+
+// Retry configuration type
+interface RetryConfig {
+    maxAttempts: number;
+    initialDelay: number;
+    maxDelay: number;
+    backoffFactor: number;
+}
+
+// Default retry configuration
+const DEFAULT_RETRY_CONFIG: RetryConfig = {
+    maxAttempts: 5,
+    initialDelay: 1000, // 1 second
+    maxDelay: 10000, // 10 seconds
+    backoffFactor: 2,
+};
+
+/**
+ * Implements exponential backoff retry logic for async functions
+ * @param operation Function to retry
+ * @param config Retry configuration
+ * @returns Result of the operation
+ * @throws Last error encountered after all retries are exhausted
+ */
+async function withRetry<T>(
+    operation: () => Promise<T>,
+    config: Partial<RetryConfig> = {}
+): Promise<T> {
+    const fullConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
+    let lastError: Error | undefined;
+    let delay = fullConfig.initialDelay;
+
+    for (let attempt = 1; attempt <= fullConfig.maxAttempts; attempt++) {
+        try {
+            return await operation();
+        } catch (error) {
+            lastError = error as Error;
+
+            // If this was the last attempt, throw the error
+            if (attempt === fullConfig.maxAttempts) {
+                throw new Error(
+                    `Failed after ${attempt} attempts. Last error: ${lastError.message}`
+                );
+            }
+
+            // Calculate next delay with exponential backoff
+            delay = Math.min(
+                delay * fullConfig.backoffFactor,
+                fullConfig.maxDelay
+            );
+
+            // Wait before next attempt
+            await new Promise((resolve) => setTimeout(resolve, delay));
+        }
+    }
+
+    // This should never be reached due to the throw above, but TypeScript needs it
+    throw lastError;
+}
+
+export { withRetry, type RetryConfig };
