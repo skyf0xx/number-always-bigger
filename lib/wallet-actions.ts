@@ -7,6 +7,7 @@ const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
 const NAB_PRICE_TARGET = 'bxpz3u2USXv8Ictxb0aso3l8V9UTimaiGp9henzDsl8';
 const NAB_STATS_TARGET = 'dNmk7_vhghAG06yFnRjm0IrFKPQFhqlF0pU7Bk3RmkM';
 const NAB_TOKEN = 'OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU';
+const MAINTENANCE_CONTRACT = 'SpkZWLmuKAQ3vIK_1ErUndUxA372HxPtB5ncxa2V9VM';
 
 // Types
 export interface JWK {
@@ -497,5 +498,25 @@ export async function getNabTokenDeets(): Promise<TokenBreakdown[]> {
         return adjustedTokenData;
     } catch (error) {
         return handleError(error, 'getting token breakdown', []);
+    }
+}
+
+export async function checkMaintenance(): Promise<boolean> {
+    const tags = [{ name: 'Action', value: 'Check-Maintenance' }];
+
+    try {
+        const result = await sendAndGetResult(MAINTENANCE_CONTRACT, tags);
+        if (!result.Messages?.[0]?.Data) {
+            throw new Error('No maintenance status in response');
+        }
+
+        if (result.Messages[0].Data === 'false') {
+            return false;
+        } else {
+            return true;
+        }
+    } catch (error) {
+        console.error(error);
+        return true;
     }
 }
