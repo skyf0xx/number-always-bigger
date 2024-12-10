@@ -16,6 +16,7 @@ import {
     AllowedTokens,
     getBalance,
     TokenBalance,
+    checkMaintenance,
 } from '@/lib/wallet-actions';
 import RewardsDisplay from './rewards';
 import { formatBalance } from '@/lib/utils';
@@ -44,7 +45,23 @@ const Staker = ({
     const [tokenBalance, setTokenBalance] = useState<TokenBalance | null>(null);
     const [isLoadingBalance, setIsLoadingBalance] = useState(false);
     const [inputTouched, setInputTouched] = useState(false);
-    const underMaintenance = false;
+    const [underMaintenance, setUnderMaintenance] = useState(false);
+
+    useEffect(() => {
+        const checkMaintenanceStatus = async () => {
+            try {
+                const maintenanceStatus = await checkMaintenance();
+                console.log({ maintenanceStatus });
+                setUnderMaintenance(maintenanceStatus);
+            } catch (err) {
+                console.error('Error checking maintenance status:', err);
+                // Default maintenance mode if check fails
+                setUnderMaintenance(true);
+            }
+        };
+
+        checkMaintenanceStatus();
+    }, []);
     // Fetch allowed tokens on component mount
     useEffect(() => {
         const fetchAllowedTokens = async () => {
@@ -265,8 +282,18 @@ const Staker = ({
                             </p>
                             <div className="mt-4 space-y-1 text-xs font-comic text-gray-500">
                                 <p>your tokens are safe</p>
-                                <p>your can stake and unstake at any time</p>
+                                <p>your can stake and unstake shortly</p>
                                 <p>number will still go up</p>
+                                <p>
+                                    See our{' '}
+                                    <a
+                                        target="_blank"
+                                        href="https://x.com/AlwaysBigger"
+                                    >
+                                        twitter
+                                    </a>{' '}
+                                    for updates
+                                </p>
                             </div>
                         </div>
                         <div className="flex justify-center items-center">
