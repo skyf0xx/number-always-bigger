@@ -10,11 +10,7 @@ import {
     Sparkles,
 } from 'lucide-react';
 import CountUp from 'react-countup';
-import {
-    getNABStats,
-    getNabTokenDeets,
-    TokenBreakdown,
-} from '@/lib/wallet-actions';
+import { getNABStats, getNabTokenDeets } from '@/lib/wallet-actions';
 import TokenDeets from './token-deets';
 
 const EcosystemStats = () => {
