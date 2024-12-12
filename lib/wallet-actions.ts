@@ -363,7 +363,7 @@ export async function unstakeToken(token: string): Promise<boolean> {
 export async function stakeToken(
     amount: number,
     token: string
-): Promise<string | boolean> {
+): Promise<string | true> {
     return executeWalletAction(
         'staking token',
         async () => {
@@ -382,23 +382,25 @@ export async function stakeToken(
                 (globalThis as any).arweaveWallet
             );
             const result = await sendAndGetResult(token, tags, signer as any);
-
+            let error = '';
+            let hasDebitNotice;
             if ((result as any).Error) {
-                throw new Error('Error: ' + (result as any).Error);
+                error = 'Error: ' + (result as any).Error;
+            } else {
+                // Check all messages for the Debit-Notice action
+                hasDebitNotice = result.Messages?.some((message) =>
+                    message.Tags.some(
+                        (tag) =>
+                            tag.name === 'Action' &&
+                            tag.value === 'Debit-Notice'
+                    )
+                );
             }
 
-            // Check all messages for the Debit-Notice action
-            const hasDebitNotice = result.Messages?.some((message) =>
-                message.Tags.some(
-                    (tag) =>
-                        tag.name === 'Action' && tag.value === 'Debit-Notice'
-                )
-            );
-
             // If we found a Debit-Notice, transaction was successful
-            return hasDebitNotice ? true : false;
+            return hasDebitNotice ? true : error;
         },
-        false
+        'insufficient balance or not approved'
     );
 }
 
