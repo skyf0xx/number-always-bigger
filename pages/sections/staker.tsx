@@ -395,79 +395,104 @@ const Staker = ({
             )}
 
             {/* Stake Form */}
-            <form onSubmit={handleStake} className="space-y-4">
-                <div className="relative">
-                    <div className="flex gap-2">
-                        <div className="flex-1 relative">
-                            <input
-                                type="number"
-                                value={stakeInput}
-                                onChange={(e) =>
-                                    handleInputChange(e.target.value)
+            {!underMaintenance && (
+                <form onSubmit={handleStake} className="space-y-4">
+                    <div className="relative">
+                        <div className="flex gap-2">
+                            <div className="flex-1 relative">
+                                <input
+                                    type="number"
+                                    inputMode="decimal"
+                                    value={stakeInput}
+                                    onChange={(e) =>
+                                        handleInputChange(e.target.value)
+                                    }
+                                    placeholder="enter amount to stake"
+                                    className={`w-full p-3 rounded-lg border-2 font-comic focus:outline-none focus:ring-2 ${
+                                        inputError
+                                            ? 'border-red-400 focus:ring-red-400'
+                                            : isValidInput
+                                            ? 'border-crypto-green focus:ring-crypto-green'
+                                            : 'border-meme-blue focus:ring-meme-blue'
+                                    }`}
+                                    disabled={isProcessing}
+                                    step="any"
+                                />
+                                {selectedToken && tokenBalance && (
+                                    <button
+                                        type="button"
+                                        onClick={handleMaxClick}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-moon-yellow hover:bg-yellow-400 text-black rounded font-comic transition-colors"
+                                    >
+                                        max
+                                    </button>
+                                )}
+                            </div>
+                            <button
+                                type="submit"
+                                className="bg-crypto-green text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={
+                                    isProcessing ||
+                                    !isValidInput ||
+                                    !selectedToken
                                 }
-                                placeholder="enter amount to stake"
-                                className={`w-full p-3 rounded-lg border-2 font-comic focus:outline-none focus:ring-2 ${
-                                    inputError
-                                        ? 'border-red-400 focus:ring-red-400'
-                                        : isValidInput
-                                        ? 'border-crypto-green focus:ring-crypto-green'
-                                        : 'border-meme-blue focus:ring-meme-blue'
-                                }`}
-                                disabled={isProcessing}
-                                step="any"
-                            />
-                            {selectedToken && tokenBalance && (
-                                <button
-                                    type="button"
-                                    onClick={handleMaxClick}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 text-sm bg-moon-yellow hover:bg-yellow-400 text-black rounded font-comic transition-colors"
-                                >
-                                    max
-                                </button>
-                            )}
+                            >
+                                {isProcessing ? (
+                                    <RefreshCw className="h-5 w-5 animate-spin" />
+                                ) : (
+                                    <Sparkles className="h-5 w-5" />
+                                )}
+                                {isProcessing ? 'processing...' : 'stake'}
+                            </button>
                         </div>
-                        <button
-                            type="submit"
-                            className="bg-crypto-green text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                            disabled={
-                                isProcessing || !isValidInput || !selectedToken
-                            }
-                        >
-                            {isProcessing ? (
-                                <RefreshCw className="h-5 w-5 animate-spin" />
-                            ) : (
-                                <Sparkles className="h-5 w-5" />
-                            )}
-                            {isProcessing ? 'processing...' : 'stake'}
-                        </button>
+                        {inputError && (
+                            <p className="text-red-500 text-sm font-comic mt-1">
+                                {inputError}
+                            </p>
+                        )}
                     </div>
-                    {inputError && (
-                        <p className="text-red-500 text-sm font-comic mt-1">
-                            {inputError}
-                        </p>
-                    )}
-                </div>
-            </form>
+                </form>
+            )}
 
             {/* Unstake Form */}
-            <form onSubmit={handleUnstake} className="space-y-4">
-                <button
-                    type="submit"
-                    className="w-full bg-floor-pink text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={isProcessing || !selectedToken}
-                >
-                    {isProcessing ? (
-                        <RefreshCw className="h-5 w-5 animate-spin" />
-                    ) : (
-                        <ArrowDownCircle className="h-5 w-5" />
-                    )}
-                    {isProcessing
-                        ? 'processing...'
-                        : selectedToken
-                        ? `unstake all ${getTokenName(selectedToken)}`
-                        : 'unstake all'}
-                </button>
-            </form>
+            {!underMaintenance && (
+                <form onSubmit={handleUnstake} className="space-y-4">
+                    <button
+                        type="submit"
+                        className="w-full bg-floor-pink text-white px-6 py-3 rounded-lg font-comic hover:bg-opacity-90 transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={isProcessing || !selectedToken}
+                    >
+                        {isProcessing ? (
+                            <RefreshCw className="h-5 w-5 animate-spin" />
+                        ) : (
+                            <ArrowDownCircle className="h-5 w-5" />
+                        )}
+                        {isProcessing
+                            ? 'processing...'
+                            : selectedToken
+                            ? `unstake all ${getTokenName(selectedToken)}`
+                            : 'unstake all'}
+                    </button>
+                </form>
+            )}
+
+            {underMaintenance && (
+                <div className="mt-4 bg-moon-yellow/10 border-2 border-dashed border-moon-yellow rounded-lg p-4 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-2">
+                        <Construction className="h-5 w-5 text-moon-yellow animate-bounce" />
+                        <span className="font-comic text-lg">
+                            printer maintenance time!
+                        </span>
+                    </div>
+                    <p className="font-comic text-gray-600">
+                        staking and unstaking will be back shortly™️
+                        <br />
+                        <span className="text-sm">
+                            (your tokens are always safe fren)
+                        </span>
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
