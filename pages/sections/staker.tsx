@@ -171,9 +171,10 @@ const Staker = ({
 
             const result = await stakeToken(amount, selectedToken);
 
-            if (result === false) {
+            if (result !== true) {
                 throw new Error(
-                    'Staking failed - insufficient balance or not approved'
+                    'Staking failed - insufficient balance or not approved: ' +
+                        result
                 );
             }
 
