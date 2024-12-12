@@ -141,7 +141,14 @@ const Staker = ({
 
     // Handle input change with validation
     const handleInputChange = (value: string) => {
-        setStakeInput(value);
+        const normalizedValue = value.replace(/,/g, '').replace(/[^0-9.]/g, '');
+
+        // Ensure only one decimal point
+        const parts = normalizedValue.split('.');
+        const formattedValue =
+            parts.length > 1 ? `${parts[0]}.${parts[1]}` : normalizedValue;
+
+        setStakeInput(formattedValue);
         setInputTouched(true);
         setError(null);
     };
