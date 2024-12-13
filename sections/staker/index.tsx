@@ -2,13 +2,13 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { RefreshCw, Sparkles, ArrowDownCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { checkMaintenance } from '@/lib/wallet-actions';
-import { useTokenSelection } from './use-token-selection';
-import { useStakingForm } from './use-staking-form';
-import { StakerProps } from './types';
+import useTokenSelection from './use-token-selection';
+import useStakingForm from './use-staking-form';
+import { StakerProps } from '../../lib/types';
 import RewardsDisplay from '../rewards';
-import { BalanceDisplay } from './balance-display';
-import { MaintenanceNotice } from './maintenance-notice';
-import { TokenSelector } from './token-selector';
+import BalanceDisplay from './balance-display';
+import MaintenanceNotice from './maintenance-notice';
+import TokenSelector from './token-selector';
 
 const Staker = ({
     walletAddress,

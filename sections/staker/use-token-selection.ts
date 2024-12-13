@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
-import { AllowedTokens, TokenBalance } from './types';
-import { getAllowedTokens, getBalance } from '@/lib/wallet-actions';
+import { AllowedTokens } from '../../lib/types';
+import {
+    getAllowedTokens,
+    getBalance,
+    TokenBalance,
+} from '@/lib/wallet-actions';
 
-export const useTokenSelection = (walletAddress: string) => {
+const useTokenSelection = (walletAddress: string) => {
     const [selectedToken, setSelectedToken] = useState('');
     const [allowedTokens, setAllowedTokens] = useState<AllowedTokens>({
         addresses: {},
@@ -76,3 +80,5 @@ export const useTokenSelection = (walletAddress: string) => {
         getTokenName,
     };
 };
+
+export default useTokenSelection;

@@ -140,8 +140,8 @@ async function executeWalletAction<T>(
 // Balance response interface
 export interface TokenBalance {
     balance: string;
-    ticker: string;
-    account: string;
+    ticker?: string;
+    account?: string;
 }
 
 // New getBalance function

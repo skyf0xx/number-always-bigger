@@ -1,16 +1,16 @@
 import { Wallet, ArrowUpCircle, RefreshCw } from 'lucide-react';
-import { TokenBalance, StakedBalances } from './types';
 import { formatBalance } from '@/lib/utils';
+import { StakedBalances, TokenBalance } from '@/lib/wallet-actions';
 
 interface BalanceDisplayProps {
     selectedToken: string;
     tokenBalance: TokenBalance | null;
     isLoadingBalance: boolean;
-    stakedBalances: StakedBalances[];
+    stakedBalances: StakedBalances;
     getTokenName: (address: string) => string;
 }
 
-export const BalanceDisplay = ({
+const BalanceDisplay = ({
     selectedToken,
     tokenBalance,
     isLoadingBalance,
@@ -55,3 +55,5 @@ export const BalanceDisplay = ({
         </div>
     </div>
 );
+
+export default BalanceDisplay;

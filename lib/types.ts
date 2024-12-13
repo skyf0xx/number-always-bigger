@@ -1,11 +1,4 @@
-export interface StakedBalances {
-    name: string;
-    amount: string;
-}
-
-export interface TokenBalance {
-    balance: string;
-}
+import { StakedBalances } from '@/lib/wallet-actions';
 
 export interface AllowedTokens {
     addresses: Record<string, string>;
@@ -15,5 +8,5 @@ export interface AllowedTokens {
 export interface StakerProps {
     walletAddress: string;
     onStakeComplete?: () => void;
-    stakedBalances?: StakedBalances[];
+    stakedBalances?: StakedBalances;
 }

@@ -1,7 +1,7 @@
 import { Construction } from 'lucide-react';
 import Image from 'next/image';
 
-export const MaintenanceNotice = () => (
+const MaintenanceNotice = () => (
     <div className="mt-8 bg-moon-yellow/20 border-2 border-moon-yellow rounded-lg p-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.2)_0%,transparent_70%)] animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
@@ -44,3 +44,5 @@ export const MaintenanceNotice = () => (
         </div>
     </div>
 );
+
+export default MaintenanceNotice;

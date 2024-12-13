@@ -2,25 +2,25 @@
 import React, { useEffect } from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
 
-import NABHero from './sections/hero';
-import NABHeader from './sections/header';
-import HowItWorks from './sections/how-it-works';
-import PriceChart from './sections/price-chart';
+import NABHero from '../sections/hero';
+import NABHeader from '../sections/header';
+import HowItWorks from '../sections/how-it-works';
+import PriceChart from '../sections/price-chart';
 import Head from 'next/head';
-import WhitepaperSection from './sections/whitepaper';
-import FAQSection from './sections/faq';
-import RealityCheckSection from './sections/reality';
-import AOSection from './sections/ao';
-import HowToGet from './sections/how-to-get';
-import Tokenomics from './sections/tokenomics';
-import StakingDashboard from './sections/dashboard';
+import WhitepaperSection from '../sections/whitepaper';
+import FAQSection from '../sections/faq';
+import RealityCheckSection from '../sections/reality';
+import AOSection from '../sections/ao';
+import HowToGet from '../sections/how-to-get';
+import Tokenomics from '../sections/tokenomics';
+import StakingDashboard from '../sections/dashboard';
 import {
     scrollToDashboard,
     useArweaveWalletInit,
     useArweaveWalletStore,
 } from '@/hooks/useArweaveWallet';
-import PartnershipsSection from './sections/partnerships';
-import EcosystemStats from './sections/stats';
+import PartnershipsSection from '../sections/partnerships';
+import EcosystemStats from '../sections/stats';
 
 export default function Home() {
     useArweaveWalletInit();
