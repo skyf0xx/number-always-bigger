@@ -50,7 +50,11 @@ const HowToGet: React.FC = () => {
                             </li>
                             <li className="flex items-center gap-2">
                                 <Sparkles className="text-moon-yellow" />
-                                wAR (soon)
+                                wAR
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <Sparkles className="text-moon-yellow" />
+                                Fren Points
                             </li>
                             <li className="flex items-center gap-2">
                                 <Sparkles className="text-moon-yellow" />
