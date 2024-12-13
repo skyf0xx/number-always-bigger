@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { TokenBalance } from './types';
-import { stakeToken, unstakeToken } from '@/lib/wallet-actions';
+import { stakeToken, TokenBalance, unstakeToken } from '@/lib/wallet-actions';
 
-export const useStakingForm = (
+const useStakingForm = (
     onStakeComplete?: () => void,
     getTokenName?: (address: string) => string
 ) => {
@@ -125,3 +124,5 @@ export const useStakingForm = (
         validateInput,
     };
 };
+
+export default useStakingForm;
