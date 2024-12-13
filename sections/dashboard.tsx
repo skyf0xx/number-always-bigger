@@ -12,7 +12,7 @@ import {
     useArweaveWalletStore,
 } from '@/hooks/useArweaveWallet';
 import Staker from './staker';
-import { formatBalance } from '@/lib/utils';
+import StakedDisplay from './staker/staked';
 
 const StakingDashboard = () => {
     const [stakedBalances, setStakedBalances] = useState<StakedBalances>([]);
@@ -121,41 +121,7 @@ const StakingDashboard = () => {
 
             {/* Staked Balances Cards */}
             <div className="grid grid-cols-1 gap-4 mb-6">
-                {stakedBalances.map((balance) => (
-                    <Card
-                        key={balance.name}
-                        className="bg-white/95 backdrop-blur-sm border-2 border-meme-blue transform hover:scale-105 transition-transform"
-                    >
-                        <CardContent className="pt-6">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                    <Coins className="h-5 w-5 text-meme-blue" />
-                                    <h3 className="text-lg font-comic">
-                                        {balance.name}
-                                    </h3>
-                                </div>
-                                <span className="text-2xl font-bold font-comic">
-                                    {formatBalance(balance.amount)}
-                                </span>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
-
-                {stakedBalances.length === 0 && (
-                    <Card className="bg-white/95 backdrop-blur-sm border-2 border-moon-yellow">
-                        <CardContent className="pt-6">
-                            <div className="text-center">
-                                <p className="text-lg font-comic">
-                                    no tokens staked yet fren!
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                    stake some tokens to see them here
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
+                <StakedDisplay balances={stakedBalances} />
             </div>
 
             {/* Staking Interface */}
