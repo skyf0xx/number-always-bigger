@@ -1,5 +1,6 @@
+import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { TrendingUp, Sparkles, Rocket } from 'lucide-react';
+import { TrendingUp, Sparkles, Rocket, RefreshCw } from 'lucide-react';
 
 interface TokenBreakdown {
     num_stakers: number;
@@ -17,18 +18,6 @@ const HowToGet: React.FC<HowToGetProps> = ({
     data = [],
     isLoading = false,
 }) => {
-    if (isLoading) {
-        return (
-            <section className="max-w-4xl mx-auto my-16" id="stake">
-                <div className="bg-white rounded-lg p-8 transform -rotate-1 border-4 border-crypto-green">
-                    <h2 className="text-4xl font-bold mb-6 text-center">
-                        loading accepted tokens...
-                    </h2>
-                </div>
-            </section>
-        );
-    }
-
     // Sort tokens alphabetically by token_name
     const sortedTokens = [...data].sort((a, b) =>
         a.token_name.localeCompare(b.token_name)
@@ -61,17 +50,24 @@ const HowToGet: React.FC<HowToGetProps> = ({
                         accepted tokens:
                     </AlertTitle>
                     <AlertDescription className="text-xl">
-                        <ul className="space-y-4">
-                            {sortedTokens.map((token) => (
-                                <li
-                                    key={token.token_address}
-                                    className="flex items-center gap-2"
-                                >
-                                    <Sparkles className="text-moon-yellow" />
-                                    {token.token_name}
-                                </li>
-                            ))}
-                        </ul>
+                        {isLoading ? (
+                            <div className="flex items-center gap-2 py-4">
+                                <RefreshCw className="h-5 w-5 animate-spin text-moon-yellow" />
+                                <span>loading accepted tokens...</span>
+                            </div>
+                        ) : (
+                            <ul className="space-y-4">
+                                {sortedTokens.map((token) => (
+                                    <li
+                                        key={token.token_address}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <Sparkles className="text-moon-yellow" />
+                                        {token.token_name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </AlertDescription>
                 </Alert>
             </div>
