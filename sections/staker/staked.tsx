@@ -76,7 +76,7 @@ const StakedDisplay = ({ balances }: StakedDisplayProps) => {
                     <div className="space-y-3">
                         <div className="pt-2 border-t border-gray-200">
                             <p className="text-sm text-gray-500 font-comic mb-2">
-                                inactive stakes
+                                you can also stake
                             </p>
                             {visibleZeroBalances.map((balance) => (
                                 <div
