@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import {
     TrendingUp,
@@ -10,42 +10,21 @@ import {
     Sparkles,
 } from 'lucide-react';
 import CountUp from 'react-countup';
-import { getNABStats, getNabTokenDeets } from '@/lib/wallet-actions';
 import TokenDeets from './token-deets';
 
-const EcosystemStats = () => {
-    const [stats, setStats] = useState<any>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [tokenDeets, setTokenDeets] = useState([]);
+interface EcosystemStatsProps {
+    stats: any;
+    tokenDeets: any[];
+    isLoading: boolean;
+    error: string | null;
+}
 
-    const fetchStats = async () => {
-        try {
-            setIsLoading(true);
-            const [statsData, deetsData] = await Promise.all([
-                getNABStats(),
-                getNabTokenDeets(),
-            ]);
-
-            if (!statsData) {
-                throw new Error('Failed to fetch stats');
-            }
-
-            setStats(statsData);
-            setTokenDeets(deetsData as any);
-            setError(null);
-        } catch (err) {
-            setError('oopsie! stats machine broke');
-            console.error('Error fetching stats:', err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchStats();
-    }, []);
-
+const EcosystemStats = ({
+    stats,
+    tokenDeets,
+    isLoading,
+    error,
+}: EcosystemStatsProps) => {
     const statsItems = [
         {
             title: 'market cap',
@@ -98,6 +77,16 @@ const EcosystemStats = () => {
                     <span className="font-comic">
                         calculating big numbers...
                     </span>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="max-w-6xl mx-auto py-12">
+                <div className="text-center text-white font-comic">
+                    <p>{error}</p>
                 </div>
             </div>
         );

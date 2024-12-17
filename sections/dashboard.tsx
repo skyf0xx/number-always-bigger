@@ -49,6 +49,11 @@ const StakingDashboard = () => {
         });
     }, [walletAddress]);
 
+    // Check if user has any staked tokens
+    const hasStakedTokens = stakedBalances.some(
+        (balance) => parseFloat(balance.amount) > 0
+    );
+
     if (isLoading) {
         return (
             <div className="max-w-4xl mx-auto p-4 text-center">
@@ -106,23 +111,28 @@ const StakingDashboard = () => {
                 </CardContent>
             </Card>
 
-            {/* Column Headers */}
-            <div className="flex items-center justify-between px-6 py-3 bg-meme-blue/10 rounded-lg border-2 border-meme-blue bg-white">
-                <div className="flex items-center gap-2">
-                    <Coins className="h-5 w-5 text-meme-blue" />
-                    <h3 className="text-lg font-comic text-meme-blue">
-                        allowed tokens
-                    </h3>
-                </div>
-                <span className="text-lg font-comic text-meme-blue">
-                    staked amount
-                </span>
-            </div>
+            {/* Only show staked balances section if user has staked tokens */}
+            {hasStakedTokens && (
+                <>
+                    {/* Column Headers */}
+                    <div className="flex items-center justify-between px-6 py-3 bg-meme-blue/10 rounded-lg border-2 border-meme-blue bg-white">
+                        <div className="flex items-center gap-2">
+                            <Coins className="h-5 w-5 text-meme-blue" />
+                            <h3 className="text-lg font-comic text-meme-blue">
+                                token
+                            </h3>
+                        </div>
+                        <span className="text-lg font-comic text-meme-blue">
+                            staked amount
+                        </span>
+                    </div>
 
-            {/* Staked Balances Cards */}
-            <div className="grid grid-cols-1 gap-4 mb-6">
-                <StakedDisplay balances={stakedBalances} />
-            </div>
+                    {/* Staked Balances Cards */}
+                    <div className="grid grid-cols-1 gap-4 mb-6">
+                        <StakedDisplay balances={stakedBalances} />
+                    </div>
+                </>
+            )}
 
             {/* Staking Interface */}
             <Card className="bg-white/95 backdrop-blur-sm border-2 border-moon-yellow">

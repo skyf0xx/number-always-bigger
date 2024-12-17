@@ -1,7 +1,28 @@
+import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { TrendingUp, Sparkles, Rocket } from 'lucide-react';
+import { TrendingUp, Sparkles, Rocket, RefreshCw } from 'lucide-react';
 
-const HowToGet: React.FC = () => {
+interface TokenBreakdown {
+    num_stakers: number;
+    token_name: string;
+    token_address: string;
+    total_staked: string;
+}
+
+interface HowToGetProps {
+    data?: TokenBreakdown[];
+    isLoading?: boolean;
+}
+
+const HowToGet: React.FC<HowToGetProps> = ({
+    data = [],
+    isLoading = false,
+}) => {
+    // Sort tokens alphabetically by token_name
+    const sortedTokens = [...data].sort((a, b) =>
+        a.token_name.localeCompare(b.token_name)
+    );
+
     return (
         <section className="max-w-4xl mx-auto my-16" id="stake">
             <div className="bg-white rounded-lg p-8 transform -rotate-1 border-4 border-crypto-green">
@@ -29,49 +50,24 @@ const HowToGet: React.FC = () => {
                         accepted tokens:
                     </AlertTitle>
                     <AlertDescription className="text-xl">
-                        <ul className="space-y-4">
-                            <li className="flex items-center gap-2">
-                                <TrendingUp className="text-crypto-green" />
-                                <a
-                                    target="_blank"
-                                    href="https://www.ao.link/#/token/lmaw9BhyycEIyxWhr0kF_tTcfoSoduDX8fChpHn2eQM"
-                                    className="text-meme-blue hover:text-crypto-green underline decoration-dotted hover:decoration-solid transition-all duration-300 hover:translate-x-1 inline-flex items-center gap-1"
-                                >
-                                    Botega LP qAR/AGENT
-                                </a>{' '}
-                                <span className="text-sm">
-                                    (mint NAB while still earning your LP
-                                    rewards on Botega)
-                                </span>
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Sparkles className="text-moon-yellow" />
-                                qAR
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Sparkles className="text-moon-yellow" />
-                                wAR
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Sparkles className="text-moon-yellow" />
-                                Fren Points
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Sparkles className="text-moon-yellow" />
-                                ASTRO USD (soon)
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Sparkles className="text-moon-yellow" />
-                                stETH (soon)
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <Rocket className="text-crypto-green" />
-                                stSOL (soon)
-                            </li>
-                            <li className="text-center mt-4">
-                                more tokens coming soon™
-                            </li>
-                        </ul>
+                        {isLoading ? (
+                            <div className="flex items-center gap-2 py-4">
+                                <RefreshCw className="h-5 w-5 animate-spin text-moon-yellow" />
+                                <span>loading accepted tokens...</span>
+                            </div>
+                        ) : (
+                            <ul className="space-y-4">
+                                {sortedTokens.map((token) => (
+                                    <li
+                                        key={token.token_address}
+                                        className="flex items-center gap-2"
+                                    >
+                                        <Sparkles className="text-moon-yellow" />
+                                        {token.token_name}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
                     </AlertDescription>
                 </Alert>
             </div>
