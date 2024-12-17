@@ -224,7 +224,7 @@ export default function Home() {
                     </div>
                 </section>
                 {/* How to Get NAB */}
-                <HowToGet />
+                <HowToGet data={tokenDeets} isLoading={isLoading} />
                 {/* Tokenomics */}
                 <Tokenomics />
                 <AOSection />
