@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { TrendingUp, Wallet, Sparkles, Rocket, Heart } from 'lucide-react';
 
 import NABHero from '../sections/hero';
@@ -21,6 +21,7 @@ import {
 } from '@/hooks/useArweaveWallet';
 import PartnershipsSection from '../sections/partnerships';
 import EcosystemStats from '../sections/stats';
+import { getNABStats, getNabTokenDeets } from '@/lib/wallet-actions';
 
 export default function Home() {
     useArweaveWalletInit();
@@ -28,6 +29,38 @@ export default function Home() {
     const connected = useArweaveWalletStore((state) => state.connected);
     const connect = useArweaveWalletStore((state) => state.connect);
     const [isInitialRender, setIsInitialRender] = React.useState(true);
+
+    const [stats, setStats] = useState<any>(null);
+    const [tokenDeets, setTokenDeets] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchStats = async () => {
+        try {
+            setIsLoading(true);
+            const [statsData, deetsData] = await Promise.all([
+                getNABStats(),
+                getNabTokenDeets(),
+            ]);
+
+            if (!statsData) {
+                throw new Error('Failed to fetch stats');
+            }
+
+            setStats(statsData);
+            setTokenDeets(deetsData as any);
+            setError(null);
+        } catch (err) {
+            setError('oopsie! stats machine broke');
+            console.error('Error fetching stats:', err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchStats();
+    }, []);
 
     useEffect(() => {
         // Only scroll if it's not the initial render and wallet is connected
@@ -97,7 +130,12 @@ export default function Home() {
                 {' '}
                 <NABHeader />
                 <NABHero />
-                <EcosystemStats />
+                <EcosystemStats
+                    stats={stats}
+                    tokenDeets={tokenDeets}
+                    isLoading={isLoading}
+                    error={error}
+                />
                 {/* Staking Dashboard - only shown when wallet is connected */}
                 {connected && (
                     <section className="py-16 px-4 relative">
