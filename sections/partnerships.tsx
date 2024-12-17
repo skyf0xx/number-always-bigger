@@ -10,6 +10,12 @@ const PartnershipsSection = () => {
             imageUrl: './astro.avif',
             link: 'https://www.astrousd.com',
         },
+        {
+            name: 'AOX',
+            description: 'The Bridge to AO.',
+            imageUrl: './AOX-Avatar.svg',
+            link: 'https://aox.xyz',
+        },
     ];
 
     return (
