@@ -29,6 +29,11 @@ const HowToGet: React.FC<HowToGetProps> = ({
         );
     }
 
+    // Sort tokens alphabetically by token_name
+    const sortedTokens = [...data].sort((a, b) =>
+        a.token_name.localeCompare(b.token_name)
+    );
+
     return (
         <section className="max-w-4xl mx-auto my-16" id="stake">
             <div className="bg-white rounded-lg p-8 transform -rotate-1 border-4 border-crypto-green">
@@ -57,7 +62,7 @@ const HowToGet: React.FC<HowToGetProps> = ({
                     </AlertTitle>
                     <AlertDescription className="text-xl">
                         <ul className="space-y-4">
-                            {data.map((token) => (
+                            {sortedTokens.map((token) => (
                                 <li
                                     key={token.token_address}
                                     className="flex items-center gap-2"
