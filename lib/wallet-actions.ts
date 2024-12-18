@@ -30,6 +30,7 @@ export interface TotalSupplyResponse {
 export interface StakedBalance {
     name: string;
     amount: string;
+    weight?: string;
 }
 
 export type StakedBalances = StakedBalance[];
@@ -216,6 +217,12 @@ export async function getStakedBalances(
             'No staked balances data in response'
         );
 
+        // Parse weights from the response
+        const weightsTag = result.Messages[0]?.Tags.find(
+            (tag) => tag.name === 'Weights'
+        );
+        const weights = weightsTag ? JSON.parse(weightsTag.value) : {};
+
         // Get all allowed tokens to map names to addresses
         const allowedTokens = await getAllowedTokens();
         const tokenAddressByName = Object.entries(allowedTokens.names).reduce(
@@ -239,12 +246,23 @@ export async function getStakedBalances(
                     const denomination = await getTokenDenomination(
                         tokenAddress
                     );
+
+                    // Get token key from the address
+                    const tokenKey = Object.entries(
+                        allowedTokens.addresses
+                    ).find(([_, addr]) => addr === tokenAddress)?.[0];
+
                     return {
                         ...balance,
                         amount: adjustDecimalString(
                             balance.amount,
                             denomination
                         ),
+                        // Add weight if available
+                        weight:
+                            tokenKey && weights[tokenKey]
+                                ? weights[tokenKey]
+                                : undefined,
                     };
                 } catch (error) {
                     console.error(
