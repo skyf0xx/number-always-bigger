@@ -20,6 +20,9 @@ const StakingDashboard = () => {
     const [showStakePanel, setShowStakePanel] = useState(true);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [tokenWeights, setTokenWeights] = useState<Record<string, string>>(
+        {}
+    );
 
     const walletAddress = useArweaveWalletStore((state) => state.address);
 
@@ -33,7 +36,17 @@ const StakingDashboard = () => {
                 getStakedBalances(walletAddress),
                 getStakeOwnership(walletAddress),
             ]);
+
+            // Extract weights from balances
+            const weights: Record<string, string> = {};
+            balances.forEach((balance) => {
+                if (balance.weight) {
+                    weights[balance.name] = balance.weight;
+                }
+            });
+
             setStakedBalances(balances);
+            setTokenWeights(weights);
             setStakeOwnership(ownership);
         } catch (err) {
             setError('Failed to fetch staking data');
@@ -129,7 +142,10 @@ const StakingDashboard = () => {
 
                     {/* Staked Balances Cards */}
                     <div className="grid grid-cols-1 gap-4 mb-6">
-                        <StakedDisplay balances={stakedBalances} />
+                        <StakedDisplay
+                            balances={stakedBalances}
+                            tokenWeights={tokenWeights}
+                        />
                     </div>
                 </>
             )}
