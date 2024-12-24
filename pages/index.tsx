@@ -252,9 +252,13 @@ export default function Home() {
                         >
                             Telegram: @NumberAlwaysBigger
                         </a>
-                        <span className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black">
-                            Discord: NAB Fren Zone (soon)
-                        </span>
+                        <a
+                            target="_blank"
+                            href="https://discord.gg/RSXg24mCrJ"
+                            className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
+                        >
+                            Discord: NAB Fren Zone
+                        </a>
                     </div>
                     <p className="mt-8 text-sm bg-white inline-block px-4 py-2 rounded-full transform rotate-1">
                         powered by <span className="font-bold">mithril.</span>{' '}
