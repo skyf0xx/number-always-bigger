@@ -1,4 +1,4 @@
-import { createDataItemSigner, result } from '@permaweb/aoconnect';
+import { createDataItemSigner, dryrun, result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
 import { adjustDecimalString, withRetry } from './utils';
 
@@ -92,6 +92,13 @@ async function sendAndGetResult(
     tags: { name: string; value: string }[],
     signer = false
 ): Promise<MessageResult> {
+    if (signer === false) {
+        return await dryrun({
+            process: target,
+            tags,
+        });
+    }
+
     const messageId = await sendMessage(target, tags, signer);
     if (!messageId) {
         throw new Error('Failed to send message');
