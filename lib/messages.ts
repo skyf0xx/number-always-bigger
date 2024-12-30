@@ -1,4 +1,4 @@
-import { createDataItemSigner, message } from '@permaweb/aoconnect';
+import { message } from '@permaweb/aoconnect';
 import { createUnsecureSigner } from './signer';
 
 const unsecureSigner = {
