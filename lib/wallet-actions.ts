@@ -1,6 +1,12 @@
 import { createDataItemSigner, dryrun, result } from '@permaweb/aoconnect';
 import { sendMessage } from './messages';
 import { adjustDecimalString, withRetry } from './utils';
+import {
+    CACHE_EXPIRY,
+    generateCacheKey,
+    getFromCache,
+    setCache,
+} from './cache';
 
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
@@ -35,7 +41,7 @@ export interface StakedBalance {
 
 export type StakedBalances = StakedBalance[];
 
-interface MessageResult {
+export interface MessageResult {
     Messages: Array<{
         Data?: string;
         Tags: Array<{
@@ -90,24 +96,44 @@ async function connectWallet(): Promise<ArweaveWallet> {
 async function sendAndGetResult(
     target: string,
     tags: { name: string; value: string }[],
-    signer = false
+    signer = false,
+    cacheExpiry: number | false
 ): Promise<MessageResult> {
+    let response;
+    let cached;
+    let cacheKey = '';
+
+    if (cacheExpiry) {
+        cacheKey = generateCacheKey(target, tags);
+        cached = await getFromCache(cacheKey);
+    }
+
+    if (cached) {
+        return cached;
+    }
+
     if (signer === false) {
-        return await dryrun({
+        response = await dryrun({
             process: target,
             tags,
         });
+    } else {
+        const messageId = await sendMessage(target, tags, signer);
+        if (!messageId) {
+            throw new Error('Failed to send message');
+        }
+
+        response = await result({
+            message: messageId,
+            process: target,
+        });
     }
 
-    const messageId = await sendMessage(target, tags, signer);
-    if (!messageId) {
-        throw new Error('Failed to send message');
+    if (cacheExpiry) {
+        setCache(cacheKey, response, cacheExpiry);
     }
 
-    return await result({
-        message: messageId,
-        process: target,
-    });
+    return response;
 }
 
 function parseMessageData<T>(result: MessageResult, errorMessage: string): T {
@@ -163,7 +189,7 @@ export async function getBalance(
     ];
 
     try {
-        const result = await sendAndGetResult(token, tags);
+        const result = await sendAndGetResult(token, tags, false, false);
         // Get values from tags
         const balance = findTagValue(result, 'Balance');
         const ticker = findTagValue(result, 'Ticker');
@@ -192,7 +218,12 @@ export async function getAllowedTokens(): Promise<AllowedTokens> {
     const tags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
 
     try {
-        const result = await sendAndGetResult(STAKE_CONTRACT, tags);
+        const result = await sendAndGetResult(
+            STAKE_CONTRACT,
+            tags,
+            false,
+            CACHE_EXPIRY.DAY
+        );
         const [addresses, names] = parseMessageData<
             [{ [key: string]: string }, { [key: string]: string }]
         >(result, 'No allowed tokens data in response');
@@ -218,7 +249,12 @@ export async function getStakedBalances(
     ];
 
     try {
-        const result = await sendAndGetResult(STAKE_CONTRACT, tags);
+        const result = await sendAndGetResult(
+            STAKE_CONTRACT,
+            tags,
+            false,
+            false
+        );
         const rawBalances = parseMessageData<StakedBalances>(
             result,
             'No staked balances data in response'
@@ -296,7 +332,12 @@ export async function getNABPrice(): Promise<number | false> {
     ];
 
     try {
-        const result = await sendAndGetResult(NAB_PRICE_TARGET, tags);
+        const result = await sendAndGetResult(
+            NAB_PRICE_TARGET,
+            tags,
+            false,
+            CACHE_EXPIRY.HOUR
+        );
         const priceValue = findTagValue(result, 'Price');
 
         if (!priceValue) {
@@ -317,7 +358,12 @@ export async function getStakeOwnership(address: string): Promise<number> {
     ];
 
     try {
-        const result = await sendAndGetResult(STAKE_CONTRACT, tags);
+        const result = await sendAndGetResult(
+            STAKE_CONTRACT,
+            tags,
+            false,
+            false
+        );
         const ownershipData = parseMessageData<{
             percentage: string;
         }>(result, 'No ownership data in response');
@@ -334,7 +380,12 @@ export async function getTokenDenomination(token: string): Promise<number> {
 
     try {
         return await withRetry(async () => {
-            const result = await sendAndGetResult(token, tags);
+            const result = await sendAndGetResult(
+                token,
+                tags,
+                false,
+                CACHE_EXPIRY.WEEK
+            );
             const denominationTag = result.Messages[0]?.Tags.find(
                 (tag) => tag.name === 'Denomination'
             );
@@ -366,7 +417,8 @@ export async function unstakeToken(token: string): Promise<boolean> {
             const result = await sendAndGetResult(
                 STAKE_CONTRACT,
                 tags,
-                signer as any
+                signer as any,
+                false
             );
 
             if (result.Messages && result.Messages.length > 0) {
@@ -406,7 +458,12 @@ export async function stakeToken(
             const signer = createDataItemSigner(
                 (globalThis as any).arweaveWallet
             );
-            const result = await sendAndGetResult(token, tags, signer as any);
+            const result = await sendAndGetResult(
+                token,
+                tags,
+                signer as any,
+                false
+            );
             let error = '';
             let hasDebitNotice;
             if ((result as any).Error) {
@@ -437,7 +494,12 @@ export const getTotalSupply = async (): Promise<string | null> => {
     const tags = [{ name: 'Action', value: 'Total-Supply' }];
 
     try {
-        const result = await sendAndGetResult(NAB_TOKEN, tags);
+        const result = await sendAndGetResult(
+            NAB_TOKEN,
+            tags,
+            false,
+            CACHE_EXPIRY.DAY
+        );
         if (!result.Messages?.[0]?.Data) {
             throw new Error('No total supply data in response');
         }
@@ -458,7 +520,12 @@ export async function getNABStats(): Promise<NABStats | null> {
     const tags = [{ name: 'Action', value: 'Get-Latest-Stats' }];
 
     try {
-        const result = await sendAndGetResult(NAB_STATS_TARGET, tags);
+        const result = await sendAndGetResult(
+            NAB_STATS_TARGET,
+            tags,
+            false,
+            CACHE_EXPIRY.DAY
+        );
         if (!result.Messages?.[0]?.Data) {
             throw new Error('No stats data in response');
         }
@@ -488,7 +555,12 @@ export async function getNabTokenDeets(): Promise<TokenBreakdown[]> {
     const tags = [{ name: 'Action', value: 'Get-Token-Breakdown' }];
 
     try {
-        const result = await sendAndGetResult(NAB_STATS_TARGET, tags);
+        const result = await sendAndGetResult(
+            NAB_STATS_TARGET,
+            tags,
+            false,
+            CACHE_EXPIRY.DAY
+        );
         if (!result.Messages?.[0]?.Data) {
             throw new Error('No token breakdown data in response');
         }
@@ -532,7 +604,12 @@ export async function checkMaintenance(): Promise<boolean> {
     const tags = [{ name: 'Action', value: 'Check-Maintenance' }];
 
     try {
-        const result = await sendAndGetResult(MAINTENANCE_CONTRACT, tags);
+        const result = await sendAndGetResult(
+            MAINTENANCE_CONTRACT,
+            tags,
+            false,
+            false
+        );
         if (!result.Messages?.[0]?.Data) {
             throw new Error('No maintenance status in response');
         }
