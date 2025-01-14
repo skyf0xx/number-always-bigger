@@ -247,6 +247,13 @@ export default function Home() {
                         </a>
                         <a
                             target="_blank"
+                            href="https://warpcast.com/alwaysbigger"
+                            className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
+                        >
+                            Warpcast: @alwaysbigger
+                        </a>
+                        <a
+                            target="_blank"
                             href="https://t.me/+kbiXF8FXhI9hZTUx"
                             className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
                         >
