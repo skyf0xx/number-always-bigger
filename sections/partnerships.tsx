@@ -16,6 +16,12 @@ const PartnershipsSection = () => {
             imageUrl: './AOX-Avatar.svg',
             link: 'https://aox.xyz',
         },
+        {
+            name: 'Arc AO',
+            description: 'Provably Fair Gaming — Built on Trust.',
+            imageUrl: './arc_ao.jpg',
+            link: 'https://linktr.ee/arcaogames',
+        },
     ];
 
     return (
