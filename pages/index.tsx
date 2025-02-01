@@ -240,10 +240,10 @@ export default function Home() {
                     <div className="flex justify-center gap-8 mb-8">
                         <a
                             target="_blank"
-                            href="https://x.com/Mithril_Labs"
+                            href="https://x.com/AlwaysBigger"
                             className="bg-white px-6 py-3 rounded-full font-bold transform hover:scale-110 transition-transform hover:-rotate-2 border-2 border-black"
                         >
-                            Twitter: @Mithril_Labs
+                            Twitter: @AlwaysBigger
                         </a>
                         <a
                             target="_blank"
