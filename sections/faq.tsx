@@ -7,6 +7,10 @@ const FAQSection = () => {
 
     const faqs = [
         {
+            question: 'where can I BUY NAB?',
+            answer: 'BUY NAB',
+        },
+        {
             question: 'what happens if number tries to go down?',
             answer: 'If the price drops below its highest low, NAB reduces the global supply (everywhere) to bring the price back up. number always wins!',
         },
@@ -103,12 +107,51 @@ const FAQSection = () => {
                             >
                                 <div className="overflow-hidden">
                                     <div
-                                        className={`
-                    p-4 pt-0 text-gray-600
-                    bg-gradient-to-r from-crypto-green/10 via-moon-yellow/10 to-floor-pink/10
-                  `}
+                                        className={`p-4 pt-0 text-gray-600 bg-gradient-to-r from-crypto-green/10 via-moon-yellow/10 to-floor-pink/10`}
                                     >
-                                        {faq.answer}
+                                        {faq.answer == 'BUY NAB' ? (
+                                            <>
+                                                <span>
+                                                    you can get NAB right now on{' '}
+                                                    <a
+                                                        href="https://www.permaswap.network/#/tokens"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-meme-blue hover:underline"
+                                                    >
+                                                        PermaSwap
+                                                    </a>{' '}
+                                                    or{' '}
+                                                    <a
+                                                        href="https://dexi.arweave.dev/#/token/OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-meme-blue hover:underline"
+                                                    >
+                                                        DexI
+                                                    </a>
+                                                    . both are approved! <br />
+                                                    remember: you can also stake
+                                                    accepted tokens to earn NAB
+                                                    (sometimes better than
+                                                    buying directly). choose
+                                                    your path to number go up!
+                                                </span>
+                                                <p>
+                                                    <a
+                                                        href="https://www.ao.link/#/token/OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-meme-blue hover:underline"
+                                                    >
+                                                        NAB&apos;s Token
+                                                        Contract
+                                                    </a>
+                                                </p>
+                                            </>
+                                        ) : (
+                                            faq.answer
+                                        )}
                                     </div>
                                 </div>
                             </div>
