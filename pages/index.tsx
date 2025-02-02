@@ -22,6 +22,7 @@ import {
 import PartnershipsSection from '../sections/partnerships';
 import EcosystemStats from '../sections/stats';
 import { getNABStats, getNabTokenDeets } from '@/lib/wallet-actions';
+import RoadmapSection from '@/sections/roadmap';
 
 export default function Home() {
     useArweaveWalletInit();
@@ -227,6 +228,7 @@ export default function Home() {
                 <HowToGet data={tokenDeets} isLoading={isLoading} />
                 {/* Tokenomics */}
                 <Tokenomics />
+                <RoadmapSection />
                 <AOSection />
                 <WhitepaperSection />
                 <FAQSection />
