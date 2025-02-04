@@ -36,7 +36,7 @@ const RoadmapSection = () => {
                 },
                 {
                     text: 'Launch $MINT (Proof of Contribution token)',
-                    completed: false,
+                    completed: true,
                     explainer:
                         "MINT rewards all forms of 'work'—whether by smart contracts or human contributions—that enhance NAB’s value and ecosystem growth.",
                 },
@@ -57,7 +57,7 @@ const RoadmapSection = () => {
         },
         {
             title: 'Phase 2: Expanding the Ecosystem with MINT (Q1 Onwards)',
-            status: 'in-progress',
+            status: 'upcoming',
             items: [
                 {
                     text: 'Reward Community-Driven Awareness Efforts',
