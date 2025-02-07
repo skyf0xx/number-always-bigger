@@ -17,7 +17,7 @@ interface ArweaveWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
-    newLPTokens: UserTokensResult;
+    newLPTokens: AllowedTokens;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
@@ -71,6 +71,27 @@ const keepLPTokensOnly = (tokens: UserTokensResult): UserTokensResult => {
     });
 };
 
+const convertToAllowedTokensFormat = (
+    tokens: UserTokensResult
+): AllowedTokens => {
+    const addresses: { [key: string]: string } = {};
+    const names: { [key: string]: string } = {};
+
+    tokens.forEach((token, index) => {
+        // Create a key for each token (using index to ensure uniqueness)
+        const key = `lp${index + 1}`;
+
+        // Add the token's process ID (address) and name to respective objects
+        addresses[key] = token.processId;
+        names[key] = token.Name || `Unknown LP Token ${index + 1}`;
+    });
+
+    return {
+        addresses,
+        names,
+    };
+};
+
 // Helper function to filter out allowed tokens
 const filterOutAllowedTokens = (
     tokens: UserTokensResult,
@@ -102,7 +123,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
             address: null,
             connecting: false,
             connected: false,
-            newLPTokens: [],
+            newLPTokens: { addresses: {}, names: {} },
             allowedTokens: null,
 
             scrollToStakingDashboard: () => {
@@ -125,7 +146,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             address: null,
                             connecting: false,
                             connected: false,
-                            newLPTokens: [],
+                            newLPTokens: { addresses: {}, names: {} },
                         });
                         return;
                     }
@@ -142,13 +163,12 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             ]);
 
                         // Filter out allowed tokens
-                        const filteredTokens = keepLPTokensOnly(
-                            filterOutAllowedTokens(tokens, allowedTokens)
+                        const filteredTokens = convertToAllowedTokensFormat(
+                            keepLPTokensOnly(
+                                filterOutAllowedTokens(tokens, allowedTokens)
+                            )
                         );
-                        console.log({
-                            filteredTokens,
-                            alloweed: allowedTokens,
-                        });
+
                         set({
                             address,
                             connecting: false,
@@ -191,8 +211,10 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                     ]);
 
                     // Filter out allowed tokens
-                    const filteredTokens = keepLPTokensOnly(
-                        filterOutAllowedTokens(tokens, allowedTokens)
+                    const filteredTokens = convertToAllowedTokensFormat(
+                        keepLPTokensOnly(
+                            filterOutAllowedTokens(tokens, allowedTokens)
+                        )
                     );
 
                     set({
@@ -227,7 +249,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         address: null,
                         connecting: false,
                         connected: false,
-                        newLPTokens: [],
+                        newLPTokens: { addresses: {}, names: {} },
                     });
 
                     toast({
