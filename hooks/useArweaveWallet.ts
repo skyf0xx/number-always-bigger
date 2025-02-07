@@ -47,6 +47,30 @@ export const scrollToDashboard = () => {
     }, 100);
 };
 
+const keepLPTokensOnly = (tokens: UserTokensResult): UserTokensResult => {
+    if (!tokens || !Array.isArray(tokens)) {
+        return [];
+    }
+
+    return tokens.filter((token) => {
+        // Ensure token has a name
+        const tokenName = token.Name || '';
+        if (!tokenName) return false;
+
+        // Check for Botega LP tokens with NAB
+        const isBotegaLPWithNAB =
+            tokenName.includes('Botega LP') &&
+            (tokenName.includes('/NAB') || tokenName.includes('NAB/'));
+
+        // Check for NAB dash-connected tokens
+        const isNABDashToken =
+            tokenName.startsWith('NAB-') || tokenName.includes('-NAB');
+
+        // Return true if token matches either pattern
+        return isBotegaLPWithNAB || isNABDashToken;
+    });
+};
+
 // Helper function to filter out allowed tokens
 const filterOutAllowedTokens = (
     tokens: UserTokensResult,
@@ -118,9 +142,8 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             ]);
 
                         // Filter out allowed tokens
-                        const filteredTokens = filterOutAllowedTokens(
-                            tokens,
-                            allowedTokens
+                        const filteredTokens = keepLPTokensOnly(
+                            filterOutAllowedTokens(tokens, allowedTokens)
                         );
                         console.log({
                             filteredTokens,
@@ -168,9 +191,8 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                     ]);
 
                     // Filter out allowed tokens
-                    const filteredTokens = filterOutAllowedTokens(
-                        tokens,
-                        allowedTokens
+                    const filteredTokens = keepLPTokensOnly(
+                        filterOutAllowedTokens(tokens, allowedTokens)
                     );
 
                     set({
