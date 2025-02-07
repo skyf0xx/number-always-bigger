@@ -56,8 +56,22 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         return;
                     }
 
+                    const currentVersion = '1'; // in case we ever update permissions
+                    const version = localStorage.getItem('version');
+                    if (currentVersion !== version) {
+                        await window.arweaveWallet.disconnect();
+                        localStorage.setItem('version', currentVersion);
+                        set({
+                            address: null,
+                            connecting: false,
+                            connected: false,
+                        });
+                        return;
+                    }
+
                     const permissions =
                         await window.arweaveWallet.getPermissions();
+
                     if (permissions.includes('ACCESS_ADDRESS')) {
                         const address =
                             await window.arweaveWallet.getActiveAddress();
@@ -87,15 +101,18 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         return;
                     }
 
-                    // Request permissions
-                    await window.arweaveWallet.connect([
+                    const permissions = [
+                        //note! Update version if you ever change permissions
                         'ACCESS_ADDRESS',
+                        'ACCESS_TOKENS',
                         'SIGN_TRANSACTION',
                         'DISPATCH',
-                    ]);
+                    ];
 
                     const address =
                         await window.arweaveWallet.getActiveAddress();
+                    // Request permissions
+                    await window.arweaveWallet.connect(permissions);
 
                     set({
                         address,
