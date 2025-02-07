@@ -14,16 +14,22 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
 
     const getRewardMultiplier = (tokenName: string): string => {
         const weight = tokenWeights[tokenName];
-        if (!weight) return '1X';
+        if (!weight || weight === '0') return '0X';
         return `${weight}X`;
     };
 
     const calculateTotalWeight = (balance: StakedBalance): number => {
-        const weight = parseInt(tokenWeights[balance.name] || '1');
+        const weight = parseInt(tokenWeights[balance.name] || '0');
         return weight * parseFloat(balance.amount);
     };
 
-    if (balances.length === 0) {
+    // Filter out tokens with zero weight
+    const validBalances = balances.filter(
+        (balance) =>
+            tokenWeights[balance.name] && tokenWeights[balance.name] !== '0'
+    );
+
+    if (validBalances.length === 0) {
         return (
             <Card className="bg-white/95 backdrop-blur-sm border-2 border-moon-yellow">
                 <CardContent className="py-6">
@@ -32,7 +38,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                             no tokens staked yet fren!
                         </p>
                         <p className="text-sm text-gray-600">
-                            stake some tokens to see them here
+                            stake some tokens to start earning rewards
                         </p>
                     </div>
                 </CardContent>
@@ -46,12 +52,12 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
         return weight ? parseInt(weight) : 0;
     };
 
-    // Separate non-zero and zero balances
-    const nonZeroBalances = balances
+    // Separate non-zero and zero balances (only for valid weight tokens)
+    const nonZeroBalances = validBalances
         .filter((b) => parseFloat(b.amount) > 0)
         .sort((a, b) => getWeight(b.name) - getWeight(a.name));
 
-    const zeroBalances = balances
+    const zeroBalances = validBalances
         .filter((b) => parseFloat(b.amount) === 0)
         .sort((a, b) => getWeight(b.name) - getWeight(a.name));
 
@@ -73,7 +79,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                         token
                     </div>
                     <div className="col-span-3 text-sm font-comic text-gray-600 text-center">
-                        rewards per token
+                        rewards multiplier
                     </div>
                     <div className="col-span-3 text-sm font-comic text-gray-600 text-right">
                         staked amount
@@ -116,7 +122,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                 {isExpanded && visibleZeroBalances.length > 0 && (
                     <div className="mt-4 pt-4 border-t border-gray-100">
                         <p className="text-sm text-gray-500 font-comic mb-2 px-2">
-                            you can also stake these fren
+                            available tokens to stake (with active rewards)
                         </p>
                         <div className="space-y-2">
                             {visibleZeroBalances.map((balance) => (
