@@ -333,18 +333,11 @@ export async function getStakedBalances(
 
         // Get all allowed tokens to map names to addresses
         const allowedTokens = await getAllowedTokens();
-        const tokenAddressByName = Object.entries(allowedTokens.names).reduce(
-            (acc, [key, name]) => ({
-                ...acc,
-                [name]: allowedTokens.addresses[key],
-            }),
-            {} as { [key: string]: string }
-        );
 
         // Fetch denominations and adjust balances
         const adjustedBalances = await Promise.all(
             rawBalances.map(async (balance) => {
-                const tokenAddress = tokenAddressByName[balance.name];
+                const tokenAddress = balance.address;
                 if (!tokenAddress) {
                     console.warn(`Token address not found for ${balance.name}`);
                     return balance;
