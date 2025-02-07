@@ -39,3 +39,14 @@ export async function setCache(
 ): Promise<void> {
     await redis.set(key, data, { ex: expiry });
 }
+
+export async function deleteFromCache(key: string): Promise<boolean> {
+    try {
+        const result = await redis.del(key);
+        // Redis returns 1 if key was deleted, 0 if key didn't exist
+        return result === 1;
+    } catch (error) {
+        console.error('Error deleting key from cache:', error);
+        throw error;
+    }
+}
