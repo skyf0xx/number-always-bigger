@@ -3,10 +3,12 @@ import { sendMessage } from './messages';
 import { adjustDecimalString, withRetry } from './utils';
 import {
     CACHE_EXPIRY,
+    deleteFromCache,
     generateCacheKey,
     getFromCache,
     setCache,
 } from './cache';
+import { toast } from '@/hooks/use-toast';
 
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
@@ -34,6 +36,7 @@ export interface TotalSupplyResponse {
     Ticker: string;
 }
 export interface StakedBalance {
+    address: any;
     name: string;
     amount: string;
     weight?: string;
@@ -213,14 +216,79 @@ export async function getBalance(
     }
 }
 
-// Main Functions
-export async function getAllowedTokens(): Promise<AllowedTokens> {
-    const tags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
+function isRegistered(tokenAddress: string): boolean {
+    const token = `token_${tokenAddress}`;
+    const isRegistered = sessionStorage.getItem(token) === 'true';
 
+    sessionStorage.setItem(token, 'true');
+    return isRegistered;
+}
+
+export async function updateTokenList(
+    newTokens: AllowedTokens
+): Promise<boolean> {
+    const CONTRACT = 'G3biaSUvclo3cd_1ErpPYt-VoSSazWrKcuBlzeLkTnU';
+
+    try {
+        for (const [key, tokenAddress] of Object.entries(newTokens.addresses)) {
+            if (isRegistered(tokenAddress)) continue; //we already tried to register in this session
+
+            const tokenName = newTokens.names[key];
+            const tags = [
+                { name: 'Action', value: 'Register-Token' },
+                { name: 'Token-Address', value: tokenAddress },
+            ];
+
+            try {
+                const messageId = await sendMessage(CONTRACT, tags, false);
+
+                if (!messageId) {
+                    console.error(
+                        `Failed to send message for token ${tokenAddress}`
+                    );
+                    continue;
+                }
+
+                const cacheKey = generateCacheKey(
+                    STAKE_CONTRACT,
+                    allowedTokentags
+                );
+
+                setTimeout(() => {
+                    deleteFromCache(cacheKey);
+                }, 20_000);
+
+                //TODO: confirm it has registered instead of just assuming
+                /*toast({
+                    title: 'New Stakeable LP Found',
+                    description:
+                        'Successfully added ' +
+                        tokenName +
+                        'to the list of stakeable tokens',
+                });*/
+            } catch (error) {
+                console.error(
+                    `Error registering token ${tokenAddress}:`,
+                    error
+                );
+                continue;
+            }
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error updating token list:', error);
+        return false;
+    }
+}
+// Main Functions
+const allowedTokentags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
+
+export async function getAllowedTokens(): Promise<AllowedTokens> {
     try {
         const result = await sendAndGetResult(
             STAKE_CONTRACT,
-            tags,
+            allowedTokentags,
             false,
             CACHE_EXPIRY.DAY
         );
@@ -268,18 +336,11 @@ export async function getStakedBalances(
 
         // Get all allowed tokens to map names to addresses
         const allowedTokens = await getAllowedTokens();
-        const tokenAddressByName = Object.entries(allowedTokens.names).reduce(
-            (acc, [key, name]) => ({
-                ...acc,
-                [name]: allowedTokens.addresses[key],
-            }),
-            {} as { [key: string]: string }
-        );
 
         // Fetch denominations and adjust balances
         const adjustedBalances = await Promise.all(
             rawBalances.map(async (balance) => {
-                const tokenAddress = tokenAddressByName[balance.name];
+                const tokenAddress = balance.address;
                 if (!tokenAddress) {
                     console.warn(`Token address not found for ${balance.name}`);
                     return balance;

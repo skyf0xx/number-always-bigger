@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Coins, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Coins, ChevronDown, ChevronUp, Sparkles, Layers } from 'lucide-react';
 import { formatBalance } from '@/lib/utils';
 import { StakedBalance } from '@/lib/wallet-actions';
 
@@ -10,20 +10,56 @@ interface StakedDisplayProps {
 }
 
 const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [isRegularExpanded, setIsRegularExpanded] = useState(true);
+    const [isLPExpanded, setIsLPExpanded] = useState(false);
 
     const getRewardMultiplier = (tokenName: string): string => {
         const weight = tokenWeights[tokenName];
-        if (!weight) return '1X';
+        if (!weight || weight === '0') return '0X';
         return `${weight}X`;
     };
 
     const calculateTotalWeight = (balance: StakedBalance): number => {
-        const weight = parseInt(tokenWeights[balance.name] || '1');
+        const weight = parseInt(tokenWeights[balance.name] || '0');
         return weight * parseFloat(balance.amount);
     };
 
-    if (balances.length === 0) {
+    const isLPToken = (tokenName: string): boolean => {
+        return (
+            tokenName.startsWith('Botega LP') ||
+            /^[^-]+-NAB-\d+$/.test(tokenName) ||
+            /^NAB-[^-]+-\d+$/.test(tokenName)
+        );
+    };
+
+    // Filter valid balances
+    const validBalances = balances.filter(
+        (balance) =>
+            tokenWeights[balance.name] && tokenWeights[balance.name] !== '0'
+    );
+
+    // Custom sort function for tokens
+    const sortTokens = (tokens: StakedBalance[]) => {
+        return tokens.sort((a, b) => {
+            // First, group by whether they have a staked amount
+            const aHasStake = parseFloat(a.amount) > 0;
+            const bHasStake = parseFloat(b.amount) > 0;
+
+            if (aHasStake && !bHasStake) return -1;
+            if (!aHasStake && bHasStake) return 1;
+
+            // Then sort alphabetically
+            return a.name.localeCompare(b.name);
+        });
+    };
+
+    // Separate and sort LP tokens and regular tokens
+    const lpTokens = sortTokens(validBalances.filter((b) => isLPToken(b.name)));
+    const regularTokens = sortTokens(
+        validBalances.filter((b) => !isLPToken(b.name))
+    );
+
+    if (validBalances.length === 0) {
         return (
             <Card className="bg-white/95 backdrop-blur-sm border-2 border-moon-yellow">
                 <CardContent className="py-6">
@@ -32,7 +68,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                             no tokens staked yet fren!
                         </p>
                         <p className="text-sm text-gray-600">
-                            stake some tokens to see them here
+                            stake some tokens to start earning rewards
                         </p>
                     </div>
                 </CardContent>
@@ -40,64 +76,78 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
         );
     }
 
-    // Sort by weight (highest first)
-    const getWeight = (tokenName: string) => {
-        const weight = tokenWeights[tokenName];
-        return weight ? parseInt(weight) : 0;
-    };
-
-    // Separate non-zero and zero balances
-    const nonZeroBalances = balances
-        .filter((b) => parseFloat(b.amount) > 0)
-        .sort((a, b) => getWeight(b.name) - getWeight(a.name));
-
-    const zeroBalances = balances
-        .filter((b) => parseFloat(b.amount) === 0)
-        .sort((a, b) => getWeight(b.name) - getWeight(a.name));
-
-    // Calculate what to show based on expanded state
-    const visibleNonZeroBalances = isExpanded
-        ? nonZeroBalances
-        : nonZeroBalances.slice(0, 2);
-    const visibleZeroBalances = isExpanded ? zeroBalances : [];
-
-    const hiddenCount = nonZeroBalances.length - 2 + zeroBalances.length;
-    const hasHiddenItems = hiddenCount > 0;
-
-    return (
-        <Card className="bg-white/95 backdrop-blur-sm border-2 border-meme-blue">
-            <CardContent className="p-6">
-                {/* Header */}
-                <div className="grid grid-cols-12 gap-4 mb-4 px-2 border-b border-gray-100 pb-4">
-                    <div className="col-span-3 text-sm font-comic text-gray-600">
-                        token
-                    </div>
-                    <div className="col-span-3 text-sm font-comic text-gray-600 text-center">
-                        rewards per token
-                    </div>
-                    <div className="col-span-3 text-sm font-comic text-gray-600 text-right">
-                        staked amount
-                    </div>
-                    <div className="col-span-3 text-sm font-comic text-gray-600 text-right">
-                        total stake weight
-                    </div>
+    const TokenList = ({
+        tokens,
+        title,
+        icon: Icon,
+        isExpanded,
+        onToggle,
+    }: {
+        tokens: StakedBalance[];
+        title: string;
+        icon: React.ElementType;
+        isExpanded: boolean;
+        onToggle: () => void;
+    }) => (
+        <div className="mb-4">
+            <button
+                onClick={onToggle}
+                className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors mb-2"
+            >
+                <div className="flex items-center gap-2">
+                    <Icon className="h-5 w-5 text-tech-purple" />
+                    <span className="font-comic">
+                        {title} (
+                        {
+                            tokens.filter(
+                                (t: { amount: string }) =>
+                                    parseFloat(t.amount) > 0
+                            ).length
+                        }
+                        )
+                    </span>
                 </div>
+                {isExpanded ? (
+                    <ChevronUp className="h-4 w-4 text-gray-600" />
+                ) : (
+                    <ChevronDown className="h-4 w-4 text-gray-600" />
+                )}
+            </button>
 
-                {/* Active stakes section */}
+            {isExpanded && (
                 <div className="space-y-2">
-                    {visibleNonZeroBalances.map((balance) => (
+                    {tokens.map((balance: StakedBalance) => (
                         <div
                             key={balance.name}
-                            className="grid grid-cols-12 gap-4 py-3 px-2 hover:bg-gray-50 rounded-lg transition-all duration-200 items-center"
+                            className={`grid grid-cols-12 gap-4 py-3 px-2 hover:bg-gray-50 rounded-lg transition-all duration-200 items-center ${
+                                parseFloat(balance.amount) === 0
+                                    ? 'opacity-60'
+                                    : ''
+                            }`}
                         >
                             <div className="col-span-3 flex items-center gap-2">
-                                <Coins className="h-5 w-5 text-meme-blue flex-shrink-0" />
-                                <span className="font-comic truncate">
+                                <Icon
+                                    className={`h-5 w-5 ${
+                                        parseFloat(balance.amount) === 0
+                                            ? 'text-gray-400'
+                                            : 'text-meme-blue'
+                                    } flex-shrink-0`}
+                                />
+                                <span
+                                    className="font-comic truncate"
+                                    title={balance.name}
+                                >
                                     {balance.name}
                                 </span>
                             </div>
                             <div className="col-span-3 flex items-center justify-center gap-1">
-                                <Sparkles className="h-4 w-4 text-moon-yellow flex-shrink-0" />
+                                <Sparkles
+                                    className={`h-4 w-4 text-moon-yellow ${
+                                        parseFloat(balance.amount) === 0
+                                            ? 'opacity-50'
+                                            : ''
+                                    } flex-shrink-0`}
+                                />
                                 <span className="font-comic text-tech-purple">
                                     {getRewardMultiplier(balance.name)}
                                 </span>
@@ -111,73 +161,61 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                         </div>
                     ))}
                 </div>
+            )}
+        </div>
+    );
 
-                {/* Zero balances section - only shown when expanded */}
-                {isExpanded && visibleZeroBalances.length > 0 && (
-                    <div className="mt-4 pt-4 border-t border-gray-100">
-                        <p className="text-sm text-gray-500 font-comic mb-2 px-2">
-                            you can also stake these fren
-                        </p>
-                        <div className="space-y-2">
-                            {visibleZeroBalances.map((balance) => (
-                                <div
-                                    key={balance.name}
-                                    className="grid grid-cols-12 gap-4 py-3 px-2 hover:bg-gray-50 rounded-lg transition-all duration-200 items-center opacity-60"
-                                >
-                                    <div className="col-span-3 flex items-center gap-2">
-                                        <Coins className="h-5 w-5 text-gray-400 flex-shrink-0" />
-                                        <span className="font-comic truncate">
-                                            {balance.name}
-                                        </span>
-                                    </div>
-                                    <div className="col-span-3 flex items-center justify-center gap-1">
-                                        <Sparkles className="h-4 w-4 text-moon-yellow opacity-50 flex-shrink-0" />
-                                        <span className="font-comic text-tech-purple">
-                                            {getRewardMultiplier(balance.name)}
-                                        </span>
-                                    </div>
-                                    <div className="col-span-3 font-comic text-right">
-                                        0
-                                    </div>
-                                    <div className="col-span-3 font-comic text-right text-meme-blue">
-                                        0
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+    return (
+        <Card className="bg-white/95 backdrop-blur-sm border-2 border-meme-blue">
+            <CardContent className="p-6">
+                {/* Header */}
+                <div className="grid grid-cols-12 gap-4 mb-4 px-2 border-b border-gray-100 pb-4">
+                    <div className="col-span-3 text-sm font-comic text-gray-600">
+                        token
                     </div>
-                )}
+                    <div className="col-span-3 text-sm font-comic text-gray-600 text-center">
+                        rewards multiplier
+                    </div>
+                    <div className="col-span-3 text-sm font-comic text-gray-600 text-right">
+                        staked amount
+                    </div>
+                    <div className="col-span-3 text-sm font-comic text-gray-600 text-right">
+                        total stake weight
+                    </div>
+                </div>
 
-                {/* Show more/less button */}
-                {hasHiddenItems && (
-                    <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="w-full flex items-center justify-center gap-2 py-3 mt-4 text-sm font-comic text-gray-600 hover:text-gray-800 transition-colors border-t border-gray-100"
-                    >
-                        {isExpanded ? (
-                            <>
-                                <ChevronUp className="h-4 w-4" />
-                                show less
-                            </>
-                        ) : (
-                            <>
-                                <ChevronDown className="h-4 w-4" />
-                                show {hiddenCount} more token
-                                {hiddenCount > 1 ? 's' : ''}
-                            </>
-                        )}
-                    </button>
-                )}
+                {/* Regular Tokens Section */}
+                <TokenList
+                    tokens={regularTokens}
+                    title="Regular Tokens"
+                    icon={Coins}
+                    isExpanded={isRegularExpanded}
+                    onToggle={() => setIsRegularExpanded(!isRegularExpanded)}
+                />
+
+                {/* LP Tokens Section */}
+                <TokenList
+                    tokens={lpTokens}
+                    title="LP Tokens"
+                    icon={Layers}
+                    isExpanded={isLPExpanded}
+                    onToggle={() => setIsLPExpanded(!isLPExpanded)}
+                />
 
                 {/* Summary footer */}
                 <div className="mt-4 pt-4 border-t border-gray-100">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                         <div className="font-comic text-gray-600">
-                            total active stakes: {nonZeroBalances.length}
+                            total active stakes:{' '}
+                            {
+                                validBalances.filter(
+                                    (b) => parseFloat(b.amount) > 0
+                                ).length
+                            }
                         </div>
                         <div className="font-comic text-meme-blue">
                             total weight:{' '}
-                            {nonZeroBalances
+                            {validBalances
                                 .reduce(
                                     (sum, balance) =>
                                         sum + calculateTotalWeight(balance),

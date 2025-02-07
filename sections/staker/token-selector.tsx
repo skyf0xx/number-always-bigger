@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, ChevronDown, RefreshCw } from 'lucide-react';
 import { AllowedTokens } from '@/lib/wallet-actions';
 
 interface TokenSelectorProps {
@@ -9,6 +9,15 @@ interface TokenSelectorProps {
     isProcessing: boolean;
 }
 
+type UserTokensResult = Array<{
+    Name?: string;
+    Ticker?: string;
+    Logo?: string;
+    Denomination: number;
+    processId: string;
+    balance?: string | null;
+}>;
+
 const TokenSelector = ({
     selectedToken,
     onTokenSelect,
@@ -17,25 +26,68 @@ const TokenSelector = ({
 }: TokenSelectorProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [walletTokens, setWalletTokens] = useState<UserTokensResult>([]);
+    const [isLoadingTokens, setIsLoadingTokens] = useState(true);
 
-    // Sort tokens alphabetically by name
-    const sortedTokens = Object.entries(allowedTokens.names)
-        .sort(([, nameA], [, nameB]) => nameA.localeCompare(nameB))
+    useEffect(() => {
+        const fetchWalletTokens = async () => {
+            try {
+                setIsLoadingTokens(true);
+                if (window.arweaveWallet) {
+                    const tokens = await window.arweaveWallet.userTokens();
+                    setWalletTokens(tokens || []);
+                }
+            } catch (error) {
+                console.error('Error fetching wallet tokens:', error);
+                setWalletTokens([]);
+            } finally {
+                setIsLoadingTokens(false);
+            }
+        };
+
+        fetchWalletTokens();
+    }, []);
+
+    // Create a set of wallet token addresses for faster lookup
+    const walletTokenAddresses = new Set(
+        walletTokens.map((token) => token.processId)
+    );
+
+    // Filter tokens that exist in both allowed tokens and wallet
+    const availableTokens = Object.entries(allowedTokens.names)
+        .filter(([key]) =>
+            walletTokenAddresses.has(allowedTokens.addresses[key])
+        )
         .map(([key]) => ({
             key,
             name: allowedTokens.names[key],
             address: allowedTokens.addresses[key],
-        }));
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
 
-    // Filter tokens based on search query
-    const filteredTokens = sortedTokens.filter((token) =>
+    // Filter based on search query
+    const filteredTokens = availableTokens.filter((token) =>
         token.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    // Get the currently selected token's name
+    // Get selected token name
     const selectedTokenName =
-        sortedTokens.find((token) => token.address === selectedToken)?.name ||
-        'choose a token fren';
+        availableTokens.find((token) => token.address === selectedToken)
+            ?.name || 'choose a token fren';
+
+    if (isLoadingTokens) {
+        return (
+            <div className="relative mb-4">
+                <label className="block text-sm font-comic mb-2">
+                    select token to stake:
+                </label>
+                <div className="w-full p-3 rounded-lg border-2 border-meme-blue bg-gray-50 flex items-center justify-center gap-2">
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span className="text-gray-500">loading ur tokens...</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="relative mb-4">
@@ -43,7 +95,6 @@ const TokenSelector = ({
                 select token to stake:
             </label>
 
-            {/* Custom select button */}
             <button
                 type="button"
                 onClick={() => !isProcessing && setIsOpen(!isOpen)}
@@ -67,10 +118,8 @@ const TokenSelector = ({
                 />
             </button>
 
-            {/* Dropdown panel */}
             {isOpen && (
                 <div className="absolute z-10 w-full mt-1 bg-white border-2 border-meme-blue rounded-lg shadow-lg">
-                    {/* Search input */}
                     <div className="p-2 border-b border-gray-100">
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -85,11 +134,12 @@ const TokenSelector = ({
                         </div>
                     </div>
 
-                    {/* Token list */}
                     <div className="max-h-60 overflow-y-auto">
                         {filteredTokens.length === 0 ? (
                             <div className="p-3 text-center text-gray-500 font-comic">
-                                no tokens found fren
+                                {availableTokens.length === 0
+                                    ? 'no stakeable tokens found in ur wallet fren'
+                                    : 'no matching tokens found'}
                             </div>
                         ) : (
                             filteredTokens.map((token) => (

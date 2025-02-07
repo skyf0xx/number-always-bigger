@@ -2,11 +2,26 @@ import React from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from './use-toast';
+import {
+    AllowedTokens,
+    getAllowedTokens,
+    updateTokenList,
+} from '@/lib/wallet-actions';
+
+export type UserTokensResult = Array<{
+    Name?: string;
+    Ticker?: string;
+    Logo?: string;
+    Denomination: number;
+    processId: string;
+    balance?: string | null;
+}>;
 
 interface ArweaveWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
+    newLPTokens: AllowedTokens;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
@@ -21,7 +36,6 @@ export const scrollToDashboard = () => {
             const dashboardRect = dashboard.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
 
-            // Calculate position to center the dashboard
             const elementPosition =
                 window.scrollY +
                 dashboardRect.top -
@@ -37,15 +51,93 @@ export const scrollToDashboard = () => {
     }, 100);
 };
 
+const keepLPTokensOnly = (tokens: UserTokensResult): UserTokensResult => {
+    if (!tokens || !Array.isArray(tokens)) {
+        return [];
+    }
+
+    return tokens.filter((token) => {
+        // Ensure token has a name
+        const tokenName = token.Name || '';
+        if (!tokenName) return false;
+
+        // Check for Botega LP tokens with NAB
+        const isBotegaLPWithNAB =
+            tokenName.includes('Botega LP') &&
+            (tokenName.includes('/NAB') || tokenName.includes('NAB/'));
+
+        // Check for NAB dash-connected tokens
+        const isNABDashToken =
+            tokenName.startsWith('NAB-') || tokenName.includes('-NAB');
+
+        // Return true if token matches either pattern
+        return isBotegaLPWithNAB || isNABDashToken;
+    });
+};
+
+const convertToAllowedTokensFormat = (
+    tokens: UserTokensResult
+): AllowedTokens => {
+    const addresses: { [key: string]: string } = {};
+    const names: { [key: string]: string } = {};
+
+    tokens.forEach((token, index) => {
+        // Create a key for each token (using index to ensure uniqueness)
+        const key = `lp${index + 1}`;
+
+        // Add the token's process ID (address) and name to respective objects
+        addresses[key] = token.processId;
+        names[key] = token.Name || `Unknown LP Token ${index + 1}`;
+    });
+
+    return {
+        addresses,
+        names,
+    };
+};
+
+// Helper function to filter out allowed tokens
+const filterOutAllowedTokens = (
+    tokens: UserTokensResult,
+    allowedTokens: AllowedTokens | null
+): UserTokensResult => {
+    if (!allowedTokens) throw new Error('Allowed tokens not found');
+
+    const allowedAddresses = new Set(Object.values(allowedTokens.addresses));
+    return tokens.filter((token) => !allowedAddresses.has(token.processId));
+};
+
+const fetchAllowedTokens = async () => {
+    try {
+        return await getAllowedTokens();
+    } catch (error) {
+        console.error('Error fetching allowed tokens:', error);
+        toast({
+            title: 'Failed to fetch allowed tokens',
+            description: 'Please try refreshing the page',
+            variant: 'destructive',
+        });
+        return null;
+    }
+};
+
+const isEmptyLPTokens = (tokens: AllowedTokens) => {
+    return (
+        Object.keys(tokens.addresses).length === 0 &&
+        Object.keys(tokens.names).length === 0
+    );
+};
+
 export const useArweaveWalletStore = create<ArweaveWalletState>()(
     devtools(
         (set, get) => ({
             address: null,
             connecting: false,
             connected: false,
+            newLPTokens: { addresses: {}, names: {} },
+            allowedTokens: null,
 
             scrollToStakingDashboard: () => {
-                // Allow time for the dashboard to render
                 scrollToDashboard();
             },
 
@@ -56,15 +148,47 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         return;
                     }
 
+                    const currentVersion = '1';
+                    const version = localStorage.getItem('version');
+                    if (currentVersion !== version) {
+                        await window.arweaveWallet.disconnect();
+                        localStorage.setItem('version', currentVersion);
+                        set({
+                            address: null,
+                            connecting: false,
+                            connected: false,
+                            newLPTokens: { addresses: {}, names: {} },
+                        });
+                        return;
+                    }
+
                     const permissions =
                         await window.arweaveWallet.getPermissions();
+
                     if (permissions.includes('ACCESS_ADDRESS')) {
-                        const address =
-                            await window.arweaveWallet.getActiveAddress();
+                        const [tokens, address, allowedTokens] =
+                            await Promise.all([
+                                window.arweaveWallet.userTokens() as Promise<UserTokensResult>,
+                                window.arweaveWallet.getActiveAddress(),
+                                fetchAllowedTokens(),
+                            ]);
+
+                        // Filter out allowed tokens
+                        const filteredTokens = convertToAllowedTokensFormat(
+                            keepLPTokensOnly(
+                                filterOutAllowedTokens(tokens, allowedTokens)
+                            )
+                        );
+
+                        if (!isEmptyLPTokens(filteredTokens)) {
+                            updateTokenList(filteredTokens);
+                        }
+
                         set({
                             address,
                             connecting: false,
                             connected: true,
+                            newLPTokens: filteredTokens,
                         });
                     }
                 } catch (error) {
@@ -76,7 +200,6 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                 try {
                     set({ connecting: true });
 
-                    // Check if ArConnect is installed
                     if (!window.arweaveWallet) {
                         toast({
                             title: 'Wallet Not Found',
@@ -87,23 +210,39 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         return;
                     }
 
-                    // Request permissions
-                    await window.arweaveWallet.connect([
+                    const permissions = [
                         'ACCESS_ADDRESS',
+                        'ACCESS_TOKENS',
                         'SIGN_TRANSACTION',
                         'DISPATCH',
+                    ];
+
+                    await window.arweaveWallet.connect(permissions);
+
+                    const [tokens, address, allowedTokens] = await Promise.all([
+                        window.arweaveWallet.userTokens() as Promise<UserTokensResult>,
+                        window.arweaveWallet.getActiveAddress(),
+                        fetchAllowedTokens(),
                     ]);
 
-                    const address =
-                        await window.arweaveWallet.getActiveAddress();
+                    // Filter out allowed tokens
+                    const filteredTokens = convertToAllowedTokensFormat(
+                        keepLPTokensOnly(
+                            filterOutAllowedTokens(tokens, allowedTokens)
+                        )
+                    );
+
+                    if (!isEmptyLPTokens(filteredTokens)) {
+                        updateTokenList(filteredTokens);
+                    }
 
                     set({
                         address,
                         connecting: false,
                         connected: true,
+                        newLPTokens: filteredTokens,
                     });
 
-                    // Scroll to staking dashboard after successful connection
                     get().scrollToStakingDashboard();
 
                     toast({
@@ -129,6 +268,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         address: null,
                         connecting: false,
                         connected: false,
+                        newLPTokens: { addresses: {}, names: {} },
                     });
 
                     toast({
@@ -157,6 +297,7 @@ export const useArweaveWalletInit = () => {
     );
 
     React.useEffect(() => {
+        // Initial setup
         checkConnection();
 
         // Listen for wallet events
@@ -174,6 +315,7 @@ export const useArweaveWalletInit = () => {
 declare global {
     interface Window {
         arweaveWallet: {
+            userTokens(): Promise<UserTokensResult>;
             connect: (permissions: string[]) => Promise<void>;
             disconnect: () => Promise<void>;
             getActiveAddress: () => Promise<string>;
