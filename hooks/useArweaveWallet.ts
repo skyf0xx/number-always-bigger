@@ -2,6 +2,7 @@ import React from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from './use-toast';
+import { AllowedTokens, getAllowedTokens } from '@/lib/wallet-actions';
 
 export type UserTokensResult = Array<{
     Name?: string;
@@ -17,10 +18,12 @@ interface ArweaveWalletState {
     connecting: boolean;
     connected: boolean;
     tokens: UserTokensResult;
+    allowedTokens: AllowedTokens | null;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
     scrollToStakingDashboard: () => void;
+    fetchAllowedTokens: () => Promise<void>;
 }
 
 export const scrollToDashboard = () => {
@@ -31,7 +34,6 @@ export const scrollToDashboard = () => {
             const dashboardRect = dashboard.getBoundingClientRect();
             const viewportHeight = window.innerHeight;
 
-            // Calculate position to center the dashboard
             const elementPosition =
                 window.scrollY +
                 dashboardRect.top -
@@ -54,10 +56,28 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
             connecting: false,
             connected: false,
             tokens: [],
+            allowedTokens: null,
 
             scrollToStakingDashboard: () => {
-                // Allow time for the dashboard to render
                 scrollToDashboard();
+            },
+
+            fetchAllowedTokens: async () => {
+                try {
+                    // Only fetch if we haven't already
+                    if (!get().allowedTokens) {
+                        const tokens = await getAllowedTokens();
+                        console.log({ tokens });
+                        set({ allowedTokens: tokens });
+                    }
+                } catch (error) {
+                    console.error('Error fetching allowed tokens:', error);
+                    toast({
+                        title: 'Failed to fetch allowed tokens',
+                        description: 'Please try refreshing the page',
+                        variant: 'destructive',
+                    });
+                }
             },
 
             checkConnection: async () => {
@@ -106,7 +126,6 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                 try {
                     set({ connecting: true });
 
-                    // Check if ArConnect is installed
                     if (!window.arweaveWallet) {
                         toast({
                             title: 'Wallet Not Found',
@@ -118,7 +137,6 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                     }
 
                     const permissions = [
-                        //note! Update version if you ever change permissions
                         'ACCESS_ADDRESS',
                         'ACCESS_TOKENS',
                         'SIGN_TRANSACTION',
@@ -139,7 +157,6 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         tokens,
                     });
 
-                    // Scroll to staking dashboard after successful connection
                     get().scrollToStakingDashboard();
 
                     toast({
@@ -192,9 +209,14 @@ export const useArweaveWalletInit = () => {
     const checkConnection = useArweaveWalletStore(
         (state) => state.checkConnection
     );
+    const fetchAllowedTokens = useArweaveWalletStore(
+        (state) => state.fetchAllowedTokens
+    );
 
     React.useEffect(() => {
+        // Initial setup
         checkConnection();
+        fetchAllowedTokens();
 
         // Listen for wallet events
         window.addEventListener('arweaveWalletLoaded', checkConnection);
@@ -204,7 +226,7 @@ export const useArweaveWalletInit = () => {
             window.removeEventListener('arweaveWalletLoaded', checkConnection);
             window.removeEventListener('walletSwitch', checkConnection);
         };
-    }, [checkConnection]);
+    }, [checkConnection, fetchAllowedTokens]);
 };
 
 // Type declaration for global window object
