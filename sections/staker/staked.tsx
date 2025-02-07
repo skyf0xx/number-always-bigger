@@ -32,19 +32,32 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
         );
     };
 
-    // Filter and sort valid balances
+    // Filter valid balances
     const validBalances = balances.filter(
         (balance) =>
             tokenWeights[balance.name] && tokenWeights[balance.name] !== '0'
     );
 
-    // Separate LP tokens and regular tokens
-    const lpTokens = validBalances
-        .filter((b) => isLPToken(b.name))
-        .sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount));
-    const regularTokens = validBalances
-        .filter((b) => !isLPToken(b.name))
-        .sort((a, b) => parseFloat(b.amount) - parseFloat(a.amount));
+    // Custom sort function for tokens
+    const sortTokens = (tokens: StakedBalance[]) => {
+        return tokens.sort((a, b) => {
+            // First, group by whether they have a staked amount
+            const aHasStake = parseFloat(a.amount) > 0;
+            const bHasStake = parseFloat(b.amount) > 0;
+
+            if (aHasStake && !bHasStake) return -1;
+            if (!aHasStake && bHasStake) return 1;
+
+            // Then sort alphabetically
+            return a.name.localeCompare(b.name);
+        });
+    };
+
+    // Separate and sort LP tokens and regular tokens
+    const lpTokens = sortTokens(validBalances.filter((b) => isLPToken(b.name)));
+    const regularTokens = sortTokens(
+        validBalances.filter((b) => !isLPToken(b.name))
+    );
 
     if (validBalances.length === 0) {
         return (
@@ -63,7 +76,19 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
         );
     }
 
-    const TokenList = ({ tokens, title, icon: Icon, isExpanded, onToggle }) => (
+    const TokenList = ({
+        tokens,
+        title,
+        icon: Icon,
+        isExpanded,
+        onToggle,
+    }: {
+        tokens: StakedBalance[];
+        title: string;
+        icon: React.ElementType;
+        isExpanded: boolean;
+        onToggle: () => void;
+    }) => (
         <div className="mb-4">
             <button
                 onClick={onToggle}
@@ -73,7 +98,13 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                     <Icon className="h-5 w-5 text-tech-purple" />
                     <span className="font-comic">
                         {title} (
-                        {tokens.filter((t) => parseFloat(t.amount) > 0).length})
+                        {
+                            tokens.filter(
+                                (t: { amount: string }) =>
+                                    parseFloat(t.amount) > 0
+                            ).length
+                        }
+                        )
                     </span>
                 </div>
                 {isExpanded ? (
@@ -85,7 +116,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
 
             {isExpanded && (
                 <div className="space-y-2">
-                    {tokens.map((balance) => (
+                    {tokens.map((balance: StakedBalance) => (
                         <div
                             key={balance.name}
                             className={`grid grid-cols-12 gap-4 py-3 px-2 hover:bg-gray-50 rounded-lg transition-all duration-200 items-center ${
