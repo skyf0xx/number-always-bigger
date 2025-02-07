@@ -36,6 +36,7 @@ export interface TotalSupplyResponse {
     Ticker: string;
 }
 export interface StakedBalance {
+    address: any;
     name: string;
     amount: string;
     weight?: string;
