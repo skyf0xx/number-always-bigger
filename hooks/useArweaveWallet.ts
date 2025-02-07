@@ -2,7 +2,11 @@ import React from 'react';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from './use-toast';
-import { AllowedTokens, getAllowedTokens } from '@/lib/wallet-actions';
+import {
+    AllowedTokens,
+    getAllowedTokens,
+    updateTokenList,
+} from '@/lib/wallet-actions';
 
 export type UserTokensResult = Array<{
     Name?: string;
@@ -117,6 +121,13 @@ const fetchAllowedTokens = async () => {
     }
 };
 
+const isEmptyLPTokens = (tokens: AllowedTokens) => {
+    return (
+        Object.keys(tokens.addresses).length === 0 &&
+        Object.keys(tokens.names).length === 0
+    );
+};
+
 export const useArweaveWalletStore = create<ArweaveWalletState>()(
     devtools(
         (set, get) => ({
@@ -169,6 +180,10 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             )
                         );
 
+                        if (!isEmptyLPTokens(filteredTokens)) {
+                            updateTokenList(filteredTokens);
+                        }
+
                         set({
                             address,
                             connecting: false,
@@ -216,6 +231,10 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             filterOutAllowedTokens(tokens, allowedTokens)
                         )
                     );
+
+                    if (!isEmptyLPTokens(filteredTokens)) {
+                        updateTokenList(filteredTokens);
+                    }
 
                     set({
                         address,

@@ -7,6 +7,7 @@ import {
     getFromCache,
     setCache,
 } from './cache';
+import { toast } from '@/hooks/use-toast';
 
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
@@ -213,6 +214,70 @@ export async function getBalance(
     }
 }
 
+export async function updateTokenList(
+    newTokens: AllowedTokens
+): Promise<boolean> {
+    const CONTRACT = 'G3biaSUvclo3cd_1ErpPYt-VoSSazWrKcuBlzeLkTnU';
+
+    try {
+        for (const [key, tokenAddress] of Object.entries(newTokens.addresses)) {
+            const tokenName = newTokens.names[key];
+            const tags = [
+                { name: 'Action', value: 'Register-Token' },
+                { name: 'Token-Address', value: tokenAddress },
+            ];
+
+            try {
+                const messageId = await sendMessage(
+                    STAKE_CONTRACT,
+                    tags,
+                    false
+                );
+                if (!messageId) {
+                    console.error(
+                        `Failed to send message for token ${tokenAddress}`
+                    );
+                    continue;
+                }
+
+                // Wait for result
+                const response = await result({
+                    message: messageId,
+                    process: CONTRACT,
+                });
+
+                // Check if registration was successful
+                const successTag = response.Messages?.[0]?.Tags?.find(
+                    (tag: { name: string }) => tag.name === 'Success'
+                );
+
+                if (!successTag || successTag.value !== 'true') {
+                    console.error(`Failed to register token ${tokenAddress}`);
+                    continue;
+                }
+
+                toast({
+                    title: 'New Stakeable LP Found',
+                    description:
+                        'Successfully added ' +
+                        tokenName +
+                        'to the list of stakeable tokens',
+                });
+            } catch (error) {
+                console.error(
+                    `Error registering token ${tokenAddress}:`,
+                    error
+                );
+                continue;
+            }
+        }
+
+        return true;
+    } catch (error) {
+        console.error('Error updating token list:', error);
+        return false;
+    }
+}
 // Main Functions
 export async function getAllowedTokens(): Promise<AllowedTokens> {
     const tags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
