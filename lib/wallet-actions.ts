@@ -216,6 +216,14 @@ export async function getBalance(
     }
 }
 
+function isRegistered(tokenAddress: string): boolean {
+    const token = `token_${tokenAddress}`;
+    const isRegistered = sessionStorage.getItem(token) === 'true';
+
+    sessionStorage.setItem(token, 'true');
+    return isRegistered;
+}
+
 export async function updateTokenList(
     newTokens: AllowedTokens
 ): Promise<boolean> {
@@ -223,6 +231,8 @@ export async function updateTokenList(
 
     try {
         for (const [key, tokenAddress] of Object.entries(newTokens.addresses)) {
+            if (isRegistered(tokenAddress)) continue; //we already tried to register in this session
+
             const tokenName = newTokens.names[key];
             const tags = [
                 { name: 'Action', value: 'Register-Token' },
