@@ -228,11 +228,8 @@ export async function updateTokenList(
             ];
 
             try {
-                const messageId = await sendMessage(
-                    STAKE_CONTRACT,
-                    tags,
-                    false
-                );
+                const messageId = await sendMessage(CONTRACT, tags, false);
+
                 if (!messageId) {
                     console.error(
                         `Failed to send message for token ${tokenAddress}`
