@@ -1,6 +1,8 @@
 import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { TrendingUp, Sparkles, Rocket, RefreshCw } from 'lucide-react';
+import { RefreshCw, Coins, Info, Layers, ArrowRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
 
 interface TokenBreakdown {
     num_stakers: number;
@@ -18,10 +20,7 @@ const HowToGet: React.FC<HowToGetProps> = ({
     data = [],
     isLoading = false,
 }) => {
-    // Sort tokens alphabetically by token_name
-    const sortedTokens = [...data].sort((a, b) =>
-        a.token_name.localeCompare(b.token_name)
-    );
+    const singleTokens = ['NAB', 'MINT', 'qAR', 'wAR', 'USDA'];
 
     return (
         <section className="max-w-4xl mx-auto my-16" id="stake">
@@ -29,47 +28,152 @@ const HowToGet: React.FC<HowToGetProps> = ({
                 <h2 className="text-4xl font-bold mb-6 text-center">
                     how 2 get NAB?
                 </h2>
-                <p className="text-2xl text-center mb-8">
-                    u can&apos;t buy NAB directly fren (we&apos;re built
-                    different)
-                </p>
+
+                {/* Two paths card */}
+                <Card className="border-4 border-moon-yellow mb-8 hover:scale-[1.01] transition-transform">
+                    <CardContent className="p-6">
+                        <div className="grid md:grid-cols-2 gap-6">
+                            {/* Quick path */}
+                            <div className="p-4 rounded-lg bg-gray-50">
+                                <h3 className="text-xl font-bold mb-2">
+                                    Quick Path
+                                </h3>
+                                <p className="text-lg mb-3">
+                                    Grab some on{' '}
+                                    <Link
+                                        href="https://dexi.arweave.dev/#/token/OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU"
+                                        target="_blank"
+                                        className="text-meme-blue font-bold hover:underline"
+                                    >
+                                        Dexi
+                                    </Link>
+                                </p>
+                            </div>
+
+                            {/* Chad path */}
+                            <div className="p-4 rounded-lg bg-crypto-green/10 border-2 border-crypto-green">
+                                <h3 className="text-xl font-bold mb-2">
+                                    Chad Path
+                                </h3>
+                                <p className="text-lg">
+                                    <span className="font-bold">
+                                        Make it yourself
+                                    </span>{' '}
+                                    and earn rewards
+                                </p>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 <Alert className="border-4 border-moon-yellow mb-8">
                     <AlertTitle className="text-2xl mb-4">
-                        to make NAB exist:
+                        how to make NAB:
                     </AlertTitle>
                     <AlertDescription className="text-xl space-y-4">
-                        <p>1. stake accepted tokens in our special contract</p>
-                        <p>2. wait for number printer go brrr</p>
-                        <p>3. profit</p>
+                        <p className="flex items-center gap-2">
+                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-moon-yellow text-black font-bold flex items-center justify-center">
+                                1
+                            </span>
+                            stake accepted tokens in our special contract
+                        </p>
+                        <p className="flex items-center gap-2">
+                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-moon-yellow text-black font-bold flex items-center justify-center">
+                                2
+                            </span>
+                            wait for number printer go brrr
+                        </p>
+                        <p className="flex items-center gap-2">
+                            <span className="flex-shrink-0 w-6 h-6 rounded-full bg-moon-yellow text-black font-bold flex items-center justify-center">
+                                3
+                            </span>
+                            profit
+                        </p>
                     </AlertDescription>
                 </Alert>
 
-                <Alert className="border-4 border-floor-pink">
-                    <AlertTitle className="text-2xl mb-4">
-                        accepted tokens:
-                    </AlertTitle>
-                    <AlertDescription className="text-xl">
-                        {isLoading ? (
-                            <div className="flex items-center gap-2 py-4">
-                                <RefreshCw className="h-5 w-5 animate-spin text-moon-yellow" />
-                                <span>loading accepted tokens...</span>
-                            </div>
-                        ) : (
-                            <ul className="space-y-4">
-                                {sortedTokens.map((token) => (
-                                    <li
-                                        key={token.token_address}
-                                        className="flex items-center gap-2"
+                <div className="space-y-6">
+                    <h3 className="text-2xl font-bold text-center mb-6 flex items-center justify-center gap-2">
+                        <Coins className="h-6 w-6 text-moon-yellow" />
+                        stake & earn: accepted tokens
+                    </h3>
+
+                    {isLoading ? (
+                        <div className="flex items-center justify-center gap-2 py-8">
+                            <RefreshCw className="h-6 w-6 animate-spin text-moon-yellow" />
+                            <span className="text-xl">
+                                loading accepted tokens...
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="space-y-6">
+                            {/* Single Tokens Card */}
+                            <Card className="border-4 border-floor-pink hover:scale-[1.02] transition-transform">
+                                <CardContent className="p-6">
+                                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                        <Coins className="h-5 w-5 text-moon-yellow" />
+                                        Single Tokens
+                                    </h4>
+                                    <div className="flex flex-wrap gap-3">
+                                        {singleTokens.map((token) => (
+                                            <span
+                                                key={token}
+                                                className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg hover:bg-gray-200 transition-colors"
+                                            >
+                                                {token}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            {/* LP Tokens Card */}
+                            <Card className="border-4 border-tech-purple hover:scale-[1.02] transition-transform">
+                                <CardContent className="p-6">
+                                    <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
+                                        <Layers className="h-5 w-5 text-tech-purple" />
+                                        LP Tokens
+                                    </h4>
+                                    <p className="text-lg mb-4">
+                                        Any{' '}
+                                        <Link
+                                            href="https://botega.arweave.dev/#/swap"
+                                            target="_blank"
+                                            className="text-meme-blue font-bold hover:underline"
+                                        >
+                                            Botega
+                                        </Link>{' '}
+                                        or{' '}
+                                        <Link
+                                            href="https://www.permaswap.network/#/ao"
+                                            target="_blank"
+                                            className="text-meme-blue font-bold hover:underline"
+                                        >
+                                            Permaswap
+                                        </Link>{' '}
+                                        LP that pairs with NAB
+                                    </p>
+                                </CardContent>
+                            </Card>
+
+                            {/* Info Note */}
+                            <div className="bg-gray-50 rounded-lg p-4 text-gray-600 flex items-start gap-3">
+                                <Info className="h-5 w-5 mt-1 flex-shrink-0" />
+                                <p className="text-sm">
+                                    New LP tokens may take up to 24 hours to be
+                                    stakeable. Need help? Join us on{' '}
+                                    <Link
+                                        href="https://discord.gg/RSXg24mCrJ"
+                                        target="_blank"
+                                        className="text-meme-blue hover:underline"
                                     >
-                                        <Sparkles className="text-moon-yellow" />
-                                        {token.token_name}
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-                    </AlertDescription>
-                </Alert>
+                                        Discord
+                                    </Link>
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </div>
         </section>
     );
