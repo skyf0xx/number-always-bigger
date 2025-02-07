@@ -3,10 +3,20 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { toast } from './use-toast';
 
+export type UserTokensResult = Array<{
+    Name?: string;
+    Ticker?: string;
+    Logo?: string;
+    Denomination: number;
+    processId: string;
+    balance?: string | null;
+}>;
+
 interface ArweaveWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
+    tokens: UserTokensResult;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
@@ -43,6 +53,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
             address: null,
             connecting: false,
             connected: false,
+            tokens: [],
 
             scrollToStakingDashboard: () => {
                 // Allow time for the dashboard to render
@@ -65,6 +76,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             address: null,
                             connecting: false,
                             connected: false,
+                            tokens: [],
                         });
                         return;
                     }
@@ -73,12 +85,16 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         await window.arweaveWallet.getPermissions();
 
                     if (permissions.includes('ACCESS_ADDRESS')) {
-                        const address =
-                            await window.arweaveWallet.getActiveAddress();
+                        const [tokens, address] = await Promise.all([
+                            window.arweaveWallet.userTokens() as Promise<UserTokensResult>,
+                            window.arweaveWallet.getActiveAddress(),
+                        ]);
+
                         set({
                             address,
                             connecting: false,
                             connected: true,
+                            tokens,
                         });
                     }
                 } catch (error) {
@@ -109,15 +125,18 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         'DISPATCH',
                     ];
 
-                    const address =
-                        await window.arweaveWallet.getActiveAddress();
-                    // Request permissions
                     await window.arweaveWallet.connect(permissions);
+
+                    const [tokens, address] = await Promise.all([
+                        window.arweaveWallet.userTokens() as Promise<UserTokensResult>,
+                        window.arweaveWallet.getActiveAddress(),
+                    ]);
 
                     set({
                         address,
                         connecting: false,
                         connected: true,
+                        tokens,
                     });
 
                     // Scroll to staking dashboard after successful connection
@@ -146,6 +165,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         address: null,
                         connecting: false,
                         connected: false,
+                        tokens: [],
                     });
 
                     toast({
@@ -191,6 +211,7 @@ export const useArweaveWalletInit = () => {
 declare global {
     interface Window {
         arweaveWallet: {
+            userTokens(): Promise<UserTokensResult>;
             connect: (permissions: string[]) => Promise<void>;
             disconnect: () => Promise<void>;
             getActiveAddress: () => Promise<string>;
