@@ -3,6 +3,7 @@ import { sendMessage } from './messages';
 import { adjustDecimalString, withRetry } from './utils';
 import {
     CACHE_EXPIRY,
+    deleteFromCache,
     generateCacheKey,
     getFromCache,
     setCache,
@@ -253,6 +254,13 @@ export async function updateTokenList(
                     continue;
                 }
 
+                const cacheKey = generateCacheKey(
+                    STAKE_CONTRACT,
+                    allowedTokentags
+                );
+
+                await deleteFromCache(cacheKey);
+
                 toast({
                     title: 'New Stakeable LP Found',
                     description:
@@ -276,13 +284,13 @@ export async function updateTokenList(
     }
 }
 // Main Functions
-export async function getAllowedTokens(): Promise<AllowedTokens> {
-    const tags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
+const allowedTokentags = [{ name: 'Action', value: 'Get-Allowed-Tokens' }];
 
+export async function getAllowedTokens(): Promise<AllowedTokens> {
     try {
         const result = await sendAndGetResult(
             STAKE_CONTRACT,
-            tags,
+            allowedTokentags,
             false,
             CACHE_EXPIRY.DAY
         );
