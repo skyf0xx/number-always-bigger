@@ -34,8 +34,9 @@ const TokenDeets = ({ data = [], isLoading = false }: TokenDeetsProps) => {
         );
     }
 
-    // Filter and sort data
+    // Filter out tokens with zero stakers, then apply search and sort
     const processedData = [...data]
+        .filter((token) => token.num_stakers > 0) // Filter out tokens with zero stakers
         .filter((token) =>
             token.token_name.toLowerCase().includes(searchQuery.toLowerCase())
         )
@@ -49,6 +50,22 @@ const TokenDeets = ({ data = [], isLoading = false }: TokenDeetsProps) => {
     const visibleData = isExpanded
         ? processedData
         : processedData.slice(0, maxVisible);
+
+    // If there are no tokens with stakers, show a message
+    if (processedData.length === 0) {
+        return (
+            <Card className="bg-white/95 backdrop-blur-sm border-2 border-tech-purple">
+                <CardContent className="p-4">
+                    <div className="text-center font-comic">
+                        <p>no tokens staked yet fren!</p>
+                        <p className="text-sm text-gray-500">
+                            connect wallet to start staking
+                        </p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <Card className="bg-white/95 backdrop-blur-sm border-2 border-tech-purple">
@@ -126,14 +143,14 @@ const TokenDeets = ({ data = [], isLoading = false }: TokenDeetsProps) => {
                 </div>
 
                 {/* Show More/Less Button */}
-                {data.length > maxVisible && (
+                {processedData.length > maxVisible && (
                     <button
                         onClick={() => setIsExpanded(!isExpanded)}
                         className="w-full mt-4 py-2 flex items-center justify-center gap-2 text-sm font-comic text-gray-600 hover:text-gray-800 transition-colors"
                     >
                         {isExpanded
                             ? 'show less'
-                            : `show ${data.length - maxVisible} more`}
+                            : `show ${processedData.length - maxVisible} more`}
                         <ChevronDown
                             className={`h-4 w-4 transition-transform ${
                                 isExpanded ? 'rotate-180' : ''
