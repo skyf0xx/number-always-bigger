@@ -249,36 +249,23 @@ export async function updateTokenList(
                     continue;
                 }
 
-                // Wait for result
-                const response = await result({
-                    message: messageId,
-                    process: CONTRACT,
-                });
-
-                // Check if registration was successful
-                const successTag = response.Messages?.[0]?.Tags?.find(
-                    (tag: { name: string }) => tag.name === 'Success'
-                );
-
-                if (!successTag || successTag.value !== true) {
-                    console.error(`Failed to register token ${tokenAddress}`);
-                    continue;
-                }
-
                 const cacheKey = generateCacheKey(
                     STAKE_CONTRACT,
                     allowedTokentags
                 );
 
-                await deleteFromCache(cacheKey);
+                setTimeout(() => {
+                    deleteFromCache(cacheKey);
+                }, 20_000);
 
-                toast({
+                //TODO: confirm it has registered instead of just assuming
+                /*toast({
                     title: 'New Stakeable LP Found',
                     description:
                         'Successfully added ' +
                         tokenName +
                         'to the list of stakeable tokens',
-                });
+                });*/
             } catch (error) {
                 console.error(
                     `Error registering token ${tokenAddress}:`,
