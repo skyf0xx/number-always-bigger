@@ -248,7 +248,7 @@ export async function updateTokenList(
                     (tag: { name: string }) => tag.name === 'Success'
                 );
 
-                if (!successTag || successTag.value !== 'true') {
+                if (!successTag || successTag.value !== true) {
                     console.error(`Failed to register token ${tokenAddress}`);
                     continue;
                 }
