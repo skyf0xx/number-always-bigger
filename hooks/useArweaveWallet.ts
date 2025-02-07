@@ -17,7 +17,7 @@ interface ArweaveWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
-    tokens: UserTokensResult;
+    newTokens: UserTokensResult;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
@@ -78,7 +78,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
             address: null,
             connecting: false,
             connected: false,
-            tokens: [],
+            newTokens: [],
             allowedTokens: null,
 
             scrollToStakingDashboard: () => {
@@ -101,7 +101,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             address: null,
                             connecting: false,
                             connected: false,
-                            tokens: [],
+                            newTokens: [],
                         });
                         return;
                     }
@@ -130,7 +130,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             address,
                             connecting: false,
                             connected: true,
-                            tokens: filteredTokens,
+                            newTokens: filteredTokens,
                         });
                     }
                 } catch (error) {
@@ -177,7 +177,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         address,
                         connecting: false,
                         connected: true,
-                        tokens: filteredTokens,
+                        newTokens: filteredTokens,
                     });
 
                     get().scrollToStakingDashboard();
@@ -205,7 +205,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         address: null,
                         connecting: false,
                         connected: false,
-                        tokens: [],
+                        newTokens: [],
                     });
 
                     toast({
