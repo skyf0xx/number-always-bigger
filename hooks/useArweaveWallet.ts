@@ -17,7 +17,7 @@ interface ArweaveWalletState {
     address: string | null;
     connecting: boolean;
     connected: boolean;
-    newTokens: UserTokensResult;
+    newLPTokens: UserTokensResult;
     connect: () => Promise<void>;
     disconnect: () => Promise<void>;
     checkConnection: () => Promise<void>;
@@ -78,7 +78,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
             address: null,
             connecting: false,
             connected: false,
-            newTokens: [],
+            newLPTokens: [],
             allowedTokens: null,
 
             scrollToStakingDashboard: () => {
@@ -101,7 +101,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             address: null,
                             connecting: false,
                             connected: false,
-                            newTokens: [],
+                            newLPTokens: [],
                         });
                         return;
                     }
@@ -130,7 +130,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                             address,
                             connecting: false,
                             connected: true,
-                            newTokens: filteredTokens,
+                            newLPTokens: filteredTokens,
                         });
                     }
                 } catch (error) {
@@ -177,7 +177,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         address,
                         connecting: false,
                         connected: true,
-                        newTokens: filteredTokens,
+                        newLPTokens: filteredTokens,
                     });
 
                     get().scrollToStakingDashboard();
@@ -205,7 +205,7 @@ export const useArweaveWalletStore = create<ArweaveWalletState>()(
                         address: null,
                         connecting: false,
                         connected: false,
-                        newTokens: [],
+                        newLPTokens: [],
                     });
 
                     toast({
