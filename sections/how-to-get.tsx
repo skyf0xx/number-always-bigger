@@ -21,6 +21,13 @@ const HowToGet: React.FC<HowToGetProps> = ({
     isLoading = false,
 }) => {
     const singleTokens = ['NAB', 'MINT', 'qAR', 'wAR', 'USDA'];
+    const singleTokenAddresses = {
+        NAB: 'OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU',
+        MINT: 'SWQx44W-1iMwGFBSHlC3lStCq3Z7O2WZrx9quLeZOu0',
+        qAR: 'NG-0lVX882MG5nhARrSzyprEK6ejonHpdUmaaMPsHE8',
+        wAR: 'xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10',
+        USDA: '',
+    };
 
     return (
         <section className="max-w-4xl mx-auto my-16" id="stake">
