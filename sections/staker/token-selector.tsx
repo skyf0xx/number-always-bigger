@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, ChevronDown, RefreshCw } from 'lucide-react';
+import { Search, ChevronDown, RefreshCw, Info } from 'lucide-react';
 import { AllowedTokens } from '@/lib/wallet-actions';
 
 interface TokenSelectorProps {
@@ -17,6 +17,13 @@ type UserTokensResult = Array<{
     processId: string;
     balance?: string | null;
 }>;
+
+interface TokenInfo {
+    key: string;
+    name: string;
+    address: string;
+    isAvailable: boolean;
+}
 
 const TokenSelector = ({
     selectedToken,
@@ -53,27 +60,49 @@ const TokenSelector = ({
         walletTokens.map((token) => token.processId)
     );
 
-    // Filter tokens that exist in both allowed tokens and wallet
-    const availableTokens = Object.entries(allowedTokens.names)
-        .filter(([key]) =>
-            walletTokenAddresses.has(allowedTokens.addresses[key])
+    // Create arrays for available and unavailable tokens
+    const { availableTokens, unavailableTokens } = Object.entries(
+        allowedTokens.names
+    )
+        .map(
+            ([key]): TokenInfo => ({
+                key,
+                name: allowedTokens.names[key],
+                address: allowedTokens.addresses[key],
+                isAvailable: walletTokenAddresses.has(
+                    allowedTokens.addresses[key]
+                ),
+            })
         )
-        .map(([key]) => ({
-            key,
-            name: allowedTokens.names[key],
-            address: allowedTokens.addresses[key],
-        }))
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .reduce<{
+            availableTokens: TokenInfo[];
+            unavailableTokens: TokenInfo[];
+        }>(
+            (acc, token) => {
+                if (token.isAvailable) {
+                    acc.availableTokens.push(token);
+                } else {
+                    acc.unavailableTokens.push(token);
+                }
+                return acc;
+            },
+            { availableTokens: [], unavailableTokens: [] }
+        );
 
     // Filter based on search query
-    const filteredTokens = availableTokens.filter((token) =>
+    const filteredAvailable = availableTokens.filter((token) =>
+        token.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    const filteredUnavailable = unavailableTokens.filter((token) =>
         token.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     // Get selected token name
     const selectedTokenName =
-        availableTokens.find((token) => token.address === selectedToken)
-            ?.name || 'choose a token fren';
+        [...availableTokens, ...unavailableTokens].find(
+            (token) => token.address === selectedToken
+        )?.name || 'choose a token fren';
 
     if (isLoadingTokens) {
         return (
@@ -135,37 +164,74 @@ const TokenSelector = ({
                     </div>
 
                     <div className="max-h-60 overflow-y-auto">
-                        {filteredTokens.length === 0 ? (
+                        {filteredAvailable.length === 0 &&
+                        filteredUnavailable.length === 0 ? (
                             <div className="p-3 text-center text-gray-500 font-comic">
-                                {availableTokens.length === 0
-                                    ? 'no stakeable tokens found in ur wallet fren'
-                                    : 'no matching tokens found'}
+                                no matching tokens found
                             </div>
                         ) : (
-                            filteredTokens.map((token) => (
-                                <button
-                                    key={token.key}
-                                    onClick={() => {
-                                        onTokenSelect(token.address);
-                                        setIsOpen(false);
-                                        setSearchQuery('');
-                                    }}
-                                    className={`w-full p-3 text-left font-comic hover:bg-gray-50
-                                        flex items-center justify-between
-                                        ${
-                                            selectedToken === token.address
-                                                ? 'bg-meme-blue/10'
-                                                : ''
-                                        }`}
-                                >
-                                    <span>{token.name}</span>
-                                    {selectedToken === token.address && (
-                                        <span className="text-meme-blue">
-                                            •
-                                        </span>
+                            <>
+                                {/* Available Tokens */}
+                                {filteredAvailable.length > 0 && (
+                                    <div className="py-1">
+                                        {filteredAvailable.map((token) => (
+                                            <button
+                                                key={token.key}
+                                                onClick={() => {
+                                                    onTokenSelect(
+                                                        token.address
+                                                    );
+                                                    setIsOpen(false);
+                                                    setSearchQuery('');
+                                                }}
+                                                className={`w-full p-3 text-left font-comic hover:bg-gray-50
+                                                    flex items-center justify-between
+                                                    ${
+                                                        selectedToken ===
+                                                        token.address
+                                                            ? 'bg-meme-blue/10'
+                                                            : ''
+                                                    }`}
+                                            >
+                                                <span>{token.name}</span>
+                                                {selectedToken ===
+                                                    token.address && (
+                                                    <span className="text-meme-blue">
+                                                        •
+                                                    </span>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Divider if both sections are present */}
+                                {filteredAvailable.length > 0 &&
+                                    filteredUnavailable.length > 0 && (
+                                        <div className="border-t border-gray-100" />
                                     )}
-                                </button>
-                            ))
+
+                                {/* Unavailable Tokens */}
+                                {filteredUnavailable.length > 0 && (
+                                    <div className="py-1">
+                                        <div className="px-3 py-2 text-xs text-gray-500 font-comic bg-gray-50 flex items-center gap-2">
+                                            <Info className="w-3 h-3" />
+                                            tokens u need to get first
+                                        </div>
+                                        {filteredUnavailable.map((token) => (
+                                            <div
+                                                key={token.key}
+                                                className="w-full p-3 text-left font-comic text-gray-400 flex items-center justify-between"
+                                            >
+                                                <span>{token.name}</span>
+                                                <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
+                                                    not in wallet
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
