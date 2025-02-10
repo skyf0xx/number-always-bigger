@@ -136,7 +136,7 @@ const RoadmapSection = () => {
                             className={`
                                 relative p-6 rounded-xl transition-all duration-300
                                 ${
-                                    phaseIndex === 1
+                                    phase.status === 'in-progress'
                                         ? 'bg-gradient-to-r from-crypto-green/10 via-moon-yellow/10 to-floor-pink/10'
                                         : ''
                                 }
