@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Coins, RefreshCw, ChevronDown, Search } from 'lucide-react';
 import CountUp from 'react-countup';
+import { formatTokenName } from '@/lib/utils';
 
 interface TokenBreakdown {
     num_stakers: number;
@@ -121,7 +122,7 @@ const TokenDeets = ({ data = [], isLoading = false }: TokenDeetsProps) => {
                         >
                             <div className="col-span-4 flex items-center gap-2">
                                 <Coins className="h-4 w-4 text-tech-purple" />
-                                {token.token_name}
+                                {formatTokenName(token.token_name)}
                             </div>
                             <div className="col-span-4 text-right">
                                 <CountUp

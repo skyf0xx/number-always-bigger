@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Coins, ChevronDown, ChevronUp, Sparkles, Layers } from 'lucide-react';
-import { formatBalance } from '@/lib/utils';
+import { formatBalance, formatTokenName } from '@/lib/utils';
 import { StakedBalance } from '@/lib/wallet-actions';
 
 interface StakedDisplayProps {
@@ -135,9 +135,9 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                                 />
                                 <span
                                     className="font-comic truncate"
-                                    title={balance.name}
+                                    title={formatTokenName(balance.name)}
                                 >
-                                    {balance.name}
+                                    {formatTokenName(balance.name)}
                                 </span>
                             </div>
                             <div className="col-span-3 flex items-center justify-center gap-1">

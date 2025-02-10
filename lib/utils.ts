@@ -35,6 +35,16 @@ export const formatBalance = (amount: string) => {
     }).format(num);
 };
 
+export const formatTokenName = (name: string): string => {
+    // Check if it's a Permaswap LP token (Token-Token-Number format)
+    const permaswapMatch = name.match(/^([A-Za-z]+)-([A-Za-z]+)-(\d+)$/);
+    if (permaswapMatch) {
+        const [_, token1, token2] = permaswapMatch;
+        return `Permaswap LP ${token1}/${token2}`;
+    }
+    return name;
+};
+
 // Retry configuration type
 interface RetryConfig {
     maxAttempts: number;
