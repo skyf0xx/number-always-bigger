@@ -135,7 +135,7 @@ const Tokenomics: React.FC = () => {
                                             <a
                                                 target="_blank"
                                                 className="text-meme-blue hover:text-crypto-green transition-colors"
-                                                href="https://botega.arweave.dev/#/pools"
+                                                href="https://botega.arweave.net/#/pools"
                                             >
                                                 Botega
                                             </a>
