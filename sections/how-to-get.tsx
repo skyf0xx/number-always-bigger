@@ -161,7 +161,7 @@ const HowToGet: React.FC<HowToGetProps> = ({
                                     <p className="text-lg mb-4">
                                         Any{' '}
                                         <Link
-                                            href="https://botega.arweave.dev/#/swap"
+                                            href="https://botega.arweave.net/#/swap"
                                             target="_blank"
                                             className="text-meme-blue font-bold hover:underline"
                                         >
