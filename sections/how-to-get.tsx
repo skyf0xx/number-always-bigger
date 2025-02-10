@@ -122,14 +122,31 @@ const HowToGet: React.FC<HowToGetProps> = ({
                                         Single Tokens
                                     </h4>
                                     <div className="flex flex-wrap gap-3">
-                                        {singleTokens.map((token) => (
-                                            <span
-                                                key={token}
-                                                className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg hover:bg-gray-200 transition-colors"
-                                            >
-                                                {token}
-                                            </span>
-                                        ))}
+                                        {singleTokens.map((token) =>
+                                            singleTokenAddresses[
+                                                token as keyof typeof singleTokenAddresses
+                                            ] ? (
+                                                <Link
+                                                    key={token}
+                                                    href={`https://dexi.ar.io/#/token/${
+                                                        singleTokenAddresses[
+                                                            token as keyof typeof singleTokenAddresses
+                                                        ]
+                                                    }`}
+                                                    target="_blank"
+                                                    className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                                                >
+                                                    {token}
+                                                </Link>
+                                            ) : (
+                                                <span
+                                                    key={token}
+                                                    className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg"
+                                                >
+                                                    {token}
+                                                </span>
+                                            )
+                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
@@ -158,7 +175,14 @@ const HowToGet: React.FC<HowToGetProps> = ({
                                         >
                                             Permaswap
                                         </Link>{' '}
-                                        LP that pairs with NAB
+                                        LP that pairs with NAB e.g.{' '}
+                                        <Link
+                                            href="https://botega.arweave.net/#/swap?from=OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU&to=0syT13r0s0tgPmIed95bJnuSqaD29HQNN8D3ElLSrsc"
+                                            target="_blank"
+                                            className="text-meme-blue font-bold hover:underline"
+                                        >
+                                            AO/ NAB
+                                        </Link>{' '}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -168,7 +192,7 @@ const HowToGet: React.FC<HowToGetProps> = ({
                                 <Info className="h-5 w-5 mt-1 flex-shrink-0" />
                                 <p className="text-sm">
                                     New LP tokens may take up to 24 hours to be
-                                    stakeable. Need help? Join us on{' '}
+                                    stakeable. Can&apos;t find one? Ask us on{' '}
                                     <Link
                                         href="https://discord.gg/RSXg24mCrJ"
                                         target="_blank"
