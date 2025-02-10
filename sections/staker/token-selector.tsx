@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, ChevronDown, RefreshCw, Info } from 'lucide-react';
 import { AllowedTokens } from '@/lib/wallet-actions';
+import { formatTokenName } from '@/lib/utils';
 
 interface TokenSelectorProps {
     selectedToken: string;
@@ -67,7 +68,7 @@ const TokenSelector = ({
         .map(
             ([key]): TokenInfo => ({
                 key,
-                name: allowedTokens.names[key],
+                name: formatTokenName(allowedTokens.names[key]),
                 address: allowedTokens.addresses[key],
                 isAvailable: walletTokenAddresses.has(
                     allowedTokens.addresses[key]
