@@ -9,6 +9,7 @@ import RewardsDisplay from '../rewards';
 import BalanceDisplay from './balance-display';
 import MaintenanceNotice from './maintenance-notice';
 import TokenSelector from './token-selector';
+import { formatTokenName } from '@/lib/utils';
 
 const Staker = ({
     walletAddress,
@@ -200,7 +201,9 @@ const Staker = ({
                         {isProcessing
                             ? 'processing...'
                             : selectedToken
-                            ? `unstake all ${getTokenName(selectedToken)}`
+                            ? `unstake all ${formatTokenName(
+                                  getTokenName(selectedToken)
+                              )}`
                             : 'unstake all'}
                     </button>
                 </form>

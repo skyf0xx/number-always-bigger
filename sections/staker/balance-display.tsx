@@ -1,5 +1,5 @@
 import { Wallet, ArrowUpCircle, RefreshCw, Coins } from 'lucide-react';
-import { formatBalance } from '@/lib/utils';
+import { formatBalance, formatTokenName } from '@/lib/utils';
 import { StakedBalances, TokenBalance } from '@/lib/wallet-actions';
 
 interface BalanceDisplayProps {
@@ -51,7 +51,7 @@ const BalanceDisplay = ({
                         ) : (
                             '0'
                         )}{' '}
-                        {getTokenName(selectedToken)}
+                        {formatTokenName(getTokenName(selectedToken))}
                     </p>
                 </div>
             </div>
@@ -68,7 +68,7 @@ const BalanceDisplay = ({
                                     balance.name === getTokenName(selectedToken)
                             )?.amount ?? '0'
                         )}{' '}
-                        {getTokenName(selectedToken)}
+                        {formatTokenName(getTokenName(selectedToken))}
                     </p>
                 </div>
             </div>
