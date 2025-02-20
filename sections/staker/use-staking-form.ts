@@ -56,10 +56,7 @@ const useStakingForm = (
             const result = await stakeToken(amount, selectedToken);
 
             if (result !== true) {
-                throw new Error(
-                    'Staking failed - insufficient balance or not approved: ' +
-                        result
-                );
+                throw new Error(result);
             }
 
             setSuccess(
@@ -90,8 +87,10 @@ const useStakingForm = (
             setSuccess(null);
 
             const result = await unstakeToken(selectedToken);
-            if (!result) {
-                throw new Error('Unstaking failed');
+
+            // Check if result is a string (error message) or true (success)
+            if (result !== true) {
+                throw new Error(result);
             }
 
             setSuccess(
@@ -101,6 +100,7 @@ const useStakingForm = (
                 onStakeComplete();
             }
         } catch (err: any) {
+            // Handle the error message directly if it comes from unstakeToken
             setError(
                 err?.message || 'oopsie! something went wrong while unstaking'
             );
