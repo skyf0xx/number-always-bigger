@@ -3,11 +3,30 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Coins, ChevronDown, ChevronUp, Sparkles, Layers } from 'lucide-react';
 import { formatBalance, formatTokenName } from '@/lib/utils';
 import { StakedBalance } from '@/lib/wallet-actions';
+import Link from 'next/link';
 
 interface StakedDisplayProps {
     balances: StakedBalance[];
     tokenWeights: Record<string, string>;
 }
+
+// Special token display component
+const TokenNameDisplay = ({ name }: { name: string }) => {
+    if (name === 'MINT') {
+        return (
+            <Link
+                href="http://mithril-mint-token.ar.io"
+                target="_blank"
+                className="relative group inline-flex items-center gap-2 bg-gradient-to-r from-[#6B46C1] via-[#9F7AEA] to-[#D69E2E] px-3 py-1 rounded-full font-medium text-white hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+            >
+                <Sparkles className="h-3 w-3 text-white animate-pulse" />
+                {name}
+                <span className="absolute -inset-0.5 bg-gradient-to-r from-[#6B46C1] via-[#9F7AEA] to-[#D69E2E] opacity-0 group-hover:opacity-30 rounded-full blur transition duration-300"></span>
+            </Link>
+        );
+    }
+    return <span className="font-comic">{formatTokenName(name)}</span>;
+};
 
 const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
     const [isRegularExpanded, setIsRegularExpanded] = useState(true);
@@ -32,28 +51,28 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
         );
     };
 
-    // Filter valid balances
     const validBalances = balances.filter(
         (balance) =>
             tokenWeights[balance.name] && tokenWeights[balance.name] !== '0'
     );
 
-    // Custom sort function for tokens
     const sortTokens = (tokens: StakedBalance[]) => {
         return tokens.sort((a, b) => {
-            // First, group by whether they have a staked amount
+            // First sort MINT token to the top
+            if (a.name === 'MINT') return -1;
+            if (b.name === 'MINT') return 1;
+
+            // Then sort by staked amount
             const aHasStake = parseFloat(a.amount) > 0;
             const bHasStake = parseFloat(b.amount) > 0;
-
             if (aHasStake && !bHasStake) return -1;
             if (!aHasStake && bHasStake) return 1;
 
-            // Then sort alphabetically
+            // Finally sort alphabetically
             return a.name.localeCompare(b.name);
         });
     };
 
-    // Separate and sort LP tokens and regular tokens
     const lpTokens = sortTokens(validBalances.filter((b) => isLPToken(b.name)));
     const regularTokens = sortTokens(
         validBalances.filter((b) => !isLPToken(b.name))
@@ -98,13 +117,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                     <Icon className="h-5 w-5 text-tech-purple" />
                     <span className="font-comic">
                         {title} (
-                        {
-                            tokens.filter(
-                                (t: { amount: string }) =>
-                                    parseFloat(t.amount) > 0
-                            ).length
-                        }
-                        )
+                        {tokens.filter((t) => parseFloat(t.amount) > 0).length})
                     </span>
                 </div>
                 {isExpanded ? (
@@ -116,7 +129,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
 
             {isExpanded && (
                 <div className="space-y-2">
-                    {tokens.map((balance: StakedBalance) => (
+                    {tokens.map((balance) => (
                         <div
                             key={balance.name}
                             className={`grid grid-cols-12 gap-4 py-3 px-2 hover:bg-gray-50 rounded-lg transition-all duration-200 items-center ${
@@ -133,12 +146,7 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                                             : 'text-meme-blue'
                                     } flex-shrink-0`}
                                 />
-                                <span
-                                    className="font-comic truncate"
-                                    title={formatTokenName(balance.name)}
-                                >
-                                    {formatTokenName(balance.name)}
-                                </span>
+                                <TokenNameDisplay name={balance.name} />
                             </div>
                             <div className="col-span-3 flex items-center justify-center gap-1">
                                 <Sparkles
@@ -168,7 +176,6 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
     return (
         <Card className="bg-white/95 backdrop-blur-sm border-2 border-meme-blue">
             <CardContent className="p-6">
-                {/* Header */}
                 <div className="grid grid-cols-12 gap-4 mb-4 px-2 border-b border-gray-100 pb-4">
                     <div className="col-span-3 text-sm font-comic text-gray-600">
                         token
@@ -184,7 +191,6 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                     </div>
                 </div>
 
-                {/* Regular Tokens Section */}
                 <TokenList
                     tokens={regularTokens}
                     title="Regular Tokens"
@@ -193,7 +199,6 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                     onToggle={() => setIsRegularExpanded(!isRegularExpanded)}
                 />
 
-                {/* LP Tokens Section */}
                 <TokenList
                     tokens={lpTokens}
                     title="LP Tokens"
@@ -202,7 +207,6 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                     onToggle={() => setIsLPExpanded(!isLPExpanded)}
                 />
 
-                {/* Summary footer */}
                 <div className="mt-4 pt-4 border-t border-gray-100">
                     <div className="flex flex-col sm:flex-row sm:justify-between gap-2">
                         <div className="font-comic text-gray-600">
