@@ -1,6 +1,13 @@
 import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { RefreshCw, Coins, Info, Layers, ArrowRight } from 'lucide-react';
+import {
+    RefreshCw,
+    Coins,
+    Info,
+    Layers,
+    ArrowRight,
+    Sparkles,
+} from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 
@@ -16,13 +23,45 @@ interface HowToGetProps {
     isLoading?: boolean;
 }
 
+const MintToken = () => (
+    <Link
+        href="http://mithril-mint-token.ar.io"
+        target="_blank"
+        className="relative group flex items-center gap-2 bg-gradient-to-r from-[#6B46C1] via-[#9F7AEA] to-[#D69E2E] px-4 py-2 rounded-full font-bold text-lg text-white hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+    >
+        <Sparkles className="h-4 w-4 text-white animate-pulse" />
+        MINT
+        <span className="absolute -inset-0.5 bg-gradient-to-r from-[#6B46C1] via-[#9F7AEA] to-[#D69E2E] opacity-0 group-hover:opacity-30 rounded-full blur transition duration-300"></span>
+    </Link>
+);
+
+const RegularToken = ({
+    token,
+    address,
+}: {
+    token: string;
+    address?: string;
+}) =>
+    address ? (
+        <Link
+            href={`https://dexi.ar.io/#/token/${address}`}
+            target="_blank"
+            className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg hover:bg-gray-200 transition-colors"
+        >
+            {token}
+        </Link>
+    ) : (
+        <span className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg">
+            {token}
+        </span>
+    );
+
 const HowToGet: React.FC<HowToGetProps> = ({
     data = [],
     isLoading = false,
 }) => {
     const singleTokens = ['MINT', 'qAR', 'wAR', 'USDA'];
     const singleTokenAddresses = {
-        MINT: 'SWQx44W-1iMwGFBSHlC3lStCq3Z7O2WZrx9quLeZOu0',
         qAR: 'NG-0lVX882MG5nhARrSzyprEK6ejonHpdUmaaMPsHE8',
         wAR: 'xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10',
         USDA: '',
@@ -120,32 +159,17 @@ const HowToGet: React.FC<HowToGetProps> = ({
                                         <Coins className="h-5 w-5 text-moon-yellow" />
                                         Single Tokens
                                     </h4>
-                                    <div className="flex flex-wrap gap-3">
-                                        {singleTokens.map((token) =>
-                                            singleTokenAddresses[
-                                                token as keyof typeof singleTokenAddresses
-                                            ] ? (
-                                                <Link
-                                                    key={token}
-                                                    href={`https://dexi.ar.io/#/token/${
-                                                        singleTokenAddresses[
-                                                            token as keyof typeof singleTokenAddresses
-                                                        ]
-                                                    }`}
-                                                    target="_blank"
-                                                    className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg hover:bg-gray-200 transition-colors cursor-pointer"
-                                                >
-                                                    {token}
-                                                </Link>
-                                            ) : (
-                                                <span
-                                                    key={token}
-                                                    className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg"
-                                                >
-                                                    {token}
-                                                </span>
-                                            )
-                                        )}
+                                    <div className="flex flex-wrap gap-3 items-center">
+                                        <MintToken />
+                                        {Object.entries(
+                                            singleTokenAddresses
+                                        ).map(([token, address]) => (
+                                            <RegularToken
+                                                key={token}
+                                                token={token}
+                                                address={address}
+                                            />
+                                        ))}
                                     </div>
                                 </CardContent>
                             </Card>

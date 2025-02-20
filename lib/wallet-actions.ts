@@ -463,7 +463,44 @@ export async function getTokenDenomination(token: string): Promise<number> {
     }
 }
 
-export async function unstakeToken(token: string): Promise<boolean> {
+export async function unstakeToken(token: string): Promise<string | true> {
+    const cleanupErrorMessage = (error: string): string => {
+        // Handle known error patterns
+        const errorPatterns: { [key: string]: string } = {
+            'MINT token cannot be unstaked':
+                'MINT token is a perma-stake token unless in LP form, and cannot be unstaked',
+            'Insufficient balance': 'You have no tokens to unstake',
+            'Not staked': "You haven't staked this token yet",
+            'Invalid token': 'This token is not supported for staking',
+        };
+
+        // Check for known error patterns
+        for (const [pattern, message] of Object.entries(errorPatterns)) {
+            if (error.includes(pattern)) {
+                return message;
+            }
+        }
+
+        // Handle full error trace format
+        if (error.includes('[31mError')) {
+            // Extract the actual error message between the last ': ' and the first '[0m'
+            const match = error.match(/: ([^[]+)/);
+            if (match && match[1]) {
+                return match[1].trim();
+            }
+        }
+
+        // If no specific pattern matches, return a cleaned-up version of the error
+        return (
+            error
+                .replace(/\[\d+m/g, '') // Remove color codes
+                .replace(/string ".*?":/g, '') // Remove file references
+                .split('stack traceback:')[0] // Remove stack trace
+                .replace(/error:/i, '') // Remove 'error:' prefix
+                .trim() || 'Failed to unstake token. Please try again.'
+        );
+    };
+
     return executeWalletAction(
         'unstaking token',
         async () => {
@@ -482,19 +519,22 @@ export async function unstakeToken(token: string): Promise<boolean> {
                 false
             );
 
+            if ((result as any).Error) {
+                return cleanupErrorMessage((result as any).Error);
+            }
+
             if (result.Messages && result.Messages.length > 0) {
                 const errorTag = result.Messages[0].Tags.find(
                     (tag) => tag.name === 'Error'
                 );
                 if (errorTag) {
-                    console.error('Unstake error:', errorTag.value);
-                    return false;
+                    return cleanupErrorMessage(errorTag.value);
                 }
                 return true;
             }
-            return false;
+            return 'Unable to unstake token. Please try again later.';
         },
-        false
+        'Please connect your wallet to unstake'
     );
 }
 
