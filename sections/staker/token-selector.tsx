@@ -75,6 +75,12 @@ const TokenSelector = ({
                 ),
             })
         )
+        .filter(
+            (token) =>
+                !['4Aq_6sBUyEo6AlKRq6JLT9dDfYG5ThfznA_cXjwsJpM'].includes(
+                    token.address
+                )
+        )
         .sort((a, b) => a.name.localeCompare(b.name))
         .reduce<{
             availableTokens: TokenInfo[];
