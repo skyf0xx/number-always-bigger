@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Coins, ChevronDown, ChevronUp, Sparkles, Layers } from 'lucide-react';
+import {
+    Coins,
+    ChevronDown,
+    ChevronUp,
+    Sparkles,
+    Layers,
+    Info,
+} from 'lucide-react';
 import { formatBalance, formatTokenName } from '@/lib/utils';
 import { StakedBalance } from '@/lib/wallet-actions';
 import Link from 'next/link';
@@ -11,7 +18,12 @@ interface StakedDisplayProps {
 }
 
 // Special token display component
-const TokenNameDisplay = ({ name }: { name: string }) => {
+interface TokenNameDisplayProps {
+    name: string;
+    address?: string;
+}
+
+const TokenNameDisplay = ({ name, address }: TokenNameDisplayProps) => {
     if (name === 'MINT') {
         return (
             <Link
@@ -25,6 +37,22 @@ const TokenNameDisplay = ({ name }: { name: string }) => {
             </Link>
         );
     }
+
+    if (address) {
+        return (
+            <Link
+                href={`https://www.ao.link/#/token/${address}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-comic hover:text-meme-blue transition-colors relative group inline-flex items-center"
+            >
+                <span>{formatTokenName(name)}</span>
+                {/* Subtle underline animation on hover */}
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-meme-blue/20 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></span>
+            </Link>
+        );
+    }
+
     return <span className="font-comic">{formatTokenName(name)}</span>;
 };
 
@@ -146,7 +174,10 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                                             : 'text-meme-blue'
                                     } flex-shrink-0`}
                                 />
-                                <TokenNameDisplay name={balance.name} />
+                                <TokenNameDisplay
+                                    name={balance.name}
+                                    address={balance.address}
+                                />
                             </div>
                             <div className="col-span-3 flex items-center justify-center gap-1">
                                 <Sparkles
@@ -226,6 +257,31 @@ const StakedDisplay = ({ balances, tokenWeights }: StakedDisplayProps) => {
                                     0
                                 )
                                 .toLocaleString()}
+                        </div>
+                    </div>
+                </div>
+                <div className="mb-6 p-4 bg-gray-50 rounded-lg border border-meme-blue/20">
+                    <div className="flex items-start gap-3">
+                        <Info className="h-5 w-5 mt-1 text-meme-blue flex-shrink-0" />
+                        <div className="space-y-2">
+                            <p className="font-comic text-gray-700">
+                                reward weights explained:
+                            </p>
+                            <ul className="space-y-1 text-sm text-gray-600">
+                                <li className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-meme-blue" />
+                                    weights = The more NAB in a pool, the higher
+                                    its weight.
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-meme-blue" />
+                                    updates daily to keep things fair
+                                </li>
+                                <li className="flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-meme-blue" />
+                                    partners like Q Arweave get extra boosts
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
