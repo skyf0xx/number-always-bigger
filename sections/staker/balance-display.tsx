@@ -27,10 +27,6 @@ const BalanceDisplay = ({
 }: BalanceDisplayProps) => {
     const MINT_TOKEN = 'SWQx44W-1iMwGFBSHlC3lStCq3Z7O2WZrx9quLeZOu0';
 
-    if (selectedToken === '4Aq_6sBUyEo6AlKRq6JLT9dDfYG5ThfznA_cXjwsJpM') {
-        selectedToken = ''; // Old expired token
-    }
-
     if (!selectedToken) {
         return (
             <div className="p-4 bg-gray-50 rounded-lg mb-4">
