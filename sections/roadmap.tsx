@@ -42,7 +42,7 @@ const RoadmapSection = () => {
                 },
                 {
                     text: "Activate Mithril's Rebasing on $MINT (Create Scarcity)",
-                    completed: false,
+                    completed: true,
                     explainer:
                         'MINT’s rebasing mechanism, simpler than NAB’s, will be implemented first as a proof of concept in Q1.',
                 },
