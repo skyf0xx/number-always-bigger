@@ -27,7 +27,10 @@ const BalanceDisplay = ({
 }: BalanceDisplayProps) => {
     const MINT_TOKEN = 'SWQx44W-1iMwGFBSHlC3lStCq3Z7O2WZrx9quLeZOu0';
 
-    if (!selectedToken) {
+    if (
+        !selectedToken ||
+        selectedToken === '4Aq_6sBUyEo6AlKRq6JLT9dDfYG5ThfznA_cXjwsJpM'
+    ) {
         return (
             <div className="p-4 bg-gray-50 rounded-lg mb-4">
                 <div className="flex items-center justify-center gap-2 text-gray-500">
