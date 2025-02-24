@@ -111,6 +111,12 @@ const TokenSelector = ({
             (token) => token.address === selectedToken
         )?.name || 'choose a token fren';
 
+    const handleTokenSelect = (token: TokenInfo) => {
+        onTokenSelect(token.address);
+        setIsOpen(false);
+        setSearchQuery('');
+    };
+
     if (isLoadingTokens) {
         return (
             <div className="relative mb-4">
@@ -184,13 +190,9 @@ const TokenSelector = ({
                                         {filteredAvailable.map((token) => (
                                             <button
                                                 key={token.key}
-                                                onClick={() => {
-                                                    onTokenSelect(
-                                                        token.address
-                                                    );
-                                                    setIsOpen(false);
-                                                    setSearchQuery('');
-                                                }}
+                                                onClick={() =>
+                                                    handleTokenSelect(token)
+                                                }
                                                 className={`w-full p-3 text-left font-comic hover:bg-gray-50
                                                     flex items-center justify-between
                                                     ${
@@ -218,23 +220,28 @@ const TokenSelector = ({
                                         <div className="border-t border-gray-100" />
                                     )}
 
-                                {/* Unavailable Tokens */}
+                                {/* Unavailable Tokens - Now Clickable */}
                                 {filteredUnavailable.length > 0 && (
                                     <div className="py-1">
                                         <div className="px-3 py-2 text-xs text-gray-500 font-comic bg-gray-50 flex items-center gap-2">
                                             <Info className="w-3 h-3" />
-                                            tokens u need to get first
+                                            click to check if u have these
+                                            tokens
                                         </div>
                                         {filteredUnavailable.map((token) => (
-                                            <div
+                                            <button
                                                 key={token.key}
-                                                className="w-full p-3 text-left font-comic text-gray-400 flex items-center justify-between"
+                                                onClick={() =>
+                                                    handleTokenSelect(token)
+                                                }
+                                                className="w-full p-3 text-left font-comic text-gray-600 hover:bg-gray-50 
+                                                    flex items-center justify-between group transition-colors"
                                             >
                                                 <span>{token.name}</span>
-                                                <span className="text-xs bg-gray-100 px-2 py-1 rounded-full">
-                                                    not in wallet
+                                                <span className="text-xs bg-gray-100 group-hover:bg-gray-200 px-2 py-1 rounded-full transition-colors">
+                                                    check balance
                                                 </span>
-                                            </div>
+                                            </button>
                                         ))}
                                     </div>
                                 )}
