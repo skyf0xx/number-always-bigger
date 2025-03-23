@@ -63,7 +63,7 @@ const RewardsDisplay = ({ walletAddress }: RewardsDisplayProps) => {
                     <Gift className="h-5 w-5 text-moon-yellow" />
                     <div>
                         <p className="font-comic text-sm text-gray-600">
-                            your NAB rewards: (unlock on Feb 2025)
+                            your NAB rewards
                         </p>
                         <p className="font-comic font-bold text-lg">
                             {rewards ? formatBalance(rewards.balance) : '0'} NAB
