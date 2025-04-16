@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Gift } from 'lucide-react';
+import { RefreshCw, Gift, Sparkles, ArrowRight } from 'lucide-react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { getBalance, TokenBalance } from '@/lib/wallet-actions';
 import { formatBalance } from '@/lib/utils';
+import Link from 'next/link';
 
 const NAB_TOKEN = 'OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU';
 
@@ -58,7 +59,7 @@ const RewardsDisplay = ({ walletAddress }: RewardsDisplayProps) => {
 
     return (
         <div className="p-4 bg-white/80 rounded-lg border-2 border-moon-yellow mt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-2">
                     <Gift className="h-5 w-5 text-moon-yellow" />
                     <div>
@@ -72,6 +73,26 @@ const RewardsDisplay = ({ walletAddress }: RewardsDisplayProps) => {
                 </div>
                 <div className="text-xs text-gray-500 font-comic">
                     auto-updates every 5 min
+                </div>
+            </div>
+
+            {/* Staking promotion - integrated into the same box */}
+            <div className="mt-3 pt-3 border-t border-moon-yellow/30">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-tech-purple" />
+                        <p className="font-comic text-sm text-gray-600">
+                            use ur NAB to earn more here:
+                        </p>
+                    </div>
+                    <Link
+                        href="https://mithril-mint-token.ar.io/"
+                        target="_blank"
+                        className="group flex items-center gap-1 bg-moon-yellow/20 hover:bg-moon-yellow/30 px-3 py-1 rounded-full font-comic text-sm text-gray-700 hover:text-gray-900 transition-all"
+                    >
+                        MINT Liquidity Protocol
+                        <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                    </Link>
                 </div>
             </div>
         </div>
