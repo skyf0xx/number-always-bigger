@@ -9,6 +9,72 @@ import {
     setCache,
 } from './cache';
 
+// Rate Limiting Implementation
+interface QueuedRequest {
+    resolve: (value: any) => void;
+    reject: (error: any) => void;
+    execute: () => Promise<any>;
+}
+class TargetRateLimiter {
+    private queues: Map<string, QueuedRequest[]> = new Map();
+    private processing: Set<string> = new Set();
+    private readonly REQUEST_INTERVAL = 500; // 500ms = 2 requests per second max
+
+    async throttle<T>(target: string, requestFn: () => Promise<T>): Promise<T> {
+        return new Promise((resolve, reject) => {
+            // Get or create queue for this target
+            if (!this.queues.has(target)) {
+                this.queues.set(target, []);
+            }
+
+            const queue = this.queues.get(target)!;
+
+            // Add request to queue
+            queue.push({
+                resolve,
+                reject,
+                execute: requestFn,
+            });
+
+            // Start processing if not already processing
+            this.processQueue(target);
+        });
+    }
+
+    private async processQueue(target: string) {
+        // Prevent multiple processors for same target
+        if (this.processing.has(target)) {
+            return;
+        }
+
+        this.processing.add(target);
+        const queue = this.queues.get(target)!;
+
+        while (queue.length > 0) {
+            const request = queue.shift()!;
+
+            try {
+                const result = await request.execute();
+                request.resolve(result);
+            } catch (error) {
+                request.reject(error);
+            }
+
+            // Wait before processing next request for this target
+            if (queue.length > 0) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, this.REQUEST_INTERVAL)
+                );
+            }
+        }
+
+        this.processing.delete(target);
+    }
+}
+
+// Create global rate limiter instance
+const rateLimiter = new TargetRateLimiter();
+
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
 const NAB_PRICE_TARGET = 'bxpz3u2USXv8Ictxb0aso3l8V9UTimaiGp9henzDsl8';
@@ -101,41 +167,43 @@ async function sendAndGetResult(
     signer = false,
     cacheExpiry: number | false
 ): Promise<MessageResult> {
-    let response;
-    let cached;
-    let cacheKey = '';
+    return rateLimiter.throttle(target, async () => {
+        let response;
+        let cached;
+        let cacheKey = '';
 
-    if (cacheExpiry) {
-        cacheKey = generateCacheKey(target, tags);
-        cached = await getFromCache(cacheKey);
-    }
-
-    if (cached) {
-        return cached;
-    }
-
-    if (signer === false) {
-        response = await dryrun({
-            process: target,
-            tags,
-        });
-    } else {
-        const messageId = await sendMessage(target, tags, signer);
-        if (!messageId) {
-            throw new Error('Failed to send message');
+        if (cacheExpiry) {
+            cacheKey = generateCacheKey(target, tags);
+            cached = await getFromCache(cacheKey);
         }
 
-        response = await result({
-            message: messageId,
-            process: target,
-        });
-    }
+        if (cached) {
+            return cached;
+        }
 
-    if (cacheExpiry) {
-        setCache(cacheKey, response, cacheExpiry);
-    }
+        if (signer === false) {
+            response = await dryrun({
+                process: target,
+                tags,
+            });
+        } else {
+            const messageId = await sendMessage(target, tags, signer);
+            if (!messageId) {
+                throw new Error('Failed to send message');
+            }
 
-    return response;
+            response = await result({
+                message: messageId,
+                process: target,
+            });
+        }
+
+        if (cacheExpiry) {
+            setCache(cacheKey, response, cacheExpiry);
+        }
+
+        return response;
+    });
 }
 
 function parseMessageData<T>(result: MessageResult, errorMessage: string): T {
