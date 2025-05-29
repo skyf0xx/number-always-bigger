@@ -8,7 +8,6 @@ import {
     getFromCache,
     setCache,
 } from './cache';
-import { toast } from '@/hooks/use-toast';
 
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
