@@ -8,7 +8,97 @@ import {
     getFromCache,
     setCache,
 } from './cache';
-import { toast } from '@/hooks/use-toast';
+
+// Rate Limiting Implementation
+interface QueuedRequest {
+    resolve: (value: any) => void;
+    reject: (error: any) => void;
+    execute: () => Promise<any>;
+}
+
+const tokenDenominations: { [key: string]: number } = {
+    OsK9Vgjxo0ypX_HLz2iJJuh4hp3I80yA9KArsJjIloU: 8,
+    '4Aq_6sBUyEo6AlKRq6JLT9dDfYG5ThfznA_cXjwsJpM': 12,
+    VRJW7p3SOJ927_mbuRzkYizYZxNLug6BOACxgXvvjFQ: 12,
+    lCHuxmDwoDGQFBY4Zo3n8XOKSzZzy8PAtnfNAPEDRd8: 12,
+    bxpz3u2USXv8Ictxb0aso3l8V9UTimaiGp9henzDsl8: 12,
+    '9eM72ObMJM6o3WHi6nTldwhHsCXSKgzz1hv-FpURZB4': 12,
+    'zYzUzy0ooaHj4eeFkBa3WdQE2CR7-nJ3WQteUnm6wMA': 12,
+    'NX9PKbLVIyka3KPZghnEekw9FB2dfzbzVabpY-ZN1Dg': 12,
+    '2wN5sF25smQorJncgUdg85C3jwBzDTOH-iBxDwvfBvs': 8,
+    JkN_xrwtnNAaz3bk3XHVG2Dws5tXXT2cIZ49X0lRi1c: 12,
+    lmaw9BhyycEIyxWhr0kF_tTcfoSoduDX8fChpHn2eQM: 12,
+    'NG-0lVX882MG5nhARrSzyprEK6ejonHpdUmaaMPsHE8': 12,
+    Lt0PKHQCFxXkXjJVd5CV2tRIlXe55hs4cQ8_OY9JgsI: 12,
+    'SWQx44W-1iMwGFBSHlC3lStCq3Z7O2WZrx9quLeZOu0': 8,
+    HOJpKZTM8N1xDq3ScCswpiTz2ixOG2B7UGUS57xnYTQ: 12,
+    '2fG2_DZWLmEeAzWilPMgIXx9Zpho0kubDnBuLocxsRQ': 12,
+    xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10: 12,
+    KdIH8lNEuYEySqTYAoA_ceBuvgEKcmk6u_y8GMhBN80: 12,
+    BGBUvr5dVJrgmmuPN6G56OIuNSHUWO2y7bZyPlAjK8Q: 8,
+    '230cSNf7AWy6VsBTftbTXW76xR5H1Ki42nT2xM2fA6M': 12,
+    'uay9sRihdYZOQxX9_tv7-ac4RDKHowZhBg2zscniQqo': 12,
+};
+
+class TargetRateLimiter {
+    private queues: Map<string, QueuedRequest[]> = new Map();
+    private processing: Set<string> = new Set();
+    private readonly REQUEST_INTERVAL = 500; // 500ms = 2 requests per second max
+
+    async throttle<T>(target: string, requestFn: () => Promise<T>): Promise<T> {
+        return new Promise((resolve, reject) => {
+            // Get or create queue for this target
+            if (!this.queues.has(target)) {
+                this.queues.set(target, []);
+            }
+
+            const queue = this.queues.get(target)!;
+
+            // Add request to queue
+            queue.push({
+                resolve,
+                reject,
+                execute: requestFn,
+            });
+
+            // Start processing if not already processing
+            this.processQueue(target);
+        });
+    }
+
+    private async processQueue(target: string) {
+        // Prevent multiple processors for same target
+        if (this.processing.has(target)) {
+            return;
+        }
+
+        this.processing.add(target);
+        const queue = this.queues.get(target)!;
+
+        while (queue.length > 0) {
+            const request = queue.shift()!;
+
+            try {
+                const result = await request.execute();
+                request.resolve(result);
+            } catch (error) {
+                request.reject(error);
+            }
+
+            // Wait before processing next request for this target
+            if (queue.length > 0) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, this.REQUEST_INTERVAL)
+                );
+            }
+        }
+
+        this.processing.delete(target);
+    }
+}
+
+// Create global rate limiter instance
+const rateLimiter = new TargetRateLimiter();
 
 // Constants
 const STAKE_CONTRACT = 'KbUW8wkZmiEWeUG0-K8ohSO82TfTUdz6Lqu5nxDoQDc';
@@ -102,41 +192,43 @@ async function sendAndGetResult(
     signer = false,
     cacheExpiry: number | false
 ): Promise<MessageResult> {
-    let response;
-    let cached;
-    let cacheKey = '';
+    return rateLimiter.throttle(target, async () => {
+        let response;
+        let cached;
+        let cacheKey = '';
 
-    if (cacheExpiry) {
-        cacheKey = generateCacheKey(target, tags);
-        cached = await getFromCache(cacheKey);
-    }
-
-    if (cached) {
-        return cached;
-    }
-
-    if (signer === false) {
-        response = await dryrun({
-            process: target,
-            tags,
-        });
-    } else {
-        const messageId = await sendMessage(target, tags, signer);
-        if (!messageId) {
-            throw new Error('Failed to send message');
+        if (cacheExpiry) {
+            cacheKey = generateCacheKey(target, tags);
+            cached = await getFromCache(cacheKey);
         }
 
-        response = await result({
-            message: messageId,
-            process: target,
-        });
-    }
+        if (cached) {
+            return cached;
+        }
 
-    if (cacheExpiry) {
-        setCache(cacheKey, response, cacheExpiry);
-    }
+        if (signer === false) {
+            response = await dryrun({
+                process: target,
+                tags,
+            });
+        } else {
+            const messageId = await sendMessage(target, tags, signer);
+            if (!messageId) {
+                throw new Error('Failed to send message');
+            }
 
-    return response;
+            response = await result({
+                message: messageId,
+                process: target,
+            });
+        }
+
+        if (cacheExpiry) {
+            setCache(cacheKey, response, cacheExpiry);
+        }
+
+        return response;
+    });
 }
 
 function parseMessageData<T>(result: MessageResult, errorMessage: string): T {
@@ -439,6 +531,10 @@ export async function getStakeOwnership(address: string): Promise<number> {
 export async function getTokenDenomination(token: string): Promise<number> {
     const tags = [{ name: 'Action', value: 'Info' }];
 
+    if (tokenDenominations[token]) {
+        return tokenDenominations[token]; // Use cached value preferentially. (too mamy calls were crashing processes)
+    }
+
     try {
         return await withRetry(async () => {
             const result = await sendAndGetResult(
@@ -456,6 +552,7 @@ export async function getTokenDenomination(token: string): Promise<number> {
             }
 
             const denomination = Number(denominationTag.value);
+            tokenDenominations[token] = denomination;
             return isNaN(denomination) ? 8 : denomination;
         });
     } catch (error) {
