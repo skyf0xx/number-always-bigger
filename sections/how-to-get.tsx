@@ -7,6 +7,7 @@ import {
     Layers,
     ArrowRight,
     Sparkles,
+    Users,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
@@ -23,50 +24,23 @@ interface HowToGetProps {
     isLoading?: boolean;
 }
 
-const MintToken = () => (
+const DelegateButton = () => (
     <Link
-        href="http://mithril-mint-token.ar.io"
+        href="https://ao.arweave.net/#/delegate"
         target="_blank"
-        className="relative group flex items-center gap-2 bg-gradient-to-r from-[#6B46C1] via-[#9F7AEA] to-[#D69E2E] px-4 py-2 rounded-full font-bold text-lg text-white hover:shadow-lg transform hover:scale-105 transition-all duration-300"
+        className="relative group flex items-center gap-2 bg-gradient-to-r from-[#6B46C1] via-[#9F7AEA] to-[#D69E2E] px-6 py-3 rounded-full font-bold text-lg text-white hover:shadow-lg transform hover:scale-105 transition-all duration-300"
     >
-        <Sparkles className="h-4 w-4 text-white animate-pulse" />
-        MINT
+        <Users className="h-5 w-5 text-white animate-pulse" />
+        Delegate Now
+        <ArrowRight className="h-4 w-4 text-white" />
         <span className="absolute -inset-0.5 bg-gradient-to-r from-[#6B46C1] via-[#9F7AEA] to-[#D69E2E] opacity-0 group-hover:opacity-30 rounded-full blur transition duration-300"></span>
     </Link>
 );
-
-const RegularToken = ({
-    token,
-    address,
-}: {
-    token: string;
-    address?: string;
-}) =>
-    address ? (
-        <Link
-            href={`https://dexi.ar.io/#/token/${address}`}
-            target="_blank"
-            className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg hover:bg-gray-200 transition-colors"
-        >
-            {token}
-        </Link>
-    ) : (
-        <span className="bg-gray-100 px-3 py-1 rounded-full font-medium text-lg">
-            {token}
-        </span>
-    );
 
 const HowToGet: React.FC<HowToGetProps> = ({
     data = [],
     isLoading = false,
 }) => {
-    const singleTokens = ['MINT', 'qAR', 'wAR', 'USDA'];
-    const singleTokenAddresses = {
-        qAR: 'NG-0lVX882MG5nhARrSzyprEK6ejonHpdUmaaMPsHE8',
-        wAR: 'xU9zFkq3X2ZQ6olwNVvr1vUWIjc3kXTWr7xKQD6dh10',
-        USDA: '',
-    };
-
     return (
         <section className="max-w-4xl mx-auto my-16" id="stake">
             <div className="bg-white rounded-lg p-8 transform -rotate-1 border-4 border-crypto-green">
@@ -152,24 +126,18 @@ const HowToGet: React.FC<HowToGetProps> = ({
                         </div>
                     ) : (
                         <div className="space-y-6">
-                            {/* Single Tokens Card */}
+                            {/* Delegation Card */}
                             <Card className="border-4 border-floor-pink hover:scale-[1.02] transition-transform">
                                 <CardContent className="p-6">
                                     <h4 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                        <Coins className="h-5 w-5 text-moon-yellow" />
-                                        Single Tokens
+                                        <Users className="h-5 w-5 text-moon-yellow" />
+                                        Delegation
                                     </h4>
-                                    <div className="flex flex-wrap gap-3 items-center">
-                                        <MintToken />
-                                        {Object.entries(
-                                            singleTokenAddresses
-                                        ).map(([token, address]) => (
-                                            <RegularToken
-                                                key={token}
-                                                token={token}
-                                                address={address}
-                                            />
-                                        ))}
+                                    <p className="text-lg mb-4 font-medium">
+                                        Delegate $PI to @NumberAlways and support the NAB ecosystem while earning yield! 🚀
+                                    </p>
+                                    <div className="flex justify-center">
+                                        <DelegateButton />
                                     </div>
                                 </CardContent>
                             </Card>
@@ -215,7 +183,7 @@ const HowToGet: React.FC<HowToGetProps> = ({
                                 <Info className="h-5 w-5 mt-1 flex-shrink-0" />
                                 <p className="text-sm">
                                     New LP tokens may take up to 24 hours to be
-                                    stakeable. Can&apos;t find one? Ask us on{' '}
+                                    stakeable. Can't find one? Ask us on{' '}
                                     <Link
                                         href="https://discord.gg/RSXg24mCrJ"
                                         target="_blank"
